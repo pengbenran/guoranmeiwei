@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
   <div class="indexwarp">
       <div class="header">
         <div class="search"><i class="fa fa-search" aria-hidden="true"></i>
@@ -6,35 +7,41 @@
         </div>
       </div>
       <!--header end-->
+=======
+  <div class="page">
+  
+>>>>>>> 19379c45cfbb686a0b01800f83780c03f4e16341
   </div>
 </template>
 
 <script>
-// import card from '@/components/card'
+ 
+  import Api from "@/utils/Api"
 export default {
-  data () {
+  data() {
     return {
-     
+
     }
   },
-
-  components: {
-    // card
+  async mounted(){
+    let api= new Api 
+    let res=await api.getMain()
+    console.log("加载完成");
+    console.log(res)
   },
-
   methods: {
-   
-  },
 
-  created () {
-    // 调用应用实例的方法获取全局数据
-  
   }
 }
 </script>
 
+<<<<<<< HEAD
 <style scoped lang='scss'>
  .header{
    .search{display: flex;justify-content: center;width: 90%;}
  }
 </style>
+=======
+<style>
+</style>
+>>>>>>> 19379c45cfbb686a0b01800f83780c03f4e16341

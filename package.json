@@ -16,7 +16,11 @@
     "build": "node build/build.js wx"
   },
   "dependencies": {
+<<<<<<< HEAD
     "font-awesome": "^4.7.0",
+=======
+    "flyio": "^0.6.2",
+>>>>>>> 19379c45cfbb686a0b01800f83780c03f4e16341
     "mpvue": "^1.0.11",
     "vuex": "^3.0.1"
   },
