@@ -1,33 +1,29 @@
 <template>
-  <div class="container">
-
+  <div class="page">
+  
   </div>
 </template>
 
 <script>
-// import card from '@/components/card'
+ 
+  import Api from "@/utils/Api"
 export default {
-  data () {
+  data() {
     return {
-     
+
     }
   },
-
-  components: {
-    // card
+  async mounted(){
+    let api= new Api 
+    let res=await api.getMain()
+    console.log("加载完成");
+    console.log(res)
   },
-
   methods: {
-   
-  },
 
-  created () {
-    // 调用应用实例的方法获取全局数据
-  
   }
 }
 </script>
 
-<style scoped>
-
+<style>
 </style>
