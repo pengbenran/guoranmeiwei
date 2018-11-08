@@ -1,6 +1,11 @@
 <template>
-  <div class="container">
-
+  <div class="indexwarp">
+      <div class="header">
+        <div class="search"><i class="fa fa-search" aria-hidden="true"></i>
+                            <input  placeholder="最大输入长度10"  style-placeholder='color:#ccc;font-size:28rpx;'/>
+        </div>
+      </div>
+      <!--header end-->
   </div>
 </template>
 
@@ -28,6 +33,8 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style scoped lang='scss'>
+ .header{
+   .search{display: flex;justify-content: center;width: 90%;}
+ }
 </style>
