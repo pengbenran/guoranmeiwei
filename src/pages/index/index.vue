@@ -1,17 +1,12 @@
 <template>
-<<<<<<< HEAD
   <div class="indexwarp">
       <div class="header">
-        <div class="search"><i class="fa fa-search" aria-hidden="true"></i>
-                            <input  placeholder="最大输入长度10"  style-placeholder='color:#ccc;font-size:28rpx;'/>
+        <div class="search">
+          <i class="fa fa-search" aria-hidden="true"></i>
+          <input  placeholder="最大输入长度10"  style-placeholder='color:#ccc;font-size:28rpx;'/>
         </div>
       </div>
-      <!--header end-->
-=======
-  <div class="page">
-  
->>>>>>> 19379c45cfbb686a0b01800f83780c03f4e16341
-  </div>
+    </div>
 </template>
 
 <script>
@@ -34,14 +29,9 @@ export default {
   }
 }
 </script>
-
-<<<<<<< HEAD
 <style scoped lang='scss'>
  .header{
    .search{display: flex;justify-content: center;width: 90%;}
  }
 </style>
-=======
-<style>
-</style>
->>>>>>> 19379c45cfbb686a0b01800f83780c03f4e16341
+
