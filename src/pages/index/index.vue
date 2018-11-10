@@ -3,6 +3,7 @@
     <!-- <div class="heightDiv"></div> -->
 
       <div class="header">
+<<<<<<< HEAD
         <div class="search"><i class="fa fa-search" aria-hidden="true"></i>
                             <input  placeholder="王小贱鲜果零食优选"  style-placeholder='color:#ccc;font-weight: 100;'/>
         </div>
@@ -117,6 +118,14 @@
      <img :src="imgList.footerImg"/>
    </div>
   </div>
+=======
+        <div class="search">
+          <i class="fa fa-search" aria-hidden="true"></i>
+          <input  placeholder="最大输入长度10"  style-placeholder='color:#ccc;font-size:28rpx;'/>
+        </div>
+      </div>
+    </div>
+>>>>>>> 57110101e5c6ac0f60c3bae7a6fb68c4024859fc
 </template>
 
 <script>
@@ -162,7 +171,10 @@
     }
   }
 </script>
+<<<<<<< HEAD
 
+=======
+>>>>>>> 57110101e5c6ac0f60c3bae7a6fb68c4024859fc
 <style scoped lang='scss'>
 /*局部水平居中*/
 @mixin flexc{
