@@ -9,15 +9,15 @@
 
 <script>
 import Api from "@/utils/Api";
-import globalStore from "@/utils/globaledata"; 
 import Grouplist from '@/components/grouplist'
+import config from "@/config"
 export default {
   data() {
     return {
-      bcgImg:globalStore.state.imgapi+"/group/111.png",
-      banner:globalStore.state.imgapi+"/group/3333.png",
+      bcgImg:config.imgUrl+"/group/111.png",
+      banner:config.imgUrl+"/group/3333.png",
       group_item:[
-       {gropname:'福建广西盘丝洞过节费iOSA级个iOS就技术都放假哦啊发基调集散地偶发酒叟安静的佛家说我键哦ID沙发飞机哦',groupimg:globalStore.state.imgapi+"/group/22.png",intro:'好吃的柚子又大有填',price:'69.99'}
+       {gropname:'福建广西盘丝洞过节费iOSA级个iOS就技术都放假哦啊发基调集散地偶发酒叟安静的佛家说我键哦ID沙发飞机哦',groupimg:config.imgUrl+"/group/22.png",intro:'好吃的柚子又大有填',price:'69.99'}
      ]
     }
   },

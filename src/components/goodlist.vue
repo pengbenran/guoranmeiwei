@@ -27,12 +27,12 @@
 </template>
 
 <script>
-import globalStore from "@/utils/globaledata"; 
+import config from "@/config"
 export default {
   props: ['good_item'],
   data () {
     return {
-    	addImg:globalStore.state.imgapi+'/kind/add.png',
+    	addImg:config.imgUrl+'/kind/add.png',
     }
     },
     methods: {

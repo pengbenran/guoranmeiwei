@@ -11,7 +11,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang='scss'>
 /* .container {
   height: 100%;
   display: flex;
@@ -27,5 +27,9 @@ export default {
   -moz-transition: width 2s;
   -webkit-transition: width 2s;
   -o-transition: width 2s;
+}
+
+@mixin flexc{
+display: flex;align-items: center;
 }
 </style>

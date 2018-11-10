@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import globalStore from "@/utils/globaledata"; 
+import config from "@/config"
 export default {
   components: {
   
@@ -67,22 +67,22 @@ export default {
 
   data () {
     return {
-     avator:globalStore.state.imgapi+"myself/avator.jpg",
-     wode:globalStore.state.imgapi+"myself/wode.jpg",
-     panel:globalStore.state.imgapi+"myself/panel.jpg",
+     avator:config.imgUrl+"myself/avator.jpg",
+     wode:config.imgUrl+"myself/wode.jpg",
+     panel:config.imgUrl+"myself/panel.jpg",
      orderitem:[
-     {name:'待付款',icon:globalStore.state.imgapi+"myself/daifukuan.png"},
-     {name:'待发货',icon:globalStore.state.imgapi+"myself/daifahuo.png"},
-     {name:'待收货',icon:globalStore.state.imgapi+"myself/daishouhuo.png"},
-     {name:'售后',icon:globalStore.state.imgapi+"myself/shouhou.png"},
+     {name:'待付款',icon:config.imgUrl+"myself/daifukuan.png"},
+     {name:'待发货',icon:config.imgUrl+"myself/daifahuo.png"},
+     {name:'待收货',icon:config.imgUrl+"myself/daishouhuo.png"},
+     {name:'售后',icon:config.imgUrl+"myself/shouhou.png"},
      ],
      featureitem:[
-     {name:'积分',icon:globalStore.state.imgapi+"myself/point.png"},
-     {name:'微分销',icon:globalStore.state.imgapi+"myself/fenxiao.png"},
-     {name:'地址管理',icon:globalStore.state.imgapi+"myself/address.png"},
-     {name:'拼团',icon:globalStore.state.imgapi+"myself/group.png"},
-     {name:'砍价',icon:globalStore.state.imgapi+"myself/cut.png"},
-     {name:'联系客服',icon:globalStore.state.imgapi+"myself/connect.png"}
+     {name:'积分',icon:config.imgUrl+"myself/point.png"},
+     {name:'微分销',icon:config.imgUrl+"myself/fenxiao.png"},
+     {name:'地址管理',icon:config.imgUrl+"myself/address.png"},
+     {name:'拼团',icon:config.imgUrl+"myself/group.png"},
+     {name:'砍价',icon:config.imgUrl+"myself/cut.png"},
+     {name:'联系客服',icon:config.imgUrl+"myself/connect.png"}
      ]
     }
   },

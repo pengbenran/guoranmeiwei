@@ -11,7 +11,7 @@
 <script>
 import Tab from '@/components/tab';
 import Goodlist from '@/components/goodlist';
-import globalStore from "@/utils/globaledata"; 
+import config from "@/config"
 export default {
   components: {
    Tab,
@@ -20,7 +20,7 @@ export default {
 
   data () {
     return {
-      banner:globalStore.state.imgapi+"/kind/banner.jpg",
+      banner:config.imgUrl+"/kind/banner.jpg",
      find_item:[
       {name:"季节水果",selected:true},
       {name:"热销水果",selected:false},
@@ -28,7 +28,7 @@ export default {
       {name:"热带水果",selected:false},
       {name:"季节水果",selected:false}],
      gooditem:[
-       {goodname:'福建广西盘丝洞过节费iOSA级个iOS就技术都放假哦啊发基调集散地偶发酒叟安静的佛家说我键哦ID沙发飞机哦',goodimg:globalStore.state.imgapi+"/kind/shop.jpg",intro:'好吃的柚子又大有填',price:'69.99'}
+       {goodname:'福建广西盘丝洞过节费iOSA级个iOS就技术都放假哦啊发基调集散地偶发酒叟安静的佛家说我键哦ID沙发飞机哦',goodimg:config.imgUrl+"/kind/shop.jpg",intro:'好吃的柚子又大有填',price:'69.99'}
      ]
     }
   },
