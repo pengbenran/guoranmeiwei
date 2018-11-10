@@ -1,11 +1,14 @@
 {
   "pages": [
     "pages/index/main",
+    "pages/groupdetail/main",
+    "pages/cart/main",
+    
     "pages/logs/main",
     "pages/counter/main",
     "pages/myself/main",
-    "pages/kind/main",
-    "pages/cart/main"
+    "pages/kind/main"
+    
   ],
   "window": {
     "backgroundTextStyle": "light",
