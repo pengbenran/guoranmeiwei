@@ -4,6 +4,5 @@ import 'font-awesome/css/font-awesome.min.css'
 import weui from './weui.css'
 Vue.config.productionTip = false
 App.mpType = 'app'
-
 const app = new Vue(App)
 app.$mount()
