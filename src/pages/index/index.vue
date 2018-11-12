@@ -1,40 +1,47 @@
 <template>
-  <div class="indexwarp">
+  <div class="indexwarp ">
+        <skeleton selector="skeleton"
+          loading="spin"
+          bgcolor="#FFF"
+          v-if="showSkeleton"></skeleton>
+    
+
+<div class="skeleton">
     <!-- <div class="heightDiv"></div> -->
       <div class="header">
-        <div class="search"><i class="fa fa-search" aria-hidden="true"></i>
-                            <input  placeholder="王小贱鲜果零食优选"  style-placeholder='color:#ccc;font-weight: 100;'/>
+        <div class="search skeleton-rect"><i class="fa fa-search " aria-hidden="true"></i>
+                            <input class="skeleton-rect"  placeholder="王小贱鲜果零食优选"  style-placeholder='color:#ccc;font-weight: 100;'/>
         </div>
       </div>
       <!--header end-->
-      <div class="tip">
+      <div class="tip  skeleton-Mrect">
         <div class="logo"><img :src="imgList.logo"></div><text>王小贱鲜果零食优选(湖北武汉店))</text><small>[切换]</small>
       </div>
       <!--tip end-->
-      <div class="brand">
+      <div class="brand skeleton-Mrect">
         <swiper class="swiper" indicator-dots='true' autoplay='true'>
           <swiper-item><img :src="imgList.brand"></swiper-item>
         </swiper>
       </div>
     <!--brand end-->
-    <div class="news">
+    <div class="news  skeleton-Mrect">
       <div class="shopImg"><img :src="imgList.shopImg"></div><small class="tag">火热</small><span> 全场特价9.9元起</span>
     </div>
     <!--news end-->
-     <div class="hot">
-       <div class="hotBg"><img :src="imgList.hotImg" /></div>
+     <div class="hot ">
+       <div class="hotBg "><img :src="imgList.hotImg" /></div>
        <div class="hotList">
-          <div class="hotItem">
+          <div class="hotItem skeleton-rect">
               <div class="icoImg"><img :src="imgList.ico1"/></div>
               <div class="hotShop"><img :src="imgList.shopImg1"/></div>
               <span>已售100000件</span>
           </div>
-          <div class="hotItem">
+          <div class="hotItem skeleton-rect">
               <div class="icoImg"><img :src="imgList.ico2"/></div>
               <div class="hotShop"><img :src="imgList.shopImg1"/></div>
               <span>已售100000件</span>
           </div>
-          <div class="hotItem">
+          <div class="hotItem skeleton-rect">
               <div class="icoImg"><img :src="imgList.ico3"/></div>
               <div class="hotShop"><img :src="imgList.shopImg1"/></div>
               <span>已售100000件</span>
@@ -46,7 +53,7 @@
     <div class="activity">
       <div class="top topimg"><img :src="imgList.activityImg"></div>
       <div class="actList">
-        <div class="actItem" v-for="(item,index) in activityImg" :index='index' :key='item'>
+        <div class="actItem skeleton-rect" v-for="(item,index) in activityImg" :index='index' :key='item'>
             <div class="itembg"><img :src="item.actBg"/></div>
             <div class="itemTile">
                <text>{{item.actName}}</text><small>{{item.acttall}}</small>
@@ -116,10 +123,13 @@
      <img :src="imgList.footerImg"/>
    </div>
   </div>
+  </div>
 </template>
 <script>
  import Api from "@/utils/Api"
  import config from "@/config"
+ import skeleton from '@/components/skeleton'
+
  let api= new Api 
   export default {
     data() {
@@ -144,14 +154,24 @@
         freeShopList:[{shopName:'新鲜水果特价大优惠便宜卖便宜卖好甜好甜好甜好甜好甜好甜好甜',shopImg:config.imgUrl+'/index/haotian01.png'},
                       {shopName:'新鲜水果特价大优惠便宜卖便宜卖好甜好甜好甜好甜好甜好甜好甜',shopImg:config.imgUrl+'/index/haotian02.png'},
                       {shopName:'新鲜水果特价大优惠便宜卖便宜卖好甜好甜好甜好甜好甜好甜好甜',shopImg:config.imgUrl+'/index/haotian03.png'},
-                     ]            
+                     ],
+        showSkeleton: false            
       }
+    },
+    components: {
+      skeleton
     },
     async mounted(){
         console.log(config.imgUrl,"图片")
       let res=await api.getMain()
       console.log("加载完成");
       console.log(res)
+    },
+    created () {
+      // const that = this;
+      // setTimeout(() => {
+      //   that.showSkeleton = false
+      // }, 1800)
     },
     methods: {
 
@@ -172,8 +192,8 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
 
 img{display: block;width: 100%;height: 100%}
 .heightDiv{height: 48rpx;}
- .header{padding: 10rpx 0 28rpx;border-bottom: 10rpx solid rgb(243,243,243);padding-left: 30rpx;
-   .search{@include flexc;width: 95%;height: 65rpx;background: #f5f5f5;border-radius: 35rpx;font-weight: 100;font-size: 30rpx;}
+ .header{padding: 10rpx 0 28rpx;border-bottom: 10rpx solid rgb(243,243,243);
+   .search{@include flexc;width: 95%;height: 65rpx;margin: auto;background: #f5f5f5;border-radius: 35rpx;font-weight: 100;font-size: 30rpx;}
    .search i{font-weight: 100;color: #ccc;width: 18%;text-align: center;}
    .search input{width: 82%;
  }
@@ -181,7 +201,8 @@ img{display: block;width: 100%;height: 100%}
 
  .tip{
   @include flexc;font-size: 27rpx;font-weight: 100;color: rgb(170, 170, 170);height: 78rpx;padding: 0 10rpx;border-bottom: 6rpx solid rgb(243,243,243);
-   .logo{width: 140rpx;height: 94%;}
+   .logo{width: 140rpx;height: 94%;display: inline-block}
+   .logo img{width: 140rpx;}
    small{display: inline-block;margin-left: 6rpx;color: rgb(236,189,87);}
  }
 
