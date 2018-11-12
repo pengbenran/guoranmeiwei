@@ -1,8 +1,6 @@
 <template>
   <div class="Cart">
-     <div class="top">
-       <div class="topImg"><img :src="ImgList.topImg"/></div><text>王小贱鲜果零食优选(南昌店))</text><small>[切换]</small>
-     </div>
+    <Shopaddr :shopname="shopname"></Shopaddr>
 
      <div class="shopList">
        <div class="selectico"> <icon type="circle" class="ico" size="21" /></div>
@@ -58,15 +56,17 @@
 <script>
  import Api from "@/utils/Api"
  import config from "@/config"
+ import Shopaddr from '@/components/shopaddr'
 
 export default {
   components: {
-  
+  Shopaddr
   },
 
   data () {
     return {
-     ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg'}
+     ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg'},
+     shopname:"王小姐水果店(抚生路点)"
     }
   },
 
@@ -87,12 +87,6 @@ display: flex;align-items: center;
 white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
 }
 img{display: block;height: 100%;width: 100%;}
-
-.top{@include flexc;font-size: 27rpx;font-weight: 100;color: rgb(170, 170, 170);height: 78rpx;padding: 0 10rpx;border-bottom: 6rpx solid rgb(243,243,243);
-   .topImg{height: 45rpx;width: 45rpx;margin-left: 10rpx;margin-right: 10rpx;}
-   small{display: inline-block;margin-left: 6rpx;color: rgb(236,189,87);}
-}
-
 .shopList{@include flexc;padding: 10rpx;border-bottom: 5px solid rgb(243,243,243);
    .itemLeft{width: 35%}
    .itemLeft img{width: 230rpx;height: 230rpx;margin: auto}

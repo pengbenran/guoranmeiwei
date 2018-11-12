@@ -1,17 +1,6 @@
 <template>
   <div class="myself">
-    <div class="header">
-        <div class="avator">
-          <img :src="avator">
-        </div>
-        <div class="username">
-          <div class="name">刘世轩</div>
-          <div class="lvname">普通会员</div>
-        </div>
-        <div class="qianicon">
-          <img :src="wode">
-        </div>
-    </div>
+    <Userpanel :userInfo="userInfo"></Userpanel>
     <!-- 积分余额优惠劵面板 -->
     <div class="panel">
       <div class="bcgimg">
@@ -60,29 +49,29 @@
 
 <script>
 import config from "@/config"
+import Userpanel from '@/components/userpanel'
 export default {
   components: {
-  
+  Userpanel
   },
 
   data () {
     return {
-     avator:config.imgUrl+"myself/avator.jpg",
-     wode:config.imgUrl+"myself/wode.jpg",
-     panel:config.imgUrl+"myself/panel.jpg",
+     userInfo:{avator:config.imgUrl+"/myself/avator.jpg",name:'刘实训',lvname:'白金会员'},
+     panel:config.imgUrl+"/myself/panel.jpg",
      orderitem:[
-     {name:'待付款',icon:config.imgUrl+"myself/daifukuan.png"},
-     {name:'待发货',icon:config.imgUrl+"myself/daifahuo.png"},
-     {name:'待收货',icon:config.imgUrl+"myself/daishouhuo.png"},
-     {name:'售后',icon:config.imgUrl+"myself/shouhou.png"},
+     {name:'待付款',icon:config.imgUrl+"/myself/daifukuan.png"},
+     {name:'待发货',icon:config.imgUrl+"/myself/daifahuo.png"},
+     {name:'待收货',icon:config.imgUrl+"/myself/daishouhuo.png"},
+     {name:'售后',icon:config.imgUrl+"/myself/shouhou.png"},
      ],
      featureitem:[
-     {name:'积分',icon:config.imgUrl+"myself/point.png"},
-     {name:'微分销',icon:config.imgUrl+"myself/fenxiao.png"},
-     {name:'地址管理',icon:config.imgUrl+"myself/address.png"},
-     {name:'拼团',icon:config.imgUrl+"myself/group.png"},
-     {name:'砍价',icon:config.imgUrl+"myself/cut.png"},
-     {name:'联系客服',icon:config.imgUrl+"myself/connect.png"}
+     {name:'积分',icon:config.imgUrl+"/myself/point.png"},
+     {name:'微分销',icon:config.imgUrl+"/myself/fenxiao.png"},
+     {name:'地址管理',icon:config.imgUrl+"/myself/address.png"},
+     {name:'拼团',icon:config.imgUrl+"/myself/group.png"},
+     {name:'砍价',icon:config.imgUrl+"/myself/cut.png"},
+     {name:'联系客服',icon:config.imgUrl+"/myself/connect.png"}
      ]
     }
   },
@@ -99,34 +88,7 @@ export default {
     height: 100%;
     display: block;
   }
- .header{
-  height: 150rpx;
-  display: flex;
-  width: 90%;
-  margin: 75rpx auto;
-  .avator{
-    width: 150rpx;
-    height: 150rpx;
-    overflow: hidden;
-  }
-  .username{
-    flex-grow:1;
-    padding-left: 40rpx;
-    box-sizing:border-box;
-    padding-top: 20rpx;
-    .lvname{
-      font-size: 0.8em;
-      color:#fc9632;
-    }
-  }
-  .qianicon{
-    width: 58rpx;
-    height: 58rpx;
-    overflow: hidden;
-    margin-top: 46rpx;
-
-  }
- }
+ 
  .panel{
   width: 679rpx;
   height: 200rpx;
