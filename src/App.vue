@@ -32,4 +32,36 @@ export default {
 @mixin flexc{
 display: flex;align-items: center;
 }
+
+.fontHidden{
+  white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+}
+
+.font26rpx{
+  font-weight: 100;font-size: 26rpx
+}
+.font28rpx{
+  font-weight: 100;font-size: 28rpx
+}
+
+.font30rpx{
+  font-weight: 100;font-size: 30rpx
+}
+
+.font34rpx{
+  font-weight: 100;font-size: 34rpx; 
+}
+
+.margin815rpx{
+  margin: 8rpx 15rpx;
+}
+
+.padding815rpx{
+  padding: 8rpx 15rpx
+}
+
+.padding015rpx{
+  padding: 0rpx 15rpx
+}
+
 </style>

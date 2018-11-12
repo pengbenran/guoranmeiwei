@@ -3,10 +3,10 @@
      "pages/group/main",
     "pages/index/main",
     "pages/cart/main",
+    "pages/groupdetail/main", 
     "pages/kind/main",
     "pages/grouplist/main",
     "pages/myself/main",
-    "pages/groupdetail/main", 
     "pages/logs/main",
     "pages/counter/main"
     

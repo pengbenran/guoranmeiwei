@@ -2,54 +2,15 @@
   <div class="Cart">
     <Shopaddr :shopname="shopname"></Shopaddr>
 
-     <div class="shopList">
-       <div class="selectico"> <icon type="circle" class="ico" size="21" /></div>
-       <div class="itemLeft"><img :src="ImgList.shopImg"/></div>
-       <div class="itemRight">
-          <div class="title">福建馆溪平柚子好吃好甜你好世界你好世界你好世界你好世界你好世界你好世界</div>
-          <small>拍下29.8元，精选大果</small>
-          <div class="price">
-             <div class="priceleft"><text>￥29.8元</text><span>￥38.8</span></div>
-             <div class="priceright"><i class="fa fa-plus" aria-hidden="true"></i>
-                                     <span>1</span>
-                                     <i class="fa fa-minus" aria-hidden="true"></i></div>
-          </div>
-       </div>
-     </div>
-     <div class="shopList">
-       <div class="selectico"> <icon type="circle" class="ico" size="21" /></div>
-       <div class="itemLeft"><img :src="ImgList.shopImg"/></div>
-       <div class="itemRight">
-          <div class="title">福建馆溪平柚子好吃好甜你好世界你好世界你好世界你好世界你好世界你好世界</div>
-          <small>拍下29.8元，精选大果</small>
-          <div class="price">
-             <div class="priceleft"><text>￥29.8元</text><span>￥38.8</span></div>
-             <div class="priceright"><i class="fa fa-plus" aria-hidden="true"></i>
-                                     <span>1</span>
-                                     <i class="fa fa-minus" aria-hidden="true"></i></div>
-          </div>
-       </div>
-     </div>
-     <div class="shopList">
-       <div class="selectico"> <icon type="circle" class="ico" size="21" /></div>
-       <div class="itemLeft"><img :src="ImgList.shopImg"/></div>
-       <div class="itemRight">
-          <div class="title">福建馆溪平柚子好吃好甜你好世界你好世界你好世界你好世界你好世界你好世界</div>
-          <small>拍下29.8元，精选大果</small>
-          <div class="price">
-             <div class="priceleft"><text>￥29.8元</text><span>￥38.8</span></div>
-             <div class="priceright"><i class="fa fa-plus" aria-hidden="true"></i>
-                                     <span>1</span>
-                                     <i class="fa fa-minus" aria-hidden="true"></i></div>
-          </div>
-       </div>
-     </div>
+     <CartList v-for="(item,index) in shopList" :index='index' :key='item' :Shop_List='item'></CartList>
+
      <!--shopList end-->
      
      <div class="footerBnt">
        <div class="selectBtn"><icon type="circle" class="ico" size="21" /> 全选</div>
        <div class="cartBtn"><div class="price">合计：9.9元</div><div class="btn">结算</div></div>
      </div>
+     <!--footerBnt end-->
   </div>
 </template>
 
@@ -57,16 +18,20 @@
  import Api from "@/utils/Api"
  import config from "@/config"
  import Shopaddr from '@/components/shopaddr'
-
+ import CartList from '@/components/cartlist'
 export default {
   components: {
-  Shopaddr
+    CartList
   },
 
   data () {
     return {
      ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg'},
-     shopname:"王小姐水果店(抚生路点)"
+     shopname:"王小姐水果店(抚生路点)",
+     shopList:[{shopImg:config.imgUrl+'/cart/shopimg01.jpg',shopTitle:'福建馆溪平柚子好吃好甜你好世界你好世界你好世界你好世界你好世界你好世界',mask:"你好世界",p1:19,p2:9},
+          {shopImg:config.imgUrl+'/cart/shopimg01.jpg',shopTitle:'福建馆溪平柚子好吃好甜你好世界你好世界你好世界你好世界你好世界你好世界',mask:"你好世界",p1:19,p2:9},
+          {shopImg:config.imgUrl+'/cart/shopimg01.jpg',shopTitle:'福建馆溪平柚子好吃好甜你好世界你好世界你好世界你好世界你好世界你好世界',mask:"你好世界",p1:19,p2:9}
+          ]
     }
   },
 
