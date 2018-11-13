@@ -1,7 +1,9 @@
 {
   "pages": [
-     "pages/group/main",
+    "pages/bargainInfo/main" ,
     "pages/index/main",
+    "pages/bargain/main",
+    "pages/group/main",
     "pages/cart/main",
     "pages/groupdetail/main", 
     "pages/kind/main",
@@ -9,7 +11,7 @@
     "pages/myself/main",
     "pages/logs/main",
     "pages/counter/main"
-    
+
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -52,22 +52,7 @@ display: flex;align-items: center;
 white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
 }
 img{display: block;height: 100%;width: 100%;}
-.shopList{@include flexc;padding: 10rpx;border-bottom: 5px solid rgb(243,243,243);
-   .itemLeft{width: 35%}
-   .itemLeft img{width: 230rpx;height: 230rpx;margin: auto}
-   .itemRight{width: 65%;padding-right: 20rpx;}
-   .itemRight .title{@include fontM;height: 102rpx;font-weight: 100;font-size: 30rpx;color: #8e8e8e;}
-   .itemRight small{font-size: 26rpx;color: #ccc;font-weight: 100;}
-   .price{@include flexc;justify-content: space-between;}
-   .priceleft{
-     text{font-size: 36rpx;font-weight: 100;color: rgb(252,78,79);}
-     span{font-size: 26rpx;font-weight: 100;color: #8e8e8e;text-decoration:line-through}
-   }
-   .priceright{background:#e7e7e7;@include flexc;height: 48rpx;
-     i{color: #fff;display: inline-block;width: 48rpx;height: 30rpx;line-height: 30rpx;text-align: center;font-weight: 100;font-size: 28rpx;}
-     span{background: #fff;height: 40rpx;line-height: 40rpx;color: rgb(248,193,92);display: inline-block;padding:0 15rpx;font-size: 28rpx;}
-   }
-}
+
 
 .footerBnt{@include flexc;justify-content: space-between;position: fixed;bottom: 0;width: 100%;height: 95rpx;
     .selectBtn{@include flexc;padding-left: 15rpx;font-size: 36rpx;font-weight: 100;color: #8e8e8e;}
