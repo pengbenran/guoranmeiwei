@@ -123,7 +123,7 @@ export default {
      var that=this;
      var endtime=1541995932000
      var starttime = (new Date()).valueOf();
-     that.cutTime(starttime,endtime)
+     // that.cutTime(starttime,endtime)
      wx.setNavigationBarTitle({
        title: "拼团成功"//页面标题为路由参数
      })

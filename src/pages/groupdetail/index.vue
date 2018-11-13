@@ -40,7 +40,9 @@
           <span>邀请好友一起参团，人数不足将自动退款，如不明白请看玩法详情</span>
           <span class="xianQin" @click="showModel"><i class="fa fa-question-circle" aria-hidden="true"></i> 玩法详情</span>
         </div>
-       <div class="TionInfo"><img :src="imgList.TionInfo"/></div>
+       <div class="TionInfo">
+        <wxParse :content="Goods.intro" @preview="preview" @navigate="navigate" />
+      </div>
      </div>
      <!--Tion end-->
      
@@ -49,7 +51,7 @@
        <div class="left">
          <div class="leftItme"><img :src="imgList.home" /><text>首页</text></div>
          <div class="leftItme"><img :src="imgList.kefu" /><text>客服</text></div>
-         <div class="leftItme"><img :src="imgList.shouChang" /><text>收藏</text></div>
+         <div class="leftItme" @click="collection"><img :src="imgList.shouChang" /><text>收藏</text></div>
        </div>
        <div class="right">
          <div class="btnWarp">
@@ -71,11 +73,9 @@
 <script>
  import Api from "@/utils/Api"
  import config from "@/config"
+ import wxParse from 'mpvue-wxparse'
+let api= new Api 
 export default {
-  components: {
-
-  },
-
   data () {
     return {
       imgList:{brand:config.imgUrl+'/group/header01.jpg',fenxiang:config.imgUrl+'/group/fenxiang.png',
@@ -89,11 +89,32 @@ export default {
       Goods:{},
       collageGoodsDO:{},
       collageDO:{},
-      collages:[]
+      collages:[],
+      posts:true,
+      memberId:''
     }
   },
-
+  components: {
+     wxParse
+  },
   methods: {
+        async collection(){
+        let that=this
+        let parms = {}
+        let favorite = {}
+        favorite.memberId = that.memberId
+        favorite.goodsId = that.Goods.goodsId
+        parms.favorite = JSON.stringify(favorite)
+        console.log(parms);
+        if(that.posts){
+          console.log(parms);
+          let delCollectionRes=await api.delCollection(parms)
+        }
+        else{
+          console.log(parms)
+          let addCollectionRes=await api.addCollection(parms)
+        }
+      },
       hideModel(){
        let that=this;
        that.ShowModel=false;
@@ -127,11 +148,15 @@ export default {
 
  async onLoad(option){
     let that=this
-    let api= new Api 
+    that.memberId= wx.getStorageSync('memberId')
+   
     // let goodsRes=await api.getGoods(option.goodsId,187)
     let goodsRes=await api.getGoods(19,187)
     that.Gallery=goodsRes.data.Gallery
     that.Goods=goodsRes.data.Goods
+    if (goodsRes.data.count == 0) {
+        that.posts=false
+      }
     let getseleCollGoodsRes=await api.getseleCollGoods(2)
     that.collageGoodsDO=getseleCollGoodsRes.data.collageGoodsDO
     that.collageDO=getseleCollGoodsRes.data.collageDO
@@ -141,7 +166,7 @@ export default {
       getallStartCollage.data[i].countDownHour=0
       getallStartCollage.data[i].countDownMinute=0
       getallStartCollage.data[i].countDownSecond=0
-      that.countdown(i, getallStartCollage.data[i].collageStarttime)
+      // that.countdown(i, getallStartCollage.data[i].collageStarttime)
     }
     that.collages=getallStartCollage.data
   },
@@ -157,6 +182,7 @@ export default {
 </script>
 
 <style scoped lang='scss'>
+@import url("~mpvue-wxparse/src/wxParse.css");
 /*局部水平居中*/
 @mixin flexc{
 display: flex;align-items: center;

@@ -1,11 +1,11 @@
 <template>
 	<div class="header">
 		<div class="avator">
-			<img :src="userInfo.avator">
+			<img :src="userInfo.face">
 		</div>
 		<div class="username">
-			<div class="name">{{userInfo.name}}</div>
-			<div class="lvname">{{userInfo.lvname}}</div>
+			<div class="name">{{userInfo.uname}}</div>
+			<div class="lvname">{{userInfo.lvidname}}</div>
 		</div>
 		<div class="qianicon">
 			<img :src="wode">
@@ -43,6 +43,7 @@ img{
     width: 150rpx;
     height: 150rpx;
     overflow: hidden;
+    border-radius: 50%;
   }
   .username{
     flex-grow:1;

@@ -83,13 +83,13 @@
   </div>
   <div class="freeList">
     <div class="freeListBg"><img :src="imgList.freeImgBg" /></div>
-    <scroll-view class="scrollItem" scroll-x style="height: 335rpx;">
+    <scroll-div class="scrollItem" scroll-x style="height: 335rpx;">
       <div class="freeItemWarp">
         <div class="freeItem" v-for="(item,index) in freeShopList" :index='index' :key='item'>
-          <img :src="item.shopImg" /><view class="freeInfo">{{item.shopName}}</view>
+          <img :src="item.shopImg" /><div class="freeInfo">{{item.shopName}}</div>
         </div>
       </div>
-    </scroll-view>
+    </scroll-div>
   </div>
   <div class="freeMore">更多热销<i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </div>
   <!--free end-->
@@ -100,13 +100,13 @@
   </div>
   <div class="freeList">
     <div class="freeListBg"><img :src="imgList.freeImgBg" /></div>
-    <scroll-view class="scrollItem" scroll-x style="height: 335rpx;">
+    <scroll-div class="scrollItem" scroll-x style="height: 335rpx;">
       <div class="freeItemWarp">
         <div class="freeItem" v-for="(item,index) in freeShopList" :index='index' :key='item'>
-          <img :src="item.shopImg" /><view class="freeInfo">{{item.shopName}}</view>
+          <img :src="item.shopImg" /><div class="freeInfo">{{item.shopName}}</div>
         </div>
       </div>
-    </scroll-view>
+    </scroll-div>
   </div>
   <div class="freeMore">更多热销<i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </div>
   <!--free end-->
@@ -120,6 +120,15 @@
    <img :src="imgList.footerImg"/>
  </div>
 </div>
+<div class='mode' v-if="isMember">
+  <div class='bcg'></div>
+  <div class='loginmodel'>
+    <div class='title'>需要您的授权</div>
+    <div class='tip'>为了提供更好的服务请在稍后的提示框中点击允许</div>
+    <button class='btn' open-type="getUserInfo" @click="getUserInfo" @getuserinfo="bindGetUserInfo">我知道了</button> 
+  </div> 
+</div>
+
 </div>
 </template>
 <script>
@@ -153,16 +162,38 @@
                       {shopName:'新鲜水果特价大优惠便宜卖便宜卖好甜好甜好甜好甜好甜好甜好甜',shopImg:config.imgUrl+'/index/haotian02.png'},
                       {shopName:'新鲜水果特价大优惠便宜卖便宜卖好甜好甜好甜好甜好甜好甜好甜',shopImg:config.imgUrl+'/index/haotian03.png'},
                      ],
-        showSkeleton: false            
+        showSkeleton: false ,
+        isMember:false,
+        memberId:''    
       }
     },
     components: {
       skeleton
     },
     async mounted(){
-        console.log(config.imgUrl,"图片")
-      console.log("加载完成");
-      console.log(res)
+      let that=this
+      wx.showLoading({
+        title: '加载中',
+      })
+     let memberRes=await api.getCode()
+     wx.hideLoading()
+     if (memberRes.data.memberDo != null) {
+      wx.setStorageSync('memberId', memberRes.data.memberDo.memberId)
+      wx.setStorageSync('point', memberRes.data.memberDo.point)
+      wx.setStorageSync('memberIdlvId', memberRes.data.memberDo.lvId)
+      wx.setStorageSync('isAgent', memberRes.data.memberDo.isAgent)
+      wx.setStorageSync('uname', memberRes.data.memberDo.uname)
+      wx.setStorageSync('face', memberRes.data.memberDo.face)
+      wx.setStorageSync('openId',memberRes.data.memberDo.openId)
+      that.memberId=memberRes.data.memberDo.memberId
+      }
+      else {
+        let memberId="00"
+        that.memberId=memberId
+        wx.setStorageSync('memberId', "00")
+        that.isMember=true
+        wx.hideTabBar({}) 
+      }
     },
     created () {
       // const that = this;
@@ -176,6 +207,39 @@
       },
       toNav(url){
         wx.navigateTo({ url: url });
+      },
+      bindGetUserInfo:function(e){
+        var that=this;
+        if (e.mp.detail.rawData){
+          //用户按了允许授权按钮
+          that.getUserInfo();
+        } else {
+          //用户按了拒绝按钮
+        }
+      },
+      getUserInfo(){   
+        var that = this 
+        if(that.memberId=="00"){
+         wx.login({
+          success: res => {
+            // 发送 res.code 到后台换取 openId, sessionKey, unionId
+            if (res.code) {         
+             wx.getUserInfo({
+              success: function (res_user) {
+                console.log(res_user)
+                api.weCatLogin(res.code,res_user.userInfo.avatarUrl,res_user.userInfo.nickName,res_user.userInfo.gender,res_user.userInfo.country,res_user.userInfo.province,res_user.userInfo.city).then(function(res){
+                  console.log(res.data.code==0)
+                  if(res.data.code==0){
+                    that.isMember=false
+                    wx.showTabBar({})
+                  }
+                }) 
+              }
+            }) 
+           }
+          }
+        })
+        }
       }
     }
   }
@@ -281,5 +345,52 @@ img{display: block;width: 100%;height: 100%}
 
 .bottomBrand{height: 206rpx;margin-top: 30rpx;}
 .footer{height: 80rpx;padding: 20rpx 30rpx 10rpx 0;}
+
+/* 登录模态框 */
+.mode{
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+}
+.bcg{
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.5);
+}
+.loginmodel{
+  border-radius:10rpx; 
+  width: 60%;
+  height: 260rpx;
+  background: #fff;
+  position: absolute;
+  top: 500rpx;
+  left: 20%;
+}
+.title{
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+}
+.tip{
+  width: 90%;
+  margin: 0 auto;
+  font-size: 0.8em;
+  text-indent: 20px;
+  color: #8a8a8a;
+  height: 100rpx;
+}
+.btn{
+  border: none;
+  outline: 0;
+  text-align: right;
+  background: #fff;
+  color: #3494ff
+}
+button::after {
+  border: none;
+}
 </style>
 
