@@ -1,23 +1,23 @@
 <template>
 	<div class="group">
-		<div class="grouplist" v-for="(item,index) in group_item" :index="index" :key="item">
+		<div class="grouplist" v-for="(item,index) in group_item" :index="index" :key="item" @click="jumpgroupdetail(item.collageGoodsId,item.goodsId)">
 			<div class="groupimg">
-				<img :src="item.groupimg">
+				<img :src="item.thumbnail">
 			</div>
 			<div class="groupdetail">
 				<div class="grouptop"> 
 					<div class="groupname">
-						{{item.groupname}}
+						{{item.goodsName}}
 					</div>
 					<div class="intro">
 						{{item.intro}}
 					</div>
 				</div>
-				<div class="groupcenter">2人团</div>
+				<div class="groupcenter">{{item.collagePersons}}人团</div>
 				<div class="groupbottom"> 
 					<div class="groupprice"> 
-						<div class="groupprice">拼团价:{{item.price}}</div>
-						<div class="price">零售价{{item.price}}</div>
+						<div class="groupprice">拼团价:{{item.activityPrice}}</div>
+						<div class="price">零售价{{item.goodsPrice}}</div>
 					</div>
 					<div class="icon">
 						<div class="bcgImg">
@@ -40,7 +40,11 @@ export default {
     }
     },
     methods: {
-  		
+  		jumpgroupdetail:function(collageGoodsId,goodsId){
+         wx.navigateTo({
+           url: '../groupdetail/main?collageGoodsId=' + collageGoodsId + '&goodsId=' + goodsId,
+        })
+      }
     }
 }
 </script>

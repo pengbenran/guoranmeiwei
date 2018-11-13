@@ -1,24 +1,34 @@
 <template>
   <div class="groupDetail">
-      <Comshopsop :ShopInfo='imgList' :ShopTipBool='ShopTipBool'></Comshopsop>
+      <div class="header">
+        <swiper class="swiper" indicator-dots='true' autoplay='true'>
+          <swiper-item v-for="(item,index) in Gallery" :key="item" :index="index"><img :src="item.original"></swiper-item>
+        </swiper>
+      </div>
+      <!--header end-->
+      
+      <div class="DataTime" v-if="ShopTipBool">
+          <div class="left">
+            <div class="popleNum">{{collageDO.collagePersons}}人团</div>
+            <div class="prcie">￥<text class="newPrice">{{collageGoodsDO.activityPrice}}</text><text class="delPrice">￥{{collageGoodsDO.goodsPrice}}</text></div>
+          </div>
+          
+      </div>
+      <!--DataTime end-->
+
+      <div class="shopTitle">
+          <div class="left fontHidden">{{Goods.name}}</div>
+          <div class="right"><img :src="imgList.fenxiang"/><div class="fenxiang font28rpx">分享</div></div>
+      </div>
      
      <div class="JoinGroup padding815rpx">
         <div class="title"><span></span><text>立即加入</text></div>
-        <div class="item">
+        <div class="item" v-for="(item,index) in collages" :key="item" :index="index">
           <div class="left">
-            <div class="itemimg"><img :src="imgList.touxiang"/></div><span>刘诗轩的团</span>
+            <div class="itemimg"><img :src="item.face"/></div><span>{{item.uname}}的团</span>
           </div>
           <div class="right">
-             <div class="itemInfo"><span class="info">还差<text>1人</text>成团</span><span class="time">剩余03:29:31</span></div>
-             <div class="btn">去参团</div>
-          </div>
-        </div>
-         <div class="item">
-          <div class="left">
-            <div class="itemimg"><img :src="imgList.touxiang"/></div><span>刘诗轩的团</span>
-          </div>
-          <div class="right">
-             <div class="itemInfo"><span class="info">还差<text>1人</text>成团</span><span class="time">剩余03:29:31</span></div>
+             <div class="itemInfo"><span class="info">还差<text>{{item.shortPerson}}人</text>成团</span><span class="time">剩余{{item.countDownHour}}:{{item.countDownMinute}}:{{item.countDownSecond}}</span></div>
              <div class="btn">去参团</div>
           </div>
         </div>
@@ -61,12 +71,9 @@
 <script>
  import Api from "@/utils/Api"
  import config from "@/config"
- import Comshopsop from '@/components/shopTop'
- 
-
 export default {
   components: {
-   Comshopsop
+
   },
 
   data () {
@@ -76,8 +83,13 @@ export default {
                kefu:config.imgUrl+'/group/kefu.png',shouChang:config.imgUrl+'/group/shoucang.png',
                TionInfo:config.imgUrl+'/group/TionInfo.jpg',ModelImg:config.imgUrl+'/group/modelImg.png',
       },
+      Gallery:[],
       ShopTipBool:true,
-      ShowModel:false
+      ShowModel:false,
+      Goods:{},
+      collageGoodsDO:{},
+      collageDO:{},
+      collages:[]
     }
   },
 
@@ -89,12 +101,49 @@ export default {
       showModel(){
         let that=this;
         that.ShowModel=true;
-      }
+      },
+      countdown:function(i,endtime){
+        var that=this;
+        var timestamp2 = (new Date()).valueOf();
+        var leftTime = (endtime+86400000) - timestamp2
+        if (leftTime >= 0) {
+          var interval = setInterval(function () {
+          // var days = parseInt(leftTime / 1000 / 60 / 60 / 24, 10); //计算剩余的天数
+          var hours = parseInt(leftTime / 1000 / 60 / 60 % 24, 10); //计算剩余的小时
+          var minutes = parseInt(leftTime / 1000 / 60 % 60, 10);//计算剩余的分钟
+          var seconds = parseInt(leftTime / 1000 % 60, 10);//计算剩余的秒数
+          leftTime = leftTime - 1000;
+          that.collages[i].countDownHour=hours
+          that.collages[i].countDownMinute=minutes
+          that.collages[i].countDownSecond=seconds
+        }, 1000)
+          if (leftTime <= 0) {
+            clearinterval(interval)
+          }
+        } 
+      },
 
   },
 
-  created () {
+ async onLoad(option){
+    let that=this
+    let api= new Api 
+    // let goodsRes=await api.getGoods(option.goodsId,187)
+    let goodsRes=await api.getGoods(19,187)
+    that.Gallery=goodsRes.data.Gallery
+    that.Goods=goodsRes.data.Goods
+    let getseleCollGoodsRes=await api.getseleCollGoods(2)
+    that.collageGoodsDO=getseleCollGoodsRes.data.collageGoodsDO
+    that.collageDO=getseleCollGoodsRes.data.collageDO
+    let getallStartCollage=await api.getallStartCollage(19)
    
+    for (var i = 0; i < getallStartCollage.data.length; i++) {
+      getallStartCollage.data[i].countDownHour=0
+      getallStartCollage.data[i].countDownMinute=0
+      getallStartCollage.data[i].countDownSecond=0
+      that.countdown(i, getallStartCollage.data[i].collageStarttime)
+    }
+    that.collages=getallStartCollage.data
   },
   
   onShareAppMessage: function () {

@@ -1,16 +1,14 @@
 <template>
   <div class="indexwarp ">
-        <skeleton selector="skeleton"
-          loading="spin"
-          bgcolor="#FFF"
-          v-if="showSkeleton"></skeleton>
-    
-
-<div class="skeleton">
-    <!-- <div class="heightDiv"></div> -->
+    <skeleton selector="skeleton"
+    loading="spin"
+    bgcolor="#FFF"
+    v-if="showSkeleton"></skeleton>
+    <div class="skeleton">
+      <!-- <div class="heightDiv"></div> -->
       <div class="header">
         <div class="search skeleton-rect"><i class="fa fa-search " aria-hidden="true"></i>
-                            <input class="skeleton-rect"  placeholder="王小贱鲜果零食优选"  style-placeholder='color:#ccc;font-weight: 100;'/>
+          <input class="skeleton-rect"  placeholder="王小贱鲜果零食优选"  style-placeholder='color:#ccc;font-weight: 100;'/>
         </div>
       </div>
       <!--header end-->
@@ -23,107 +21,107 @@
           <swiper-item><img :src="imgList.brand"></swiper-item>
         </swiper>
       </div>
-    <!--brand end-->
-    <div class="news  skeleton-Mrect">
-      <div class="shopImg"><img :src="imgList.shopImg"></div><small class="tag">火热</small><span> 全场特价9.9元起</span>
-    </div>
-    <!--news end-->
-     <div class="hot ">
+      <!--brand end-->
+      <div class="news  skeleton-Mrect">
+        <div class="shopImg"><img :src="imgList.shopImg"></div><small class="tag">火热</small><span> 全场特价9.9元起</span>
+      </div>
+      <!--news end-->
+      <div class="hot ">
        <div class="hotBg "><img :src="imgList.hotImg" /></div>
        <div class="hotList">
-          <div class="hotItem skeleton-rect">
-              <div class="icoImg"><img :src="imgList.ico1"/></div>
-              <div class="hotShop"><img :src="imgList.shopImg1"/></div>
-              <span>已售100000件</span>
-          </div>
-          <div class="hotItem skeleton-rect">
-              <div class="icoImg"><img :src="imgList.ico2"/></div>
-              <div class="hotShop"><img :src="imgList.shopImg1"/></div>
-              <span>已售100000件</span>
-          </div>
-          <div class="hotItem skeleton-rect">
-              <div class="icoImg"><img :src="imgList.ico3"/></div>
-              <div class="hotShop"><img :src="imgList.shopImg1"/></div>
-              <span>已售100000件</span>
-          </div>
-       </div>
-     </div>
+        <div class="hotItem skeleton-rect">
+          <div class="icoImg"><img :src="imgList.ico1"/></div>
+          <div class="hotShop"><img :src="imgList.shopImg1"/></div>
+          <span>已售100000件</span>
+        </div>
+        <div class="hotItem skeleton-rect">
+          <div class="icoImg"><img :src="imgList.ico2"/></div>
+          <div class="hotShop"><img :src="imgList.shopImg1"/></div>
+          <span>已售100000件</span>
+        </div>
+        <div class="hotItem skeleton-rect">
+          <div class="icoImg"><img :src="imgList.ico3"/></div>
+          <div class="hotShop"><img :src="imgList.shopImg1"/></div>
+          <span>已售100000件</span>
+        </div>
+      </div>
+    </div>
     <!--hot end-->
     
     <div class="activity">
       <div class="top topimg"><img :src="imgList.activityImg"></div>
       <div class="actList">
-        <div class="actItem skeleton-rect" v-for="(item,index) in activityImg" :index='index' :key='item'>
-            <div class="itembg"><img :src="item.actBg"/></div>
-            <div class="itemTile">
-               <text>{{item.actName}}</text><small>{{item.acttall}}</small>
-            </div>
+        <div class="actItem skeleton-rect" v-for="(item,index) in activityImg" :index='index' :key='item' @click="jumpactive(item.jumpurl)">
+          <div class="itembg"><img :src="item.actBg"/></div>
+          <div class="itemTile">
+           <text>{{item.actName}}</text><small>{{item.acttall}}</small>
+         </div>
+       </div>
+     </div>
+   </div>
+   <!--activity end-->
+
+   <div class="rili">
+     <div class="riliMore"><span class="time">11月</span><small class="more">查看更多</small></div>
+     <div class="riliBg"><img :src="imgList.rilibg"/></div>
+     <div class="liriWarp">
+      <div class="riliTop">
+        <span>新品上市</span><span>超值特惠</span><span>店长推荐</span>
+      </div>
+      <!-- <div class=""></div> -->
+      <div class="riliWarp">
+        <div class="Item" v-for="(item,index) in riliListImg" :index='index' :key='item'>
+          <img :src="item.riliImg"/>
         </div>
       </div>
     </div>
-    <!--activity end-->
-    
-    <div class="rili">
-       <div class="riliMore"><span class="time">11月</span><small class="more">查看更多</small></div>
-       <div class="riliBg"><img :src="imgList.rilibg"/></div>
-       <div class="liriWarp">
-          <div class="riliTop">
-              <span>新品上市</span><span>超值特惠</span><span>店长推荐</span>
-          </div>
-          <!-- <div class=""></div> -->
-          <div class="riliWarp">
-            <div class="Item" v-for="(item,index) in riliListImg" :index='index' :key='item'>
-              <img :src="item.riliImg"/>
-            </div>
-          </div>
-       </div>
-    </div>
-    <!--rili end-->
-    
-    <div class="free">
-      <div class="freeTop"><span>满足馋嘴的你</span><p>每样精挑细选，只为等你</p></div>
-      <div class="freeBrand"><img :src="imgList.freeImg"/></div>
-    </div>
-    <div class="freeList">
-        <div class="freeListBg"><img :src="imgList.freeImgBg" /></div>
-        <scroll-view class="scrollItem" scroll-x style="height: 335rpx;">
-        <div class="freeItemWarp">
-          <div class="freeItem" v-for="(item,index) in freeShopList" :index='index' :key='item'>
-              <img :src="item.shopImg" /><view class="freeInfo">{{item.shopName}}</view>
-          </div>
-        </div>
-        </scroll-view>
-    </div>
-    <div class="freeMore">更多热销<i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </div>
-    <!--free end-->
-
-    <div class="free">
-      <div class="freeTop"><span>健康水果，美味到“家”</span><p>闻得到的香甜，看得到的新鲜</p></div>
-      <div class="freeBrand"><img :src="imgList.freeImg01"/></div>
-    </div>
-    <div class="freeList">
-        <div class="freeListBg"><img :src="imgList.freeImgBg" /></div>
-        <scroll-view class="scrollItem" scroll-x style="height: 335rpx;">
-        <div class="freeItemWarp">
-          <div class="freeItem" v-for="(item,index) in freeShopList" :index='index' :key='item'>
-              <img :src="item.shopImg" /><view class="freeInfo">{{item.shopName}}</view>
-          </div>
-        </div>
-        </scroll-view>
-    </div>
-    <div class="freeMore">更多热销<i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </div>
-    <!--free end-->
-    
-    <div class="bottomBrand">
-      <img :src="imgList.bottomBrand" />
-    </div>
-   <!--bottomBrand end-->
-
-   <div class="footer">
-     <img :src="imgList.footerImg"/>
-   </div>
   </div>
+  <!--rili end-->
+
+  <div class="free">
+    <div class="freeTop"><span>满足馋嘴的你</span><p>每样精挑细选，只为等你</p></div>
+    <div class="freeBrand"><img :src="imgList.freeImg"/></div>
   </div>
+  <div class="freeList">
+    <div class="freeListBg"><img :src="imgList.freeImgBg" /></div>
+    <scroll-view class="scrollItem" scroll-x style="height: 335rpx;">
+      <div class="freeItemWarp">
+        <div class="freeItem" v-for="(item,index) in freeShopList" :index='index' :key='item'>
+          <img :src="item.shopImg" /><view class="freeInfo">{{item.shopName}}</view>
+        </div>
+      </div>
+    </scroll-view>
+  </div>
+  <div class="freeMore">更多热销<i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </div>
+  <!--free end-->
+
+  <div class="free">
+    <div class="freeTop"><span>健康水果，美味到“家”</span><p>闻得到的香甜，看得到的新鲜</p></div>
+    <div class="freeBrand"><img :src="imgList.freeImg01"/></div>
+  </div>
+  <div class="freeList">
+    <div class="freeListBg"><img :src="imgList.freeImgBg" /></div>
+    <scroll-view class="scrollItem" scroll-x style="height: 335rpx;">
+      <div class="freeItemWarp">
+        <div class="freeItem" v-for="(item,index) in freeShopList" :index='index' :key='item'>
+          <img :src="item.shopImg" /><view class="freeInfo">{{item.shopName}}</view>
+        </div>
+      </div>
+    </scroll-view>
+  </div>
+  <div class="freeMore">更多热销<i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </div>
+  <!--free end-->
+
+  <div class="bottomBrand">
+    <img :src="imgList.bottomBrand" />
+  </div>
+  <!--bottomBrand end-->
+
+  <div class="footer">
+   <img :src="imgList.footerImg"/>
+ </div>
+</div>
+</div>
 </template>
 <script>
  import Api from "@/utils/Api"
@@ -143,7 +141,7 @@
                  ico2:config.imgUrl+'/index/ico2.png',ico3:config.imgUrl+'/index/ico3.png',shopImg1:config.imgUrl+'/index/haotian01.png'
                  },
         activityImg:[{actName:'限时活动',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao0.jpg'},
-                      {actName:'火爆拼团',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao1.jpg'},
+                      {actName:'火爆拼团',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao1.jpg',jumpurl:'grouplist/main'},
                       {actName:'分享砍价',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao2.jpg'},
                       {actName:'优惠券',acttall:'400减50',actBg:config.imgUrl+'/index/cuxiao3.jpg'}],
         riliListImg:[{riliName:'芒果你好',riliImg:config.imgUrl+'/index/rili01.jpg'},
@@ -163,7 +161,6 @@
     },
     async mounted(){
         console.log(config.imgUrl,"图片")
-      let res=await api.getMain()
       console.log("加载完成");
       console.log(res)
     },
@@ -174,7 +171,9 @@
       // }, 1800)
     },
     methods: {
-
+      jumpactive:function(jumpurl){
+        wx.navigateTo({ url: jumpurl });
+      }
     }
   }
 </script>

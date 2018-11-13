@@ -1,6 +1,6 @@
 <template>
     <div>
-    <div class="header">
+      <div class="header">
         <swiper class="swiper" indicator-dots='true' autoplay='true'>
           <swiper-item><img :src="ShopInfo.brand"></swiper-item>
         </swiper>

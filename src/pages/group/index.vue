@@ -77,7 +77,7 @@ import Countdowns from "@/components/countdown";
 export default {
   data() {
     return {
-      type:2,
+      type:3,
       shopname:"王小姐水果店(抚生路点)",
       pingsuccess:config.imgUrl+'/group/pingsuccess.png',
       success:config.imgUrl+'/group/success.png',

@@ -16,14 +16,14 @@ export default {
     return {
       bcgImg:config.imgUrl+"/group/111.png",
       banner:config.imgUrl+"/group/3333.png",
-      group_item:[
-       {gropname:'福建广西盘丝洞过节费iOSA级个iOS就技术都放假哦啊发基调集散地偶发酒叟安静的佛家说我键哦ID沙发飞机哦',groupimg:config.imgUrl+"/group/22.png",intro:'好吃的柚子又大有填',price:'69.99'}
-     ]
+      group_item:[]
     }
   },
   async mounted(){
+    let that=this
     let api= new Api 
-    let res=await api.getMain()
+    let res=await api.getGroupList()
+    that.group_item=res.data
   },
   components: {
    Grouplist,

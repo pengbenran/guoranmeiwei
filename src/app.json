@@ -1,13 +1,12 @@
 {
   "pages": [
-     "pages/group/main",
+    "pages/groupdetail/main",   
     "pages/index/main",
+    "pages/group/main",
     "pages/cart/main",
-    "pages/groupdetail/main", 
     "pages/kind/main",
     "pages/grouplist/main",
     "pages/myself/main",
-    "pages/logs/main",
     "pages/counter/main"
     
   ],
