@@ -22,7 +22,9 @@ export default {
 	      	for(var i=0;i<that.find_item.length;i++){
 	      		that.find_item[i].selected=false;
 	      	}
-	      	that.find_item[index].selected=true;
+			that.find_item[index].selected=true;
+			//往父组件传值
+			that.$emit('select',index)  
 	    }
     }
 }
@@ -38,12 +40,15 @@ export default {
 	width:100%;
 	white-space: nowrap;
 	overflow-x:scroll; 
-	height: 70px;
+	height: 45px;
+	display: flex;
+	justify-content:space-around;
+	align-items: center
 }
 .find_item li{
 	display: inline-block;
 	text-align: center;
-	height: 40px;
+	height: 35px;
 	line-height: 35px;
 	font-size: 16px;
 	min-width: 25%;

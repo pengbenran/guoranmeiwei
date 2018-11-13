@@ -1,6 +1,4 @@
  import Fly from "flyio/dist/npm/wx";
-
-
 export default class Api{
   constructor() {
     this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen" 

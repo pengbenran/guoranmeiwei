@@ -51,16 +51,15 @@
     <div class="activity">
       <div class="top topimg"><img :src="imgList.activityImg"></div>
       <div class="actList">
-        <div class="actItem skeleton-rect" v-for="(item,index) in activityImg" :index='index' :key='item' @click="jumpactive(item.jumpurl)">
-          <div class="itembg"><img :src="item.actBg"/></div>
-          <div class="itemTile">
-           <text>{{item.actName}}</text><small>{{item.acttall}}</small>
-         </div>
-       </div>
-     </div>
-   </div>
+        <div class="actItem skeleton-rect" v-for="(item,index) in activityImg" :index='index' :key='item' @click="toPage(item.pageUrl)">
+            <div class="itembg"><img :src="item.actBg"/></div>
+            <div class="itemTile">
+               <text>{{item.actName}}</text><small>{{item.acttall}}</small>
+            </div>
+        </div>
+      </div>
+    </div>
    <!--activity end-->
-
    <div class="rili">
      <div class="riliMore"><span class="time">11月</span><small class="more">查看更多</small></div>
      <div class="riliBg"><img :src="imgList.rilibg"/></div>
@@ -140,10 +139,11 @@
                  footerImg:config.imgUrl+'/index/footerImg.png', ico1:config.imgUrl+'/index/ico1.png',
                  ico2:config.imgUrl+'/index/ico2.png',ico3:config.imgUrl+'/index/ico3.png',shopImg1:config.imgUrl+'/index/haotian01.png'
                  },
-        activityImg:[{actName:'限时活动',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao0.jpg'},
-                      {actName:'火爆拼团',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao1.jpg',jumpurl:'grouplist/main'},
-                      {actName:'分享砍价',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao2.jpg'},
-                      {actName:'优惠券',acttall:'400减50',actBg:config.imgUrl+'/index/cuxiao3.jpg'}],
+
+        activityImg:[{actName:'限时活动',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao0.jpg',pageUrl:'../bargain/main'},
+                      {actName:'火爆拼团',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao1.jpg',pageUrl:'../grouplist/main'},
+                      {actName:'分享砍价',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao2.jpg',pageUrl:'../bargain/main'},
+                      {actName:'优惠券',acttall:'400减50',actBg:config.imgUrl+'/index/cuxiao3.jpg',pageUrl:'../bargain/main'}],
         riliListImg:[{riliName:'芒果你好',riliImg:config.imgUrl+'/index/rili01.jpg'},
                      {riliName:'橘子你好',riliImg:config.imgUrl+'/index/rili02.jpg'},
                      {riliName:'苹果你好',riliImg:config.imgUrl+'/index/rili03.jpg'},
@@ -171,8 +171,11 @@
       // }, 1800)
     },
     methods: {
-      jumpactive:function(jumpurl){
-        wx.navigateTo({ url: jumpurl });
+      toPage(url){
+        this.toNav(url)
+      },
+      toNav(url){
+        wx.navigateTo({ url: url });
       }
     }
   }

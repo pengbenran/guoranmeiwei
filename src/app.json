@@ -2,13 +2,15 @@
   "pages": [
     "pages/groupdetail/main",   
     "pages/index/main",
+    "pages/bargainInfo/main" ,
+    "pages/bargain/main",
     "pages/group/main",
     "pages/cart/main",
     "pages/kind/main",
     "pages/grouplist/main",
     "pages/myself/main",
     "pages/counter/main"
-    
+
   ],
   "window": {
     "backgroundTextStyle": "light",
