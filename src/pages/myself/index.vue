@@ -8,7 +8,7 @@
       </div>
       <div class="paneldetail">
         <div class="panelleft">
-          <div class="panelcount">456</div>
+          <div class="panelcount">{{userInfo.point}}</div>
           <div class="panelname">积分</div>
         </div>
         <div class="panelcenter">
@@ -16,7 +16,7 @@
           <div class="panelname">余额/充值</div>
         </div>
         <div class="panelright">
-          <div class="panelcount">3张</div>
+          <div class="panelcount">{{vouchercount}}张</div>
           <div class="panelname">优惠劵</div>
         </div>
       </div>
@@ -32,6 +32,7 @@
           <div class="ordericon">
             <img :src="item.icon">
           </div>
+          <view class='yuan' v-if="item.statuscount!=0">{{item.statuscount}}</view>
           <div class="title">{{item.name}}</div>
         </div>
       </div>
@@ -49,7 +50,9 @@
 
 <script>
 import config from "@/config"
+ import Api from "@/utils/Api"
 import Userpanel from '@/components/userpanel'
+let api= new Api 
 export default {
   components: {
   Userpanel
@@ -57,13 +60,13 @@ export default {
 
   data () {
     return {
-     userInfo:{avator:config.imgUrl+"/myself/avator.jpg",name:'刘实训',lvname:'白金会员'},
+     userInfo:{},
      panel:config.imgUrl+"/myself/panel.jpg",
      orderitem:[
-     {name:'待付款',icon:config.imgUrl+"/myself/daifukuan.png"},
-     {name:'待发货',icon:config.imgUrl+"/myself/daifahuo.png"},
-     {name:'待收货',icon:config.imgUrl+"/myself/daishouhuo.png"},
-     {name:'售后',icon:config.imgUrl+"/myself/shouhou.png"},
+     {name:'待付款',icon:config.imgUrl+"/myself/daifukuan.png",statuscount:0},
+     {name:'待发货',icon:config.imgUrl+"/myself/daifahuo.png",statuscount:0},
+     {name:'待收货',icon:config.imgUrl+"/myself/daishouhuo.png",statuscount:0},
+     {name:'售后',icon:config.imgUrl+"/myself/shouhou.png",statuscount:0},
      ],
      featureitem:[
      {name:'积分',icon:config.imgUrl+"/myself/point.png"},
@@ -72,12 +75,25 @@ export default {
      {name:'拼团',icon:config.imgUrl+"/myself/group.png"},
      {name:'砍价',icon:config.imgUrl+"/myself/cut.png"},
      {name:'联系客服',icon:config.imgUrl+"/myself/connect.png"}
-     ]
+     ],
+     vouchercount:0
     }
   },
 
-  created () {
-  
+  async onShow(){
+     let that=this;
+     let memberId= wx.getStorageSync('memberId');
+     that.memberId=memberId;  //设置memberId
+     let userInfoRes= await api.getMemberInfo(memberId)
+     that.userInfo=userInfoRes.data.memberDO
+     that.orderitem[0].statuscount=userInfoRes.data.statuscount
+     that.orderitem[1].statuscount=userInfoRes.data.freightstatuscount
+     that.orderitem[2].statuscount=userInfoRes.data.shippedstatuscount
+     that.orderitem[3].statuscount=userInfoRes.data.finishstatuscount
+     that.vouchercount=userInfoRes.data.vouchercount
+  },
+  methods: {
+   
   }
 }
 </script>
@@ -145,11 +161,25 @@ export default {
   .orderlist{
     width: 25%;
     color:#333;
+    position: relative;
     .ordericon{
       width: 78rpx;
       height: 48rpx;
       overflow: hidden;
       margin: 20rpx auto;
+    }
+    .yuan{
+     width: 40rpx;
+     height: 40rpx;
+     background: #fc9632;
+     font-size: 12px;
+     color: #fff;
+     position: absolute;
+     border-radius: 50%;
+     line-height: 40rpx;
+     top: -5px;
+     right: 14px;
+     text-align: center;
     }
     .title{
       height: 50rpx;

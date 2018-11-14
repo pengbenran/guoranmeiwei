@@ -1,10 +1,10 @@
 <template>
   <div class="tab">
-    <ul class="find_item" scroll="no">
-   		<li class="find_item_list" v-for="(item, index) in find_item" :index="index" :key="key" :class="{'select':item.selected}" v-on:click="changTab(index)">
+    <scroll-view class="find_item" scroll-x style="width: 100%">
+   		<div class="find_item_list" v-for="(item, index) in find_item" :index="index" :key="key" :class="{'select':item.selected}" v-on:click="changTab(index)">
    			<span>{{item.name}}</span>
-   		</li>
-   	</ul>
+   		</div>
+   	</scroll-view>
   </div>
 </template>
 
@@ -45,7 +45,7 @@ export default {
 	justify-content:space-around;
 	align-items: center
 }
-.find_item li{
+.find_item_list{
 	display: inline-block;
 	text-align: center;
 	height: 35px;
@@ -56,7 +56,7 @@ export default {
 }
 .select{
 	font-weight: bold;
-	font-size: 22px;
+	font-size: 18px;
 	color: #fc9632;
 	border-bottom: 2rpx solid #fc9632;
 }
