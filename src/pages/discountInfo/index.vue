@@ -16,35 +16,34 @@
     </div>
     <!--price end-->
     
-    <div class="peopleInfo">
+   <div class="shopInfo">
+     <div class="shopTile fontHidden">桃子水蜜桃夏天冬天春桃秋桃你好世界你好世界你好世界你好世界你好世界你好世界</div>
+     <div class="shopTag">
+       <text>快递包邮</text><text>销量1345</text><text>江西南昌</text>
+     </div>
+   </div>
+   <!--shopInfo end-->
+   
+   <div class="tip">
+     <div class="tipImg"><img :src="ImgList.qiang" /></div><text>限时限量</text><text>疯狂抢购</text>
+   </div>
+    <!--tip end-->
+
+    <div class="tipInfo">
       <div class="left">
-        <img :src="ImgList.touxiang"/>
+         <div class="tipInfoLeft">优惠<text>积分</text></div><div class="tipInfoRight">购买可得11积分</div>
       </div>
       <div class="right">
-        <div class="title">刘世轩</div><div class="info">已有两位好友帮忙砍价，共砍<text>￥8.89</text>元</div>
+        积分用于抵扣现金<img :src="ImgList.wenhao"/>
       </div>
     </div>
-    <!--peopleInfo end-->
-    
-    <div class="shopInfo">
-      <span>桃子水蜜桃红色你好世界桃子水蜜桃红色你好世界桃子水蜜桃红色你好世界</span>
-      <text>砍后价￥9.90</text>
-    </div>
-   <!--shopinfo end-->
-   <div class="tabWarp">
-     <Tabs :find_item='find_item' @select='onselect'></Tabs>
-   </div>
-    <!--tabWarp-->
-    
+    <!--tipInfo end-->
+
     <div class="tabInfo">
-      <div class="TionInfo" v-if="selectIndex==0"><img :src="ImgList.btnInfoImg"/></div>
-      <div class="tabInfoList" v-if="selectIndex==1">
-         <div class="item" v-for="(item,index) in kanList" :inedx='index' :key='item'>
-           <div class="left"><img :src="item.touxiang" /><text>{{item.Time}}</text></div>
-           <div class="right"><text class="selTile">已砍：</text><text class="selPrice">￥{{item.price}}元</text></div>
-         </div>
-      </div>
+      <div class="InfoTitle"><img :src="ImgList.InfoTitle" mode='aspectFit'/></div>
+      <div class="TionInfo"><img :src="ImgList.btnInfoImg"/></div>
     </div>
+    <!--tabInfo end-->
 
      <div class="HeightDiv"></div>
      <div class="footerBnt">
@@ -82,35 +81,22 @@ export default {
 
   data () {
     return {
-          find_item:[
-          {name:"商品详情页",selected:true},
-          {name:"砍价排行榜",selected:false}],
           Area_item:[{AreaName:'湖北'},{AreaName:'江西'}],
           Weight_item:[{WeightName:'1kg'},{WeightName:'2kg'}],
           ImgList:{brand:config.imgUrl+'/group/header01.jpg',ShopImg:config.imgUrl+'/cart/shopimg01.jpg',home:config.imgUrl+'/group/home.png',
                    kefu:config.imgUrl+'/group/kefu.png',shouChang:config.imgUrl+'/group/shoucang.png',touxiang:config.imgUrl+'/group/touxiang.jpg',
-                   btnInfoImg:config.imgUrl+'/group/TionInfo.jpg',
+                   btnInfoImg:config.imgUrl+'/group/TionInfo.jpg', qiang:config.imgUrl+'/discount/qiang.png',
+                    wenhao:config.imgUrl+'/discount/wenhao .png',InfoTitle:config.imgUrl+'/discount/InfoTitle.jpg'
           },
-          ShopImg:[{ShopName:'你好世界桃子好吃好甜美味无限美味你好世界你好世界你好世界你好世界',
-                  ShopImg:config.imgUrl+'/cart/shopimg01.jpg',maskInfo:'当季水果',p1:9.9,p2:19.9},
-                  {ShopName:'你好世界桃子好吃好甜美味无限美味你好世界你好世界你好世界你好世界',
-                  ShopImg:config.imgUrl+'/cart/shopimg01.jpg',maskInfo:'当季水果',p1:9.9,p2:19.9}],
-          countdown:{},
           kanList:[{touxiang:config.imgUrl+'/group/touxiang.jpg',Time:'2018-11-10 16:54',price:2.33},
                    {touxiang:config.imgUrl+'/group/touxiang.jpg',Time:'2018-11-10 16:54',price:2.33}
                ],
-          selectIndex:0,
           modelShow:false,
-         
+          countdown:{}
     }
   },
    methods: {
-    //选项卡点击事件
-    onselect(e){
-      let that = this;
-      that.selectIndex=e
-    },
-
+ 
     //立即购买淡出模态框
     showModel(){
      let that = this;
@@ -126,22 +112,22 @@ export default {
     },
 
     cutTime(starttime,endtime){
-      var that=this; 
-      var leftTime = endtime - starttime;
-      if (leftTime >= 0) {
-        var interval = setInterval(function () {
-        let cutTime={}
-        cutTime.days = parseInt(leftTime / 1000 / 60 / 60 / 24, 10); //计算剩余的天数
-        cutTime.hours = parseInt(leftTime / 1000 / 60 / 60 % 24, 10); //计算剩余的小时
-        cutTime.minutes = parseInt(leftTime / 1000 / 60 % 60, 10);//计算剩余的分钟
-        cutTime.seconds = parseInt(leftTime / 1000 % 60, 10);//计算剩余的秒数
-        leftTime = leftTime - 1000;
-        that.countdown=cutTime      
-        }, 1000)
-        if (leftTime <= 0) {
-          clearinterval(interval)
-        }
-      }
+      // var that=this; 
+      // var leftTime = endtime - starttime;
+      // if (leftTime >= 0) {
+      //   var interval = setInterval(function () {
+      //   let cutTime={}
+      //   cutTime.days = parseInt(leftTime / 1000 / 60 / 60 / 24, 10); //计算剩余的天数
+      //   cutTime.hours = parseInt(leftTime / 1000 / 60 / 60 % 24, 10); //计算剩余的小时
+      //   cutTime.minutes = parseInt(leftTime / 1000 / 60 % 60, 10);//计算剩余的分钟
+      //   cutTime.seconds = parseInt(leftTime / 1000 % 60, 10);//计算剩余的秒数
+      //   leftTime = leftTime - 1000;
+      //   that.countdown=cutTime      
+      //   }, 1000)
+      //   if (leftTime <= 0) {
+      //     clearinterval(interval)
+      //   }
+      // }
     },
   
 
@@ -182,29 +168,30 @@ img{display: block;height: 100%;width: 100%;}
   .oldPrice{color: #e9e9e9;font-size: 24rpx;text-decoration:line-through;}
 }
 
-.bottomright{height: 120rpx;;}
-.peopleInfo{@include flexc;padding-bottom: 20rpx;border-bottom: 2px solid rgb(245,245,245);
-   .left{width: 25%;}
-   .left img{width: 100rpx;height: 100rpx;margin: auto;border-radius: 50%;}
-   .right{width: 75%;}
-   .right .title{font-weight: 100;font-size: 34rpx;color: #666;}
-   .right .info{color: #8e8e8e;font-weight: 100;font-size: 26rpx;}
-   .right text{color: rgb(252,148,53);}
+.shopInfo{padding: 10rpx 20rpx;font-weight: 100;border-bottom: 4px solid rgb(244,244,244);
+  .shopTile{color: #666;font-size: 34rpx;}
+  .shopTag{display: flex;justify-content:space-between;margin: 10rpx 0;color: #8e8e8e;font-size: 25rpx;}
 }
 
-.shopInfo{padding: 10rpx 20rpx;
-   span{font-size: 28rpx;font-weight: 100;}
-   text{display: inline-block;padding: 0rpx 10rpx;margin-left: 15rpx;border-radius: 25rpx; background:rgb(252,148,53);font-weight: 100;font-size: 24rpx;color: #fff;}
+.tip{@include flexc;padding: 20rpx 30rpx;margin: 10rpx;background: rgb(254,241,250);border-radius: 10rpx;
+   img{width: 46rpx;height: 46rpx;margin-right: 15rpx;}
+   text{font-weight: 100;font-size: 30rpx;margin-right: 20rpx;color: rgb(242,42,48);}
 }
 
+.tipInfo{@include flexc;justify-content: space-between;font-weight: 100;font-size: 24rpx;border-bottom: 2px solid rgb(244,244,244);
+   .left,.right {@include flexc;}
+   .tipInfoLeft{padding: 15rpx 35rpx;color: #8e8e8e;}
+   .tipInfoLeft text{margin-left: 10rpx;background:rgb(254,242,229);color: rgb(246,112,113);font-size: 20rpx; }
+   .tipInfoRight{color: #666;}
+   .right{padding-right: 15rpx;}
+   .right img{width: 35rpx;height: 35rpx;margin-left: 15rpx;}
+}
+
+.InfoTitle{margin: 20rpx 0;
+   img{height: 125rpx;width:300rpx;margin: auto;}
+} 
 .TionInfo{height: 1135rpx;}
-.tabInfoList{padding: 5rpx 25rpx;
-   .item{@include flexc;justify-content: space-between;margin-bottom: 20rpx;padding-bottom: 15rpx;border-bottom: 2px solid rgb(243,243,243);}
-   .item .left{@include flexc;}
-   .item text{font-weight: 100;font-size: 30rpx;color: #666;}
-   .left img{border-radius: 50%;width: 70rpx;height: 70rpx;margin-right: 15rpx;}
-   .right .selPrice{color: rgb(251,154,50);}
-}
+
 
 .HeightDiv{height: 110rpx;}
 .footerBnt .left,.btnWarp{@include flexc;justify-content: space-around;}

@@ -6,7 +6,7 @@
         </swiper>
       </div>
      
-  <Barlist :Shop_item='ShopImg' :btnImg='ImgList.btn'  :Url="Url"></Barlist>
+  <Barlist :Shop_item='ShopImg' :btnImg='ImgList.btn' :Url="Url"></Barlist>
   </div>
 </template>
 
@@ -23,13 +23,13 @@ export default {
   data () {
     return {
           ImgList:{brand:config.imgUrl+'/group/header01.jpg',ShopImg:config.imgUrl+'/cart/shopimg01.jpg',
-                   btn:config.imgUrl+'/bargain/btn.png',
+                   btn:config.imgUrl+'/discount/btn.png',
           },
           ShopImg:[{ShopName:'你好世界桃子好吃好甜美味无限美味你好世界你好世界你好世界你好世界',
                   ShopImg:config.imgUrl+'/cart/shopimg01.jpg',maskInfo:'当季水果',p1:9.9,p2:19.9},
                   {ShopName:'你好世界桃子好吃好甜美味无限美味你好世界你好世界你好世界你好世界',
                   ShopImg:config.imgUrl+'/cart/shopimg01.jpg',maskInfo:'当季水果',p1:9.9,p2:19.9}],
-           Url:'/pages/bargainInfo/main'
+          Url:'/pages/discountInfo/main'
     }
   },
 

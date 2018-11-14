@@ -1,8 +1,8 @@
 <template>
-    <a :href="bargainInfoUrl">
      <div>
       <div class="ShopList">
          <div class="item" v-for="(item,index) in Shop_item" :index='index' :key='item'>
+            <a :href="InfoUrl" class="item-warp">
              <div class="left">
                  <img :src="item.ShopImg" />
              </div>
@@ -14,17 +14,17 @@
                      <div class="priceRight"><img :src="btnImg" mode='aspectFit'/></div>
                  </div>
              </div>
+           </a>
          </div>
      </div>
      </div>
-     </a>
 </template>
 <script>
 export default {
-   props: ['Shop_item','btnImg'],
+   props: ['Shop_item','btnImg','Url'],
      computed:{
-            bargainInfoUrl(){
-              return '/pages/bargainInfo/main'
+           InfoUrl(){
+              return this.Url
             }
      }
 }
@@ -39,7 +39,7 @@ display: flex;align-items: center;
 @mixin fontM{
 white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
 }
-.item,.price{@include flexc}
+.item-warp,.price{@include flexc}
 
 .item{padding: 10rpx 16rpx;border-bottom: 3px solid rgb(247,247,247);
     .left{width: 35%}
