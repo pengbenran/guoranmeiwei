@@ -1,7 +1,9 @@
 {
   "pages": [
-    "pages/index/main",
+    "pages/sign/main",
     "pages/order/main",
+    "pages/store/main",
+    "pages/index/main",
     "pages/bargainInfo/main" ,
     "pages/groupdetail/main",   
     "pages/bargain/main",
@@ -12,8 +14,9 @@
     "pages/myself/main",
     "pages/counter/main",
     "pages/discount/main",
-    "pages/discountInfo/main"
-  
+    "pages/discountInfo/main",
+    "pages/address/main",
+    "pages/addressList/main"
 
   ],
   "window": {
