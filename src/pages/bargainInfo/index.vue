@@ -2,13 +2,13 @@
   <div class="bargainInfo">
     <div class="header">
       <swiper class="swiper" indicator-dots='true' autoplay='true'>
-        <swiper-item><img :src="ImgList.brand"></swiper-item>
+          <swiper-item v-for="(item,index) in Gallery" :key="item" :index="index"><img :src="item.original"></swiper-item>
       </swiper>
     </div>
     <!--header end-->
     <div class="priceWarp">
       <div class="left">
-         <div class="tag">精选水果</div><div class="price">￥<text class="newPrice">9.90</text><text class="oldPrice">￥19.9</text></div>
+         <div class="tag">精选水果</div><div class="price">￥<text class="newPrice">{{cutGood.belowPrice}}</text><text class="oldPrice">￥{{cutGood.initPrice}}</text></div>
       </div>
       <div class="right">
         <Timedown :countdown="countdown"></Timedown>
@@ -18,30 +18,31 @@
     
     <div class="peopleInfo">
       <div class="left">
-        <img :src="ImgList.touxiang"/>
+        <img :src="memberCut.face"/>
       </div>
       <div class="right">
-        <div class="title">刘世轩</div><div class="info">已有两位好友帮忙砍价，共砍<text>￥8.89</text>元</div>
+        <div class="title">{{memberCut.uname}}</div><div class="info">已有{{cutPersonCount}}位好友帮忙砍价，共砍<text>￥{{cutTotal}}</text>元</div>
       </div>
     </div>
     <!--peopleInfo end-->
     
     <div class="shopInfo">
-      <span>桃子水蜜桃红色你好世界桃子水蜜桃红色你好世界桃子水蜜桃红色你好世界</span>
-      <text>砍后价￥9.90</text>
+      <span>{{cutGood.cutName}}</span>
+      <text>砍后价￥{{cutGood.belowPrice}}</text>
     </div>
    <!--shopinfo end-->
    <div class="tabWarp">
-     <Tabs :find_item='find_item' @select='onselect'></Tabs>
+     <Tabs :find_item='find_item' @select='onselect' :wid="width"></Tabs>
    </div>
     <!--tabWarp-->
-    
     <div class="tabInfo">
-      <div class="TionInfo" v-if="selectIndex==0"><img :src="ImgList.btnInfoImg"/></div>
+      <div class="TionInfo" v-if="selectIndex==0">
+        <wxParse :content="Goods.intro" @preview="preview" @navigate="navigate" />
+      </div>
       <div class="tabInfoList" v-if="selectIndex==1">
-         <div class="item" v-for="(item,index) in kanList" :inedx='index' :key='item'>
-           <div class="left"><img :src="item.touxiang" /><text>{{item.Time}}</text></div>
-           <div class="right"><text class="selTile">已砍：</text><text class="selPrice">￥{{item.price}}元</text></div>
+         <div class="item" v-for="(item,index) in memberCut.cutHistoryDOs" :inedx='index' :key='item'>
+           <div class="left"><img :src="item.face" /><div><p>{{item.uname}}</p><p>{{item.cutTime}}</p></div></div>
+           <div class="right"><text class="selTile">已砍：</text><text class="selPrice">￥{{item.cutPersAmount}}元</text></div>
          </div>
       </div>
     </div>
@@ -54,14 +55,26 @@
          <div class="leftItme"><img :src="ImgList.shouChang" /><text>收藏</text></div>
        </div>
        <div class="right">
-         <div class="btnWarp">
-            <text>加入购物车</text><span></span><text @click="showModel">立即购买</text>
+         <div class="btnWarp" v-if="!isjoin&&!iscutOk" @click="startCut">
+            <!-- <text>加入购物车</text><span></span><text @click="showModel">立即购买</text> -->
+            <text>立即参与</text>
          </div>
+         <div class="btnWarp" v-if="isjoin&&!iscutOk"> 
+            <div class="nowprice">
+              <p>现价入手</p>
+              <p>￥{{cutFinalAmount}}</p>
+            </div> 
+            <span></span>
+            <div>
+              <button class="forhelp" open-type='share'>找人帮砍</button>
+            </div>     
+         </div>
+         <div class='btnWarp' v-if="iscutOk" @click="payorder">砍价成功立即购买</div>
        </div>
      </div>
      <!--footerBnt end-->
       
-      <Model :ImgList='ImgList' :modelShow='modelShow' :Area_item='Area_item' :Weight_item='Weight_item'  @hideModel='hideModel' ref="childs">></Model>
+   <!--    <Model :ImgList='ImgList' :modelShow='modelShow' :Area_item='Area_item' :Weight_item='Weight_item'  @hideModel='hideModel' ref="childs">></Model> -->
 
   </div>
 </template>
@@ -72,12 +85,15 @@
  import Timedown from "@/components/countdown"
  import Tabs from "@/components/tab"
  import Model from "@/components/shopModel"
-
+ import wxParse from 'mpvue-wxparse'
+ import formatTime from "@/utils/index"
+ let api= new Api 
 export default {
   components: {
    Timedown,
    Tabs,
-   Model
+   Model,
+   wxParse
   },
 
   data () {
@@ -96,12 +112,18 @@ export default {
                   {ShopName:'你好世界桃子好吃好甜美味无限美味你好世界你好世界你好世界你好世界',
                   ShopImg:config.imgUrl+'/cart/shopimg01.jpg',maskInfo:'当季水果',p1:9.9,p2:19.9}],
           countdown:{},
-          kanList:[{touxiang:config.imgUrl+'/group/touxiang.jpg',Time:'2018-11-10 16:54',price:2.33},
-                   {touxiang:config.imgUrl+'/group/touxiang.jpg',Time:'2018-11-10 16:54',price:2.33}
-               ],
           selectIndex:0,
           modelShow:false,
-         
+          width:"50%",
+          Gallery:[],
+          Goods:{},
+          cutGood:{},
+          isjoin: false,
+          iscutOk: false,
+          cutTotal:'',
+          memberCut:{},
+          cutPersonCount:'',
+          cutFinalAmount:''
     }
   },
    methods: {
@@ -124,7 +146,6 @@ export default {
      that.modelShow=false;
      console.log("点击了吗",that.modelShow)
     },
-
     cutTime(starttime,endtime){
       var that=this; 
       var leftTime = endtime - starttime;
@@ -136,29 +157,84 @@ export default {
         cutTime.minutes = parseInt(leftTime / 1000 / 60 % 60, 10);//计算剩余的分钟
         cutTime.seconds = parseInt(leftTime / 1000 % 60, 10);//计算剩余的秒数
         leftTime = leftTime - 1000;
-        that.countdown=cutTime      
+        that.countdown=cutTime    
         }, 1000)
         if (leftTime <= 0) {
           clearinterval(interval)
         }
       }
     },
-  
+    async getGood(){
+    let that=this
+    let goodsRes=await api.getGoods(19,187)
+    that.Gallery=goodsRes.data.Gallery
+    that.Goods=goodsRes.data.Goods
+    },
+    async getByCut(){
+      let that=this
+      var starttime = (new Date()).valueOf();
+      let cutDetailRes=await api.getByCutId(3)
+      that.cutGood=cutDetailRes.data
+      that.cutTime(starttime,that.cutGood.endtime)
+    },
+    async isJoin(){
+      let that=this
+      let isJoinRes=await api.isJoin(209,3)
+      if(isJoinRes.data.code==1){
+        that.isjoin=false
+      }else{
+        var cuttotal = 0;
+        for (var i = 0; i < isJoinRes.data.memberCutDate.cutHistoryDOs.length; i++) {
+          cuttotal = cuttotal + isJoinRes.data.memberCutDate.cutHistoryDOs[i].cutPersAmount
+          isJoinRes.data.memberCutDate.cutHistoryDOs[i].cutTime=formatTime.formatTime(isJoinRes.data.memberCutDate.cutHistoryDOs[i].cutTime)
+        }
+        if (isJoinRes.data.memberCutDate.isSuccess == 1) {
+          that.iscutOk=true;
+          that.isjoin= true; 
+        }
+        else {
+          that.isjoin= true
+        }
+        that.cutTotal=cuttotal;
+        that.cutFinalAmount= Number(that.cutGood.initPrice - cuttotal).toFixed(2);
+        that.percent= (cuttotal / (that.cutGood.initPrice - that.cutGood.belowPrice)) * 100;
+        that.memberCut= isJoinRes.data.memberCutDate;
+        that.cutPersonCount=that.memberCut.cutHistoryDOs.length
+
+      }
+    },
+    async startCut(){
+      var that=this
+      var startcutparm = {}
+      startcutparm.memberId = 209
+      startcutparm.cutId = that.cutGood.cutId
+      startcutparm.cutType = that.cutGood.cutType
+      if (that.cutGood.cutType == 0) {
+        startcutparm.minAmount = that.cutGood.minAmount
+        startcutparm.maxAmount = that.cutGood.maxAmount
+      }
+      else {
+        startcutparm.cutAverAmount = that.cutGood.cutAverAmount
+      }
+       let startCutRes=await api.startCut(startcutparm)
+       console.log(startCutRes);
+    }
 
   },
   mounted(){
      var that=this;
-     var endtime=1541995932000
-     var starttime = (new Date()).valueOf();
-     that.cutTime(starttime,endtime)
+  
      //页面渲染完成创建一个动画
-    
+    that.getGood()
+    that.getByCut()
+    that.isJoin()
   },
   
 }
 </script>
 
 <style scoped lang='scss'>
+@import url("~mpvue-wxparse/src/wxParse.css");
 /*局部水平居中*/
 @mixin flexc{
 display: flex;align-items: center;
@@ -199,9 +275,8 @@ img{display: block;height: 100%;width: 100%;}
 
 .TionInfo{height: 1135rpx;}
 .tabInfoList{padding: 5rpx 25rpx;
-   .item{@include flexc;justify-content: space-between;margin-bottom: 20rpx;padding-bottom: 15rpx;border-bottom: 2px solid rgb(243,243,243);}
-   .item .left{@include flexc;}
-   .item text{font-weight: 100;font-size: 30rpx;color: #666;}
+   .item{@include flexc;justify-content: space-between;margin-bottom: 20rpx;padding-bottom: 15rpx;border-bottom: 2px solid rgb(243,243,243); font-weight: 100;font-size: 30rpx;color: #666;}
+   .item .left{@include flexc; }
    .left img{border-radius: 50%;width: 70rpx;height: 70rpx;margin-right: 15rpx;}
    .right .selPrice{color: rgb(251,154,50);}
 }
@@ -214,9 +289,11 @@ img{display: block;height: 100%;width: 100%;}
   .left img{width: 58rpx;height: 58rpx;margin: auto;}
   .left text{color: rgb(117,117,117);font-size: 28rpx;font-weight: 100;}
   .right{width: 55%;}
-  .btnWarp{background-image: -webkit-linear-gradient(0deg,rgb(252,148,53), rgb(255,191,3));border-radius: 45rpx;height: 75rpx;line-height: 75rpx;}
-  .btnWarp text{font-size: 32rpx;color: #fff;font-weight: 100;padding: 0 15rpx;}
+  .btnWarp{background-image: -webkit-linear-gradient(0deg,rgb(252,148,53), rgb(255,191,3));border-radius: 45rpx;height: 75rpx;line-height: 75rpx; display: flex;}
+  .btnWarp .nowprice{font-size: 28rpx;color: #fff;font-weight: 100;padding: 0 15rpx 0 20rpx;display:block;box-sizing: border-box;}
+  .btnWarp .nowprice p{height: 35rpx;line-height: 35rpx;}
   .btnWarp span{width: 2rpx;height: 35rpx;background-color: #fff;}
+  .btnWarp .forhelp{background: none;border:none;color: #fff;}
 }
 
 

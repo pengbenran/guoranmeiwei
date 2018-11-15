@@ -4,9 +4,8 @@
         <swiper class="swiper" indicator-dots='true' autoplay='true'>
           <swiper-item><img :src="ImgList.brand"></swiper-item>
         </swiper>
-      </div>
-     
-  <Barlist :Shop_item='ShopImg' :btnImg='ImgList.btn'  :Url="Url"></Barlist>
+      </div>  
+      <Barlist :Shop_item='cutList'></Barlist>
   </div>
 </template>
 
@@ -14,7 +13,7 @@
  import Api from "@/utils/Api"
  import config from "@/config"
  import Barlist from "@/components/bargainlist"
-
+let api= new Api 
 export default {
   components: {
     Barlist
@@ -23,18 +22,16 @@ export default {
   data () {
     return {
           ImgList:{brand:config.imgUrl+'/group/header01.jpg',ShopImg:config.imgUrl+'/cart/shopimg01.jpg',
-                   btn:config.imgUrl+'/bargain/btn.png',
           },
-          ShopImg:[{ShopName:'你好世界桃子好吃好甜美味无限美味你好世界你好世界你好世界你好世界',
-                  ShopImg:config.imgUrl+'/cart/shopimg01.jpg',maskInfo:'当季水果',p1:9.9,p2:19.9},
-                  {ShopName:'你好世界桃子好吃好甜美味无限美味你好世界你好世界你好世界你好世界',
-                  ShopImg:config.imgUrl+'/cart/shopimg01.jpg',maskInfo:'当季水果',p1:9.9,p2:19.9}],
-           Url:'/pages/bargainInfo/main'
+          cutList:[]
     }
   },
+   async onLoad(){
+    let that=this
+    let cutlistRes=await api.getCutlist()
+    console.log(cutlistRes.data)
+    that.cutList=cutlistRes.data.data
 
-  created () {
-   
   }
 }
 </script>

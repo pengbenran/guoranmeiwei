@@ -1,8 +1,8 @@
 {
   "pages": [
+    "pages/bargainInfo/main" ,
     "pages/index/main",
     "pages/order/main",
-    "pages/bargainInfo/main" ,
     "pages/groupdetail/main",   
     "pages/bargain/main",
     "pages/group/main",

@@ -2,15 +2,15 @@
      <div>
       <div class="ShopList">
          <div class="item" v-for="(item,index) in Shop_item" :index='index' :key='item'>
-            <div class="item-warp" @click="jumpdetail(item.goodsId,item.cutId)">
+            <div class="item-warp" @click="jumpdetail(item.goodsId,item.limitId,item.cutId)">
              <div class="left">
-                 <img :src="item.thumbnail" />
+                 <img :src="item.goodsDO.thumbnail" />
              </div>
              <div class="tight">
-                 <div class="title fontHidden">{{item.name}}</div>
+                 <div class="title fontHidden">{{item.goodsDO.name}}</div>
                  <div class="mask">{{item.maskInfo}}</div>
                  <div class="price">
-                     <div class="priceLedt ">￥<text class="newPrice">{{item.belowPrice}}</text><text class="oldPrice">{{item.initPrice}}</text></div>
+                     <div class="priceLedt ">￥<text class="newPrice">{{item.finalAmount}}</text><text class="oldPrice">{{item.goodsPrice}}</text></div>
                      <div class="priceRight"><img :src="btn" mode='aspectFit'/></div>
                  </div>
              </div>
@@ -22,19 +22,19 @@
 <script>
 import config from "@/config"
 export default {
-  props: ['Shop_item'],
-    data(){
-        return{
-          btn:config.imgUrl+'/bargain/btn.png'
-      }
-  },
-  methods: {
-    jumpdetail:function(goodsId,cutId){
-        wx.navigateTo({
-         url: '../bargainInfo/main?cutId=' + cutId + '&goodsId=' + goodsId,
-     })
+   props: ['Shop_item'],
+   data(){
+    return{
+      btn:config.imgUrl+'/discount/btn.png'
     }
-}
+    },
+    methods: {
+      jumpdetail:function(option1,option2){
+        wx.navigateTo({
+           url: '../discountInfo/main?limitId=' + option2 + '&goodsId=' + option1,
+        })        
+      }
+    }
 }
 </script>
 <style scoped lang='scss'>

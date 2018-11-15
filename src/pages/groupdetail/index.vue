@@ -100,19 +100,14 @@ export default {
   methods: {
         async collection(){
         let that=this
-        let parms = {}
         let favorite = {}
         favorite.memberId = that.memberId
         favorite.goodsId = that.Goods.goodsId
-        parms.favorite = JSON.stringify(favorite)
-        console.log(parms);
         if(that.posts){
-          console.log(parms);
-          let delCollectionRes=await api.delCollection(parms)
+          let delCollectionRes=await api.delCollection(favorite)
         }
         else{
-          console.log(parms)
-          let addCollectionRes=await api.addCollection(parms)
+          let addCollectionRes=await api.addCollection(favorite)
         }
       },
       hideModel(){
@@ -149,7 +144,6 @@ export default {
  async onLoad(option){
     let that=this
     that.memberId= wx.getStorageSync('memberId')
-   
     // let goodsRes=await api.getGoods(option.goodsId,187)
     let goodsRes=await api.getGoods(19,187)
     that.Gallery=goodsRes.data.Gallery

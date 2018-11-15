@@ -1,7 +1,7 @@
 <template>
   <div class="tab">
     <scroll-view class="find_item" scroll-x style="width: 100%">
-   		<div class="find_item_list" v-for="(item, index) in find_item" :index="index" :key="key" :class="{'select':item.selected}" v-on:click="changTab(index)">
+   		<div class="find_item_list" v-for="(item, index) in find_item" :index="index" :key="key" :class="{'select':item.selected}" v-on:click="changTab(index)" :style="{width:wid}">
    			<span>{{item.name}}</span>
    		</div>
    	</scroll-view>
@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  props: ['find_item'],
+  props: ['find_item','wid'],
   data () {
     return {
     	
@@ -42,7 +42,7 @@ export default {
 	overflow-x:scroll; 
 	height: 45px;
 	display: flex;
-	justify-content:space-around;
+	justify-content:center;
 	align-items: center
 }
 .find_item_list{
@@ -52,7 +52,7 @@ export default {
 	line-height: 35px;
 	font-size: 16px;
 	min-width: 25%;
-	
+	flex-grow: 1;
 }
 .select{
 	font-weight: bold;

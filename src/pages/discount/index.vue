@@ -1,40 +1,44 @@
 <template>
   <div class="bargain">
      <div class="header">
-        <swiper class="swiper" indicator-dots='true' autoplay='true'>
-          <swiper-item><img :src="ImgList.brand"></swiper-item>
+         <swiper class="swiper" indicator-dots='true' autoplay='true'>
+          <swiper-item v-for="(item,index) in Gallery" :key="item" :index="index"><img :src="item.original"></swiper-item>
         </swiper>
       </div>
      
-  <Barlist :Shop_item='ShopImg' :btnImg='ImgList.btn' :Url="Url"></Barlist>
+  <Discountlist :Shop_item='apiLimit'></Discountlist>
   </div>
 </template>
 
 <script>
  import Api from "@/utils/Api"
  import config from "@/config"
- import Barlist from "@/components/bargainlist"
-
+ import Discountlist from "@/components/discountlist"
+ let api=new Api
 export default {
   components: {
-    Barlist
+    Discountlist
   },
 
   data () {
     return {
           ImgList:{brand:config.imgUrl+'/group/header01.jpg',ShopImg:config.imgUrl+'/cart/shopimg01.jpg',
-                   btn:config.imgUrl+'/discount/btn.png',
           },
-          ShopImg:[{ShopName:'你好世界桃子好吃好甜美味无限美味你好世界你好世界你好世界你好世界',
-                  ShopImg:config.imgUrl+'/cart/shopimg01.jpg',maskInfo:'当季水果',p1:9.9,p2:19.9},
-                  {ShopName:'你好世界桃子好吃好甜美味无限美味你好世界你好世界你好世界你好世界',
-                  ShopImg:config.imgUrl+'/cart/shopimg01.jpg',maskInfo:'当季水果',p1:9.9,p2:19.9}],
-          Url:'/pages/discountInfo/main'
+          apiLimit:[],
+          limitActive:[]
     }
   },
 
-  created () {
-   
+  async onLoad() {
+    let that=this
+    let limitRes= await api.getLimit()
+    let limitActive = [];
+    for (var i = 0; i < limitRes.data.apiLimit.length; i++) {
+      limitActive = limitActive.concat(limitRes.data.apiLimit[i].apilimitGoods)
+    }
+    that.apiLimit=limitActive
+    console.log(that.apiLimit)
+    that.limitActive= limitRes.data.apiLimit
   }
 }
 </script>

@@ -1,8 +1,9 @@
  import Fly from "flyio/dist/npm/wx";
 export default class Api{
   constructor() {
-    this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen" 
-    //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
+     this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen" 
+    // this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
+    // this.baseUrl = "http://192.168.2.111/mall" 
     this.fly = new Fly;
     // this.fly.config.baseUrl=
   }
@@ -53,6 +54,48 @@ export default class Api{
       resolve(res)
     })
   }
+  // 获取限时活动的列表
+  getLimit(){
+    return new Promise((resolve, reject) => {
+       let limitRes=this.fly.get(this.baseUrl +'/api/activity/limit')
+       resolve(limitRes)
+    })
+  }
+  // 获取砍价列表
+  getCutlist(){
+    return new Promise((resolve, reject) => {
+     let cutlistRes=this.fly.get(this.baseUrl +'/api/cut/cutList')
+       resolve(cutlistRes)
+    })
+  }
+   // 根据cutID查找砍价商品详情
+   getByCutId(cutId){
+      return new Promise((resolve, reject) => {
+        let cutDetailRes=this.fly.get(this.baseUrl+'/api/cut/findCut?cutId=' + cutId)
+        resolve(cutDetailRes)
+      })
+   }
+  // 判断是否参过团
+  isJoin(memberId,cutId){
+     return new Promise((resolve, reject) => {
+        let cutparm = {}
+        cutparm.memberId = memberId
+        cutparm.cutId = cutId
+        let cutDetailRes=this.fly.get(this.baseUrl+'/api/cut/isJoin',{params:JSON.stringify(cutparm)})
+        resolve(cutDetailRes)
+     })
+  }
+  startCut(startcutparm){
+      return new Promise((resolve, reject) => {
+         let startCutRes=this.fly.get(this.baseUrl+'/api/cut/startCut',{params:JSON.stringify(startcutparm)})
+        resolve(startCutRes)
+      })
+  }
+
+
+
+
+
   // 根据code判断是否是会员
   getCode(){
    return new Promise((resolve, reject) => {
@@ -94,7 +137,9 @@ export default class Api{
   // 收藏
   addCollection(parms){
    return new Promise((resolve, reject) => {
-    let addCollectionRes=this.fly.post(this.baseUrl +'/api/favorite/add',{parms:parms})
+    let collecparm={}
+    collecparm.favorite=parms
+    let addCollectionRes=this.fly.get(this.baseUrl +'/api/favorite/add',{parms:JSON.stringify(collecparm)})
     resolve(addCollectionRes)
    })
   }
