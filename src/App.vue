@@ -37,6 +37,11 @@ display: flex;align-items: center;
   white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
 }
 
+.fontHidden1{
+  white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;
+}
+
+.footerBnt{background: #fff;}
 .font26rpx{
   font-weight: 100;font-size: 26rpx
 }

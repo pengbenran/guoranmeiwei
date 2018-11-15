@@ -1,8 +1,10 @@
 {
   "pages": [
     "pages/bargainInfo/main" ,
-    "pages/index/main",
     "pages/order/main",
+    "pages/sign/main",
+    "pages/store/main",
+    "pages/index/main",
     "pages/groupdetail/main",   
     "pages/bargain/main",
     "pages/group/main",
@@ -12,8 +14,9 @@
     "pages/myself/main",
     "pages/counter/main",
     "pages/discount/main",
-    "pages/discountInfo/main"
-  
+    "pages/discountInfo/main",
+    "pages/address/main",
+    "pages/addressList/main"
 
   ],
   "window": {
