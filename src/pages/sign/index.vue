@@ -19,7 +19,7 @@
              <div class="itemTile">每日签到</div>
              <div class="itemInfo">
                  <div class="left">{{item.signTime}}</div>
-                 <div class="right">+1积分</div>
+                <div class="right">+1积分</div>
              </div>
          </div>
      </div>
