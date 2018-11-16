@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/orderList/main",
     "pages/bargainInfo/main" ,
     "pages/order/main",
     "pages/sign/main",
@@ -17,6 +18,7 @@
     "pages/discountInfo/main",
     "pages/address/main",
     "pages/addressList/main"
+
 
   ],
   "window": {

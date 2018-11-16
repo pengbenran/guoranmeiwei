@@ -22,7 +22,7 @@
                  <div class="right">+1积分</div>
              </div>
          </div>
-                  <div class="item">
+          <div class="item">
              <div class="itemTile">每日签到</div>
              <div class="itemInfo">
                  <div class="left">2018-11-14  9:20</div>

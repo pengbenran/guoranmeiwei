@@ -1,9 +1,11 @@
  import Fly from "flyio/dist/npm/wx";
+import { resolveComponents } from "_uri-js@4.2.2@uri-js";
 export default class Api{
   constructor() {
-     this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen" 
-    // this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
-    // this.baseUrl = "http://192.168.2.111/mall" 
+     this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
+     //this.baseUrl = "https://www.etuetf.com"
+     //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
+     //this.baseUrl = "http://192.168.2.111:80" 
     this.fly = new Fly;
     // this.fly.config.baseUrl=
   }
@@ -149,5 +151,47 @@ export default class Api{
     let delCollectionRes=this.fly.post(this.baseUrl +'/api/favorite/delete',{parms:parms})
     resolve(delCollectionRes)
    })
+  }
+
+  //获取订单全部列表
+  AllGoodList(parms){
+    return new Promise((resolve,reject) => {
+       let GoodList = this.fly.get(this.baseUrl +'/api/order/apiSelectOrderList',{parms:JSON.stringify(parms)})
+       resolve(GoodList)
+    })
+  }
+  //根据状态查询订单
+  OrderSelectList(parms){
+    return new Promise((resolve,reject) => {
+      let OrderList = this.fly.get(this.baseUrl +'/api/order/orderList',{parms:JSON.stringify(parms)})
+      resolve(OrderList)
+    })
+  }
+  
+  //取消订单
+  OrderCancel(parms){
+    return new Promise((resolve,reject) => {
+      let Orderres = this.fly.put(this.baseUrl +'/api/order/synthesize',{parms:JSON.stringify(parms)},{headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+       }})
+      resolve(Orderres)
+    })
+  }
+
+  //确认付款
+  ConfirmPay(parms,code){
+    return new Promise((resolve,reject) =>{
+      let Pay = this.fly.get(this.baseUrl +'/api/pay/prepay',{code: code,parms:JSON.stringify(parms)})
+      resolve(Pay)
+    })
+  }
+   //支付成功后
+   PaypassOrder(parms){
+    return new Promise((resolve,reject) => {
+      let Orderres = this.fly.put(this.baseUrl +'/api/order/passOrder',{parms:JSON.stringify(parms)},{headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+       }})
+      resolve(Orderres)
+    })
   }
 }
