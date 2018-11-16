@@ -1,17 +1,25 @@
 <template>
 <div class="kind">
- <Tab :find_item="find_item"></Tab>
- <div class="banner">
-   <img :src="banner">
- </div>
-<Goodlist :good_item="gooditem"></Goodlist>
+  <div style="height:7vh">
+    <Tab :find_item="find_item"  @listenToChild="fromChild"></Tab>
+  </div>
+  <scroll-view style="height: 93vh;" scroll-y='true' @scrolltolower='getMore' @scroll="pageScroll" :scroll-top="scrollTop">
+    <div class="banner" >
+      <img :src="banner">
+    </div>
+    <block  v-for="(item,index) in shopitem" :index="index" :key="item">
+    <Goodlist :good_item="item" :toView="toView"></Goodlist>
+    </block>
+  </scroll-view>
 </div>
 </template>
 
 <script>
 import Tab from '@/components/tab';
+import Api from "@/utils/Api"
 import Goodlist from '@/components/goodlist';
 import config from "@/config"
+let api=new Api
 export default {
   components: {
    Tab,
@@ -20,29 +28,103 @@ export default {
 
   data () {
     return {
-      banner:config.imgUrl+"/kind/banner.jpg",
-     find_item:[
-      {name:"季节水果",selected:true},
-      {name:"热销水果",selected:false},
-      {name:"促销水果",selected:false},
-      {name:"热带水果",selected:false},
-      {name:"季节水果",selected:false}],
-     gooditem:[
-       {goodname:'福建广西盘丝洞过节费iOSA级个iOS就技术都放假哦啊发基调集散地偶发酒叟安静的佛家说我键哦ID沙发飞机哦',goodimg:config.imgUrl+"/kind/shop.jpg",intro:'好吃的柚子又大有填',price:'69.99'}
-     ]
+     banner:config.imgUrl+"/kind/banner.jpg",
+     find_item:[],
+     gooditem:[],
+     shopitem:[],
+     current:0,
+     goodlength:0,
+     index:0,
+     scrollTop:0,
+     temp:[],
+     gooditemIndex:0
     }
   },
   methods:{
-      changTab:function(index){
-      var that=this;
-        for(var i=0;i<that.find_item.length;i++){
-          that.find_item[i].selected=false;
-        }
-        that.find_item[index].selected=true;
-      },
+    async fromChild(data){
+      var that=this
+      // that.gooditemIndex=data
+      // var scrollTotal=0
+      //  for(var i in that.temp){
+      //     scrollTotal+=that.temp[i]
+      //   }
+       that.find_item=kindRes.data.GoodCatAll.map((item)=>{
+         item.selected=false;
+         return item
+        })
+       that.find_item[data].selected=true
+      that.shopitem=[]
+      console.log(data)
+      if(that.gooditem[data]==undefined){
+        let moreKindRes=await api.getGoodsAll(that.find_item[data].catId)
+        that.gooditem[data]=moreKindRes.data.Goods  
+        that.shopitem=moreKindRes.data.Goods   
+      }
+      else{
+        that.shopitem=that.gooditem[data]
+      }
+      console.log(that.shopitem)
+    },
+     // async getMore(){
+     //    let that=this
+     //    wx.showLoading({  
+     //    title: '玩命加载中',  
+     //    })  
+     //    console.log(that.gooditemIndex)
+     //    that.gooditemIndex+=1
+     //    let moreKindRes=await api.getGoodsAll(that.find_item[that.gooditemIndex].catId)
+     //    that.goodlength=moreKindRes.data.Goods.length
+     //    that.gooditem[that.gooditemIndex]=moreKindRes.data.Goods
+     //    wx.hideLoading();
+     //    console.log(that.gooditem)
+     //  }, 
+      // pageScroll(e){
+      //   let that=this
+      //   let index=0
+      //   let topAll=0
+      //   for(var i in that.gooditem){
+      //     that.temp[i]=(that.gooditem[i].length*138+110)  
+      //   }
+      //   console.log(that.temp)
+      //   for(var j in that.temp){
+      //     topAll+=that.temp[j]
+      //     if(topAll>e.mp.detail.scrollTop){
+      //       index=j
+      //       break
+      //     }
+      //   }
+      //   if(index!=that.index){
+      //     that.index=index
+      //     that.find_item=that.find_item.map((item)=>{
+      //      item.selected=false
+      //      return item
+      //     })
+      //     // if(that.index*103.5>310){
+      //     //   that.scrollLeft=(that.index-2)*103.5
+      //     // }
+      //     // else{
+      //     //    that.scrollLeft=0
+      //     // } 
+      //     that.find_item[that.index].selected=true
+      //   }
+      //   // for(var j in )
+      //   // if(e.mp.detail.scrollTop>100*(that.goodlength-5)){
+      //   //   console.log("加载了下一个类别")
+      //   // }
+      // }
   },
-  created () {
-   
+  async onLoad () {
+    let that=this
+    let kindRes=await api.getGoodKind()
+    that.find_item=kindRes.data.GoodCatAll.map((item)=>{
+       item.selected=false;
+       return item
+    })
+    that.goodlength=that.find_item.length
+    that.gooditem[0]=kindRes.data.Goods
+    that.shopitem=that.gooditem[0]
+    // that.temp[0]=(that.gooditem[0].length*138+110)
+    that.find_item[0].selected=true
   }
 }
 </script>

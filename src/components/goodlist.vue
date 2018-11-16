@@ -1,35 +1,38 @@
 <template>
 	<div class="good">
-		<div class="goodlist" v-for="(item,index) in good_item" :index="index" :key="item">
-			<div class="goodimg">
-				<img :src="item.goodimg">
-			</div>
-			<div class="gooddetail">
-				<div class="goodtop"> 
-					<div class="goodname">
-						{{item.goodname}}
-					</div>
-					<div class="intro">
-						{{item.intro}}
-					</div>
-				</div>
-				<div class="goodbottom"> 
-					<div class="goodprice"> 
-						{{item.price}}
-					</div>
-					<div class="icon">
-						<img :src="addImg">
-					</div>
-				</div>
-			</div>
-		</div>
+     <div class="goodlist">
+      <div class="goodimg">
+        <img :src="good_item.thumbnail">
+      </div>
+      <div class="gooddetail">
+        <div class="goodtop"> 
+          <div class="goodname">
+            {{good_item.name}}
+          </div>
+          <div class="intro">
+            <!-- {{item.intro}} -->
+            这是一段简介
+          </div>
+        </div>
+        <div class="goodbottom"> 
+          <div class="goodprice"> 
+            {{good_item.price}}
+          </div>
+          <div class="icon">
+            <img :src="addImg">
+          </div>
+        </div>
+      </div>
+    </div>
+
+	
 	</div>
 </template>
 
 <script>
 import config from "@/config"
 export default {
-  props: ['good_item'],
+  props: ['good_item','toView'],
   data () {
     return {
     	addImg:config.imgUrl+'/kind/add.png',

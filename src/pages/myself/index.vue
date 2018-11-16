@@ -38,7 +38,7 @@
       </div>
     </div>
     <div class="feature">
-      <div class="featurelist" v-for="(item,index) in featureitem" :key="item" :index="index">
+      <div class="featurelist" v-for="(item,index) in featureitem" :key="item" :index="index" @click='topage(item.PageUrl)'>
         <div class="icon">
           <img :src="item.icon">
         </div>
@@ -69,12 +69,12 @@ export default {
      {name:'售后',icon:config.imgUrl+"/myself/shouhou.png",statuscount:0},
      ],
      featureitem:[
-     {name:'积分',icon:config.imgUrl+"/myself/point.png"},
-     {name:'微分销',icon:config.imgUrl+"/myself/fenxiao.png"},
-     {name:'地址管理',icon:config.imgUrl+"/myself/address.png"},
-     {name:'拼团',icon:config.imgUrl+"/myself/group.png"},
-     {name:'砍价',icon:config.imgUrl+"/myself/cut.png"},
-     {name:'联系客服',icon:config.imgUrl+"/myself/connect.png"}
+     {name:'积分',icon:config.imgUrl+"/myself/point.png",PageUrl:'../sign/main'},
+     {name:'微分销',icon:config.imgUrl+"/myself/fenxiao.png",PageUrl:'../sign/main'},
+     {name:'地址管理',icon:config.imgUrl+"/myself/address.png",PageUrl:'../sign/main'},
+     {name:'拼团',icon:config.imgUrl+"/myself/group.png",PageUrl:'../sign/main'},
+     {name:'砍价',icon:config.imgUrl+"/myself/cut.png",PageUrl:'../sign/main'},
+     {name:'联系客服',icon:config.imgUrl+"/myself/connect.png",PageUrl:'../sign/main'}
      ],
      vouchercount:0
     }
@@ -93,7 +93,10 @@ export default {
      that.vouchercount=userInfoRes.data.vouchercount
   },
   methods: {
-   
+   //
+   topage(url){
+    wx.navigateTo({ url: url });
+   }
   }
 }
 </script>

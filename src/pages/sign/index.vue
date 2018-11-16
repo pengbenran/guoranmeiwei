@@ -2,30 +2,23 @@
   <div class="sign">
      <div class="header d-flex">
          <div class="headerInfo">
-            <div class="Num">30</div>
+            <div class="Num">{{point}}</div>
             <div class="info">我的积分</div>
          </div>
      </div>
      <!--header end-->
 
-     <div class="signBnt">
-         <text class="pos">我的签到</text>
+     <div class="signBnt" @click="Signin()">
+         <text class="pos">立即签到</text>
      </div>
      <!--signBnt end-->
 
      <div class="jifenList">
          <div class="title"> <text></text> <span>签到记录</span> <text></text></div>
-         <div class="item">
+         <div class="item" v-for="(item,index) in pointSign" :key="item" :index="index">
              <div class="itemTile">每日签到</div>
              <div class="itemInfo">
-                 <div class="left">2018-11-14  9:20</div>
-                 <div class="right">+1积分</div>
-             </div>
-         </div>
-                  <div class="item">
-             <div class="itemTile">每日签到</div>
-             <div class="itemInfo">
-                 <div class="left">2018-11-14  9:20</div>
+                 <div class="left">{{item.signTime}}</div>
                  <div class="right">+1积分</div>
              </div>
          </div>
@@ -40,26 +33,54 @@
  import config from "@/config"
  import Shopaddr from '@/components/shopaddr'
  import OrderList from '@/components/shopList'
-
-
+ import formatTime from "@/utils/index"
+ let api=new Api
 export default {
   components: {
      OrderList,
      Shopaddr,
    
   },
-   
   data () {
     return {
- 
+       memberId:'',
+       pointSign:[],
+       signStatus:'',
+       point:''
     }
   },
   methods:{
-
+    async Signin(){
+      let that=this
+      if (that.signStatus == 1){
+      let signinRes=await api.Signin(that.memberId,1)
+      if(signStatus.data.code==1){
+        wx.showToast({
+          title: '签到成功',
+          icon: 'none',
+          duration: 1000
+        })
+      }
+      }
+      else{
+        wx.showToast({
+          title: '今天已经签到过了哦',
+          icon: 'none',
+          duration: 1000
+        })
+      }
+    }
   },
-  
-  created () {
-   
+  async onLoad(){
+    let that=this
+    that.memberId = wx.getStorageSync('memberId')
+    let pointRes=await api.getPoint(that.memberId)
+    that.point=pointRes.data.mp;
+    that.signStatus=pointRes.data.signStatus;
+    that.pointSign=pointRes.data.pointSign.map((item)=>{
+      item.signTime=formatTime.formatTime(item.signTime)
+      return item
+    })
   }
 }
 </script>

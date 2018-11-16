@@ -1,6 +1,6 @@
 <template>
   <div class="tab">
-    <scroll-view class="find_item" scroll-x style="width: 100%">
+    <scroll-view class="find_item" scroll-x style="width: 100%" :scroll-left="scrollLeft">
    		<div class="find_item_list" v-for="(item, index) in find_item" :index="index" :key="key" :class="{'select':item.selected}" v-on:click="changTab(index)" :style="{width:wid}">
    			<span>{{item.name}}</span>
    		</div>
@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  props: ['find_item','wid'],
+  props: ['find_item','wid','scrollLeft'],
   data () {
     return {
     	
@@ -24,7 +24,7 @@ export default {
 	      	}
 			that.find_item[index].selected=true;
 			//往父组件传值
-			that.$emit('select',index)  
+			that.$emit("listenToChild",index)  
 	    }
     }
 }
@@ -32,7 +32,7 @@ export default {
 
 <style>
 .tab{
-	height: 50px;
+	height: 35px;
 	overflow: hidden;
 }
 .find_item{
@@ -40,7 +40,7 @@ export default {
 	width:100%;
 	white-space: nowrap;
 	overflow-x:scroll; 
-	height: 45px;
+	height: 35px;
 	display: flex;
 	justify-content:center;
 	align-items: center

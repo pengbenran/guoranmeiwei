@@ -91,11 +91,6 @@ export default class Api{
         resolve(startCutRes)
       })
   }
-
-
-
-
-
   // 根据code判断是否是会员
   getCode(){
    return new Promise((resolve, reject) => {
@@ -149,5 +144,45 @@ export default class Api{
     let delCollectionRes=this.fly.post(this.baseUrl +'/api/favorite/delete',{parms:parms})
     resolve(delCollectionRes)
    })
+  }
+
+  //获取积分
+  getPoint(memberId){
+    return new Promise((resolve, reject) => {
+    let pointRes=this.fly.get(this.baseUrl +'/api/member/point',{memberId:memberId})
+    resolve(pointRes)
+   })
+  }
+   
+  //签到
+  Signin(memberId,cutpoint){
+    return new Promise((resolve, reject) => {
+      let params={}
+      params.memberId=memberId;
+      params.cutpoint=cutpoint;
+      let signinRes=this.fly.post(this.baseUrl +'/api/member/upMemberLv',{params:JSON.stringify(params)},{headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }})
+      resolve(signinRes)
+    })
+  }
+  // 获取商品分类
+  getGoodKind(){
+     return new Promise((resolve, reject) => {
+      let kindRes=this.fly.get(this.baseUrl +'/api/Goods/GoodCatAll')
+      resolve(kindRes)
+     })
+  }
+  // 根据商品分类获取商品
+  getGoodsAll(catId){
+     return new Promise((resolve, reject) => {
+      let goods = {}
+      let parms={}
+      goods.catId = catId
+      parms.goods=goods
+      let moreGoodRes=this.fly.get(this.baseUrl +'/api/Goods/getGoodsAll',{parms:JSON.stringify(parms)})
+      resolve(moreGoodRes)
+     })
+  
   }
 }

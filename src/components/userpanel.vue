@@ -7,7 +7,7 @@
 			<div class="name">{{userInfo.uname}}</div>
 			<div class="lvname">{{userInfo.lvidname}}</div>
 		</div>
-		<div class="qianicon">
+		<div class="qianicon" @click="jumpSign">
 			<img :src="wode">
 		</div>
 	</div>
@@ -23,7 +23,11 @@ export default {
     }
     },
     methods: {
-  		
+  		jumpSign:function(){
+        wx.navigateTo({
+         url: '../sign/main',
+        })
+      }
     }
 }
 </script>
