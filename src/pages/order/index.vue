@@ -19,17 +19,17 @@
   <!-- ZitiTime end -->
 
     <div class="AddressWarp" v-show='selectIndex==2'>
-      <div class="AddressBtn" v-if="AddressBtn" @click="toAddress">
+      <div class="AddressBtn" v-if="isAddr" @click="toAddress">
           <i class="fa fa-plus" aria-hidden="true"></i><text>请填写收货地址</text>
       </div>
-      <div class="Address" v-else @click="toAddress">
+      <div class="Address" v-else @click="toAddresslist">
           <div class="Address-item">
               <div class="itemLeft">收货人</div>
-              <div class="itemRight"><text>马登</text><text>15083845338</text></div>
+              <div class="itemRight"><text>{{addr.name}}</text><text>{{addr.mobile}}</text></div>
           </div>
             <div class="Address-item">
               <div class="itemLeft">收货地址</div>
-              <div class="itemRight">江西省南昌市西湖区洪城数码广场1101</div>
+              <div class="itemRight">{{addr.addr}}</div>
           </div>
       </div>
      </div>
@@ -37,24 +37,24 @@
 
     <Shopaddr :shopname="shopname"></Shopaddr>
      
-    <OrderList v-for="(item,index) in shopList" :index='index' :key='item' :Shop_List='item'></OrderList>
+    <OrderList :Shop_List='shopList'></OrderList>
     <!--OrderList end-->
 
     <div class="OrderMask">
-        <div class="MaskItem"><text>优惠券</text><text class="fensi">粉丝专享 ></text></div>
+        <!-- <div class="MaskItem"><text>优惠券</text><text class="fensi">粉丝专享 ></text></div> -->
         <div class="MaskItem">
           <text>积分</text>
           <div class="jifen">可使用590积分，可抵扣5.90元  
             <icon type="circle" size="16" v-if="iconBool"/><icon type="success" size="16" v-else/>
           </div>
         </div>
-        <div class="MaskItem"><text>备注:</text><input type="text" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;'></div>
+        <div class="MaskItem"><text>备注:</text><input type="text" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;' v-model="msg"></div>
     </div>
     <!--OrderMask end-->
 
      <div class="footerBnt">
        <div class="selectBtn"></div>
-       <div class="cartBtn"><div class="price">合计：9.9元<span>优惠：5.6元</span></div><div class="btn">结算</div></div>
+       <div class="cartBtn"><div class="price">合计：{{shopList.activityPrice}}元<span>优惠：{{shopList.price-shopList.activityPrice}}元</span></div><div class="btn" @click="orderPay">结算</div></div>
      </div>
      <!--footerBnt end-->
   </div>
@@ -65,8 +65,7 @@
  import config from "@/config"
  import Shopaddr from '@/components/shopaddr'
  import OrderList from '@/components/shopList'
-
-
+ let api=new Api
 export default {
   components: {
      OrderList,
@@ -76,14 +75,22 @@ export default {
    
   data () {
     return {
-     ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg'},
-     shopname:"王小姐水果店(抚生路点)",
-     shopList:[{shopImg:config.imgUrl+'/cart/shopimg01.jpg',shopTitle:'福建馆溪平柚子好吃好甜你好世界你好世界你好世界你好世界你好世界你好世界',mask:"你好世界",p1:19,p2:9},
-          ],
+      ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg'},
+      shopname:"王小姐水果店(抚生路点)",
+      shopList:{shopImg:'',shopTitle:'',mask:"你好世界",activityPrice:'',price:''},
       time: '12:01',
       selectIndex:1,
-      AddressBtn:false,
-      iconBool:true
+      isAddr:false,
+      iconBool:true,
+      Type:'',
+      goodImg:'',
+      goodname:'',
+      addr:{},
+      memberId:'',
+      option:{},
+      collagePersons:'',
+      product:{},
+      msg:''
     }
   },
   methods:{
@@ -95,21 +102,122 @@ export default {
     },
     //选择
     selectTo(index){
-      console.log("输出",index)
       let that = this;
-      that.selectIndex = index;
+      if(that.Type=="K"){
+        wx.showToast({
+          title: "拼团暂不支持自提",
+          icon: "none",
+          durantion: 2000
+        })   
+      }else{
+        that.selectIndex = index;
+      }
+      
+    },
+    // 获取货品信息
+    async getProduct(){
+      let that=this
+      let productRes=await api.getProduct(that.shopList.goodsId,that.memberId)
+      that.product=productRes.data.product
     },
     //跳转
     toAddress(){
+      wx.setStorageSync('options',this.option)
       wx.navigateTo({ url: '../address/main' });
     },
-    toAddress(){
-      wx.navigateTo({ url: '../addressList/main' });  
+    toAddresslist(){
+      wx.setStorageSync('options',this.option)
+      wx.navigateTo({ url: '../addressList/main' });
+    },
+    orderPay(){
+      let that=this
+      if(that.Type=="K"){
+        that.kaituan()
+      }
+    },
+    kaituan(){
+      let that=this
+     if(that.addr == {}) {
+      wx.showToast({
+        title: '请添加地址',
+      })
     }
-  },
+    else{
+        var bean = {}
+        var goodObj={}
+        wx.showLoading({
+          title: '请稍等',
+        })
+        bean.image = that.shopList.shopImg
+        bean.memberId = that.memberId
+        bean.orderAmount = that.shopList.activityPrice
+        bean.weight = 0
+        bean.shippingAmount = 0
+        bean.goodsAmount = that.shopList.activityPrice
+        bean.googitem = []
+        goodObj.price = that.shopList.price
+        goodObj.name = that.shopList.shopTitle
+        goodObj.num = 1
+        goodObj.cart = 0
+        goodObj.goodsId = that.shopList.goodsId
+        // goodObj.catId = that.data.Goods.catId
+        goodObj.image = that.shopList.shopImg
+        goodObj.goodsAmount = that.shopList.activityPrice 
+        goodObj.collagePersons = that.collagePersons
+        goodObj.productId = that.product.productId
+        bean.googitem[0] = goodObj
+        // var googitem = that.data.list; 
+        bean.province = that.addr.province
+        bean.city = that.addr.city
+        bean.addr = that.addr.addr
+        bean.region = that.addr.region
+        bean.shipMobile = that.addr.mobile
+        bean.shipName = that.addr.name
+        bean.addrId = that.addr.addrId
+        bean.clickd = that.msg
+        bean = JSON.stringify(bean)
+       console.log(bean)
+    }
+    },
+    //获取默认地址
+    async getdefaultAddr(){
+      let that=this
+      let addParms = {}
+      addParms.memberId = that.memberId
+      let addressRes=await api.getdefaultAddr(addParms)
+      if (addressRes.data.code == 1) {
+        that.isAddr=false
+      }
+      else {
+        that.addr=addressRes.data.memberAddressDO
+      }
+  }
+},
   
-  created () {
-   
+  onLoad(options){
+   var that=this
+   that.option=options
+   that.memberId= wx.getStorageSync('memberId')
+   let pages = getCurrentPages();
+   let prevpage = pages[pages.length - 2];
+   if(prevpage.route=="pages/addressList/main"){
+      that.option=wx.getStorageSync('options')
+      that.addr=wx.getStorageSync('addr')
+   }
+   else{
+    that.option=options
+    that.getdefaultAddr()
+   }
+   that.Type= that.option.Type;
+   that.getProduct()
+   if( that.option.Type=="K"){
+     that.selectIndex=2
+     that.shopList.shopImg= that.option.goodsImg;
+     that.shopList.shopTitle= that.option.goodname;
+     that.shopList.price= that.option.price;
+     that.shopList.activityPrice= that.option.activityPrice;
+     that.collagePersons=that.option.collagePersons
+   }
   }
 }
 </script>

@@ -1,25 +1,23 @@
 {
   "pages": [
+    "pages/grouplist/main",
+    "pages/addressList/main",
+    "pages/address/main",
+    "pages/order/main",
     "pages/index/main",
+    "pages/discountInfo/main",
     "pages/orderList/main",
     "pages/bargainInfo/main" ,
-    "pages/order/main",
     "pages/sign/main",
     "pages/store/main",
     "pages/groupdetail/main",   
     "pages/bargain/main",
     "pages/group/main",
     "pages/cart/main",
-    "pages/kind/main",
-    "pages/grouplist/main",
+    "pages/kind/main",  
     "pages/myself/main",
     "pages/counter/main",
-    "pages/discount/main",
-    "pages/discountInfo/main",
-    "pages/address/main",
-    "pages/addressList/main"
-
-
+    "pages/discount/main" 
   ],
   "window": {
     "backgroundTextStyle": "light",

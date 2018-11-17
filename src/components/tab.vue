@@ -19,10 +19,10 @@ export default {
     methods: {
   		changTab:function(index){
 		  	var that=this;
-	      	for(var i=0;i<that.find_item.length;i++){
-	      		that.find_item[i].selected=false;
-	      	}
-			that.find_item[index].selected=true;
+	  //     	for(var i=0;i<that.find_item.length;i++){
+	  //     		that.find_item[i].selected=false;
+	  //     	}
+			// that.find_item[index].selected=true;
 			//往父组件传值
 			that.$emit("listenToChild",index)  
 	    }

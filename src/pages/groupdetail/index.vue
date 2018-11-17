@@ -51,14 +51,16 @@
        <div class="left">
          <div class="leftItme"><img :src="imgList.home" /><text>首页</text></div>
          <div class="leftItme"><img :src="imgList.kefu" /><text>客服</text></div>
-         <div class="leftItme" @click="collection"><img :src="imgList.shouChang" /><text>收藏</text></div>
+         <div class="leftItme" @click="collection">
+          <img :src="imgList.noshouChang" v-if="posts" />
+          <img :src="imgList.shouChang" v-if="!posts"/><text>收藏</text></div>
        </div>
        <div class="right">
          <div class="btnWarp">
-            <text>加入购物车</text><span></span><text>立即购买</text>
+            <text @click="showbuyModel">原价购买</text><span></span><text @click="jumpOrder">立即开团</text>
          </div>
        </div>
-     </div>
+     </div> 
      <!--footerBnt end-->
 
      <div class="showModel" v-if="ShowModel">
@@ -67,6 +69,7 @@
        </div>
      </div>
      <!--showModel end-->
+      <Model :ImgList='imgList' :modelShow='modelShow' :Area_item='Area_item' :Weight_item='Weight_item'  @hideModel='hidebuyModel' ref="childs">></Model>
   </div>
 </template>
 
@@ -74,13 +77,16 @@
  import Api from "@/utils/Api"
  import config from "@/config"
  import wxParse from 'mpvue-wxparse'
+  import Model from "@/components/shopModel"
 let api= new Api 
 export default {
   data () {
     return {
-      imgList:{brand:config.imgUrl+'/group/header01.jpg',fenxiang:config.imgUrl+'/group/fenxiang.png',
-               touxiang:config.imgUrl+'/group/touxiang.jpg',home:config.imgUrl+'/group/home.png',
-               kefu:config.imgUrl+'/group/kefu.png',shouChang:config.imgUrl+'/group/shoucang.png',
+      Area_item:[{AreaName:'湖北'},{AreaName:'江西'}],
+      Weight_item:[{WeightName:'1kg'},{WeightName:'2kg'}],
+      modelShow:false,
+      imgList:{ShopImg:config.imgUrl+'/cart/shopimg01.jpg',fenxiang:config.imgUrl+'/group/fenxiang.png',home:config.imgUrl+'/group/home.png',
+               kefu:config.imgUrl+'/group/kefu.png',noshouChang:config.imgUrl+'/group/shoucan.png',shouChang:config.imgUrl+'/group/shoucang.png',
                TionInfo:config.imgUrl+'/group/TionInfo.jpg',ModelImg:config.imgUrl+'/group/modelImg.png',
       },
       Gallery:[],
@@ -90,26 +96,71 @@ export default {
       collageGoodsDO:{},
       collageDO:{},
       collages:[],
-      posts:true,
+      posts:false,
       memberId:''
     }
   },
   components: {
-     wxParse
+     wxParse,
+     Model
   },
   methods: {
-        async collection(){
-        let that=this
-        let favorite = {}
-        favorite.memberId = that.memberId
-        favorite.goodsId = that.Goods.goodsId
-        if(that.posts){
-          let delCollectionRes=await api.delCollection(favorite)
+    showbuyModel(){
+     let that = this;
+     that.modelShow=true;
+     //父组件控制子组件
+     that.$refs.childs.emitEvent();
+    },
+    jumpOrder(){
+      var that = this;
+      if (that.Goods.enableStore>0) {  
+        let url=`../order/main?goodsImg=${that.Goods.thumbnail}&goodname=${that.Goods.name}&activityPrice=${that.collageGoodsDO.activityPrice}&collagePersons='${that.collageDO.collagePersons}&Type=K&price=${that.Goods.price}&goodsId=${that.Goods.goodsId}`
+         wx.navigateTo({
+          url:url,
+        })
+      }
+      else{ 
+         wx.showToast({
+          title: "库存不够！",
+          icon: "success",
+          durantion: 2000
+        })   
+      }  
+    },
+    hidebuyModel(){
+       //是否传值
+     let that = this;
+     that.modelShow=false;
+     console.log("点击了吗",that.modelShow)
+    },
+    async collection(){
+      let that=this
+      let favorite = {}
+      favorite.memberId = that.memberId
+      favorite.goodsId = that.Goods.goodsId
+      if(that.posts){
+        let delCollectionRes=await api.delCollection(favorite)
+       if(delCollectionRes.data.code==0){
+          wx.showToast({
+            title: '取消收藏',
+            icon: 'success',
+            duration: 2000
+          })
+          that.posts=!that.posts
         }
-        else{
-          let addCollectionRes=await api.addCollection(favorite)
+      }
+      else{
+        let addCollectionRes=await api.addCollection(favorite)
+        if(addCollectionRes.data.code==0){
+          wx.showToast({
+            title: '收藏成功',
+            icon: 'success',
+            duration: 2000
+          })
+          that.posts=!that.posts
         }
-      },
+      }
+    },
       hideModel(){
        let that=this;
        that.ShowModel=false;
@@ -148,9 +199,11 @@ export default {
     let goodsRes=await api.getGoods(19,187)
     that.Gallery=goodsRes.data.Gallery
     that.Goods=goodsRes.data.Goods
-    if (goodsRes.data.count == 0) {
-        that.posts=false
-      }
+    if (goodsRes.data.Goods.count == 0) {
+      that.posts= false
+    } else {   
+      that.posts= true
+    }
     let getseleCollGoodsRes=await api.getseleCollGoods(2)
     that.collageGoodsDO=getseleCollGoodsRes.data.collageGoodsDO
     that.collageDO=getseleCollGoodsRes.data.collageDO

@@ -6,7 +6,7 @@
           <div class="title">{{Shop_List.shopTitle}}</div>
           <small>{{Shop_List.mask}}</small>
           <div class="price">
-             <div class="priceleft"><text>￥{{Shop_List.p1}}元</text><span>￥{{Shop_List.p2}}</span></div>
+             <div class="priceleft"><text>￥{{Shop_List.activityPrice}}元</text><span>￥{{Shop_List.price}}</span></div>
              <div class="priceright">
                  x 1
              </div>

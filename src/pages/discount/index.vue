@@ -28,7 +28,9 @@ export default {
           limitActive:[]
     }
   },
-
+  methods:{
+   
+  },
   async onLoad() {
     let that=this
     let limitRes= await api.getLimit()

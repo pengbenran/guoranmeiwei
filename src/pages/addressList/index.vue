@@ -7,12 +7,12 @@
             <text @click="selectTo(1)" v-show='selectIndex==2'>删除地址</text><text  @click="selectTo(2)" v-show='selectIndex==1'>取消</text>
         </div>
     </div>
-    <div class="addressList" v-if='addressList.length!=0'>
+    <div class="addressList" v-if='addressList.length!=0' >
         <div class="item" v-for="(item,index) in addressList" :index='index' :key='item'>
-            <div class="left">
-                <div class="title">{{item.title}}</div>
-                <div class="info">{{item.titleInfo}}</div>
-                <div class="pople"><text>{{item.name}}</text> | <text>{{item.phone}}</text></div>
+            <div class="left" @click="jumpOrder(index)">
+                <div class="title">{{item.addr}}</div>
+                <div class="info">{{item.region}}</div>
+                <div class="pople"><text>{{item.name}}</text> | <text>{{item.mobile}}</text></div>
             </div>
             <div class="right">
                  <div class="deit" v-show='selectIndex==2'><i class="fa fa-pencil-square-o" aria-hidden="true"></i></div>
@@ -32,7 +32,7 @@
  import Api from "@/utils/Api"
  import config from "@/config"
  import Barlist from "@/components/bargainlist"
-
+ let api=new Api
 export default {
   components: {
     Barlist
@@ -42,11 +42,11 @@ export default {
     return {
         ImgList:{addressImg:config.imgUrl+'/address/kong.png'},
         selectIndex:2,
-        addressList:[{title:'江西省南昌市西湖区',titleInfo:'江西省南昌市西湖区洪城数码广场A座1101',name:'马登',phone:'15623140205'}]
+        addressList:[],
+        memberId:''
     }
   },
   methods:{
-
     selectTo(index){
         let that = this;
         that.selectIndex = index;
@@ -55,12 +55,18 @@ export default {
     toAddress(){
       wx.navigateTo({ url: '../address/main' });
     },
+    jumpOrder(e){
+      wx.setStorageSync('addr',this.addressList[e])
+      wx.navigateTo({ url: '../order/main' });
+    }
   },
-  mounted(){
-      console.log(this.addressList)
-  },
-  created () {
-   
+  async onLoad(){
+   let that=this
+   that.memberId = wx.getStorageSync('memberId')
+   let allAdderssRes=await api.getAllAddress(that.memberId)
+   if(allAdderssRes.data.code==0){
+      that.addressList=allAdderssRes.data.memberAddressList
+   }
   }
 }
 </script>

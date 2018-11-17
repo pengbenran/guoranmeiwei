@@ -1,13 +1,13 @@
 <template>
 	<div class="good">
-     <div class="goodlist">
+     <div class="goodlist" v-for="(item,index) in good_item" :index="index" :key="item">
       <div class="goodimg">
-        <img :src="good_item.thumbnail">
+        <img :src="item.thumbnail">
       </div>
       <div class="gooddetail">
         <div class="goodtop"> 
           <div class="goodname">
-            {{good_item.name}}
+            {{item.name}}
           </div>
           <div class="intro">
             <!-- {{item.intro}} -->
@@ -16,7 +16,7 @@
         </div>
         <div class="goodbottom"> 
           <div class="goodprice"> 
-            {{good_item.price}}
+            {{item.price}}
           </div>
           <div class="icon">
             <img :src="addImg">

@@ -1,15 +1,13 @@
 <template>
 <div class="kind">
   <div style="height:7vh">
-    <Tab :find_item="find_item"  @listenToChild="fromChild"></Tab>
+    <Tab :find_item="find_item"  @listenToChild="fromChild" :wid="width"></Tab>
   </div>
   <scroll-view style="height: 93vh;" scroll-y='true' @scrolltolower='getMore' @scroll="pageScroll" :scroll-top="scrollTop">
     <div class="banner" >
       <img :src="banner">
-    </div>
-    <block  v-for="(item,index) in shopitem" :index="index" :key="item">
-    <Goodlist :good_item="item" :toView="toView"></Goodlist>
-    </block>
+    </div>  
+    <Goodlist :good_item="shopitem" :toView="toView"></Goodlist>
   </scroll-view>
 </div>
 </template>
@@ -37,24 +35,25 @@ export default {
      index:0,
      scrollTop:0,
      temp:[],
-     gooditemIndex:0
+     gooditemIndex:0,
+     width:'25%',
     }
   },
   methods:{
     async fromChild(data){
       var that=this
+      console.log(data)
       // that.gooditemIndex=data
       // var scrollTotal=0
       //  for(var i in that.temp){
       //     scrollTotal+=that.temp[i]
       //   }
-       that.find_item=kindRes.data.GoodCatAll.map((item)=>{
+       that.shopitem=[]
+       that.find_item=that.find_item.map((item)=>{
          item.selected=false;
          return item
         })
        that.find_item[data].selected=true
-      that.shopitem=[]
-      console.log(data)
       if(that.gooditem[data]==undefined){
         let moreKindRes=await api.getGoodsAll(that.find_item[data].catId)
         that.gooditem[data]=moreKindRes.data.Goods  
@@ -62,8 +61,7 @@ export default {
       }
       else{
         that.shopitem=that.gooditem[data]
-      }
-      console.log(that.shopitem)
+      }   
     },
      // async getMore(){
      //    let that=this
@@ -122,7 +120,7 @@ export default {
     })
     that.goodlength=that.find_item.length
     that.gooditem[0]=kindRes.data.Goods
-    that.shopitem=that.gooditem[0]
+    that.shopitem=kindRes.data.Goods
     // that.temp[0]=(that.gooditem[0].length*138+110)
     that.find_item[0].selected=true
   }

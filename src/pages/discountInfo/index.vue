@@ -2,13 +2,13 @@
   <div class="bargainInfo">
     <div class="header">
       <swiper class="swiper" indicator-dots='true' autoplay='true'>
-        <swiper-item><img :src="ImgList.brand"></swiper-item>
+          <swiper-item v-for="(item,index) in Gallery" :key="item" :index="index"><img :src="item.original"></swiper-item>
       </swiper>
     </div>
     <!--header end-->
     <div class="priceWarp">
       <div class="left">
-         <div class="tag">精选水果</div><div class="price">￥<text class="newPrice">9.90</text><text class="oldPrice">￥19.9</text></div>
+         <div class="tag">精选水果</div><div class="price">￥<text class="newPrice">9.90</text><text class="oldPrice">￥{{Goods.price}}</text></div>
       </div>
       <div class="right">
         <Timedown :countdown="countdown"></Timedown>
@@ -17,7 +17,7 @@
     <!--price end-->
     
    <div class="shopInfo">
-     <div class="shopTile fontHidden">桃子水蜜桃夏天冬天春桃秋桃你好世界你好世界你好世界你好世界你好世界你好世界</div>
+     <div class="shopTile fontHidden">{{Goods.name}}</div>
      <div class="shopTag">
        <text>快递包邮</text><text>销量1345</text><text>江西南昌</text>
      </div>
@@ -41,7 +41,7 @@
 
     <div class="tabInfo">
       <div class="InfoTitle"><img :src="ImgList.InfoTitle" mode='aspectFit'/></div>
-      <div class="TionInfo"><img :src="ImgList.btnInfoImg"/></div>
+      <wxParse :content="Goods.intro" @preview="preview" @navigate="navigate" />
     </div>
     <!--tabInfo end-->
 
@@ -50,7 +50,10 @@
        <div class="left">
          <div class="leftItme"><img :src="ImgList.home" /><text>首页</text></div>
          <div class="leftItme"><img :src="ImgList.kefu" /><text>客服</text></div>
-         <div class="leftItme"><img :src="ImgList.shouChang" /><text>收藏</text></div>
+         <div class="leftItme"  @click="collection">
+          <img :src="ImgList.noshouChang" v-if="posts" />
+          <img :src="ImgList.shouChang" v-if="!posts"/>
+          <text>收藏</text></div>
        </div>
        <div class="right">
          <div class="btnWarp">
@@ -60,7 +63,7 @@
      </div>
      <!--footerBnt end-->
       
-      <Model :ImgList='ImgList' :modelShow='modelShow' :Area_item='Area_item' :Weight_item='Weight_item'  @hideModel='hideModel' ref="childs">></Model>
+      <Model :ImgList='ImgList' :modelShow='modelShow' :Area_item='Area_item' :Weight_item='Weight_item'  @hideModel='hideModel' ref="childs"></Model>
 
   </div>
 </template>
@@ -71,20 +74,22 @@
  import Timedown from "@/components/countdown"
  import Tabs from "@/components/tab"
  import Model from "@/components/shopModel"
-
+ import wxParse from 'mpvue-wxparse'
+ let api=new Api
 export default {
   components: {
    Timedown,
    Tabs,
-   Model
+   Model,
+   wxParse
   },
 
   data () {
     return {
           Area_item:[{AreaName:'湖北'},{AreaName:'江西'}],
           Weight_item:[{WeightName:'1kg'},{WeightName:'2kg'}],
-          ImgList:{brand:config.imgUrl+'/group/header01.jpg',ShopImg:config.imgUrl+'/cart/shopimg01.jpg',home:config.imgUrl+'/group/home.png',
-                   kefu:config.imgUrl+'/group/kefu.png',shouChang:config.imgUrl+'/group/shoucang.png',touxiang:config.imgUrl+'/group/touxiang.jpg',
+          ImgList:{ShopImg:config.imgUrl+'/cart/shopimg01.jpg',home:config.imgUrl+'/group/home.png',
+                   kefu:config.imgUrl+'/group/kefu.png',noshouChang:config.imgUrl+'/group/shoucan.png',shouChang:config.imgUrl+'/group/shoucang.png',touxiang:config.imgUrl+'/group/touxiang.jpg',
                    btnInfoImg:config.imgUrl+'/group/TionInfo.jpg', qiang:config.imgUrl+'/discount/qiang.png',
                     wenhao:config.imgUrl+'/discount/wenhao .png',InfoTitle:config.imgUrl+'/discount/InfoTitle.jpg'
           },
@@ -92,7 +97,12 @@ export default {
                    {touxiang:config.imgUrl+'/group/touxiang.jpg',Time:'2018-11-10 16:54',price:2.33}
                ],
           modelShow:false,
-          countdown:{}
+          countdown:{},
+          Gallery:[],
+          Goods:{},
+          memberId:'',
+          posts:false,
+
     }
   },
    methods: {
@@ -110,7 +120,46 @@ export default {
      that.modelShow=false;
      console.log("点击了吗",that.modelShow)
     },
-
+    async getGood(goodsId){
+      let that=this
+      let goodsRes=await api.getGoods(goodsId,187)
+      that.Gallery=goodsRes.data.Gallery
+      that.Goods=goodsRes.data.Goods
+      if (Goods.count == 0) {
+        that.posts= false
+      } else {   
+        that.posts= true
+      }
+    },
+    // 收藏
+     async collection(){
+      let that=this
+      let favorite = {}
+      favorite.memberId = that.memberId
+      favorite.goodsId = that.Goods.goodsId
+      if(that.posts){
+        let delCollectionRes=await api.delCollection(favorite)
+       if(delCollectionRes.data.code==0){
+          wx.showToast({
+            title: '取消收藏',
+            icon: 'success',
+            duration: 2000
+          })
+          that.posts=!that.posts
+        }
+      }
+      else{
+        let addCollectionRes=await api.addCollection(favorite)
+        if(addCollectionRes.data.code==0){
+          wx.showToast({
+            title: '收藏成功',
+            icon: 'success',
+            duration: 2000
+          })
+          that.posts=!that.posts
+        }
+      }
+    },
     cutTime(starttime,endtime){
       // var that=this; 
       // var leftTime = endtime - starttime;
@@ -132,8 +181,11 @@ export default {
   
 
   },
-  mounted(){
+  onLoad(options){
      var that=this;
+    that.memberId= wx.getStorageSync('memberId')
+     that.getGood(options.goodsId)
+     console.log(options)
      var endtime=1541995932000
      var starttime = (new Date()).valueOf();
      that.cutTime(starttime,endtime)
@@ -145,6 +197,7 @@ export default {
 </script>
 
 <style scoped lang='scss'>
+@import url("~mpvue-wxparse/src/wxParse.css");
 /*局部水平居中*/
 @mixin flexc{
 display: flex;align-items: center;
