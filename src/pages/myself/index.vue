@@ -74,7 +74,8 @@ export default {
      {name:'地址管理',icon:config.imgUrl+"/myself/address.png",PageUrl:'../sign/main'},
      {name:'拼团',icon:config.imgUrl+"/myself/group.png",PageUrl:'../sign/main'},
      {name:'砍价',icon:config.imgUrl+"/myself/cut.png",PageUrl:'../sign/main'},
-     {name:'联系客服',icon:config.imgUrl+"/myself/connect.png",PageUrl:'../sign/main'}
+     {name:'联系客服',icon:config.imgUrl+"/myself/connect.png",PageUrl:'../sign/main'},
+     {name:'门店',icon:config.imgUrl+"/myself/connect.png",PageUrl:'../storePay/main'}
      ],
      vouchercount:0
     }

@@ -1,8 +1,8 @@
  import Fly from "flyio/dist/npm/wx";
 export default class Api{
   constructor() {
-     this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
-     //this.baseUrl = "https://www.etuetf.com"
+     //this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
+     this.baseUrl = "https://www.etuetf.com"
      //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
      //this.baseUrl = "http://192.168.2.111:80" 
     this.fly = new Fly;
@@ -254,4 +254,32 @@ export default class Api{
       resolve(allAddressRes)
     }) 
   }
+    //购物车所有订单
+    CartList(parms){
+      return new Promise((resolve,reject) =>{
+        let CartList = this.fly.get(this.baseUrl +'/api/shoppingCart/select',{parms:JSON.stringify(parms)})
+        resolve(CartList)
+      })
+    }
+
+    //购物车所有订单数量加减
+    CartOrderNum(parms){
+      return new Promise((resolve,reject) =>{
+        console.log("你好史学家")
+        let CartOrderNum = this.fly.put(this.baseUrl + '/api/shoppingCart/modification',{parms:JSON.stringify(parms)},{headers:{
+          'Content-Type': 'application/x-www-form-urlencoded'
+         }})
+        resolve(CartOrderNum)
+      })
+    }
+    
+    //购物车商品删除
+    CartOrderDele(parms){
+      return new Promise((resolve, reject) => {
+        let CartOrderDele=this.fly.post(this.baseUrl +'/api/shoppingCart/deleteAll',{parms:JSON.stringify(parms)},{headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }})
+        resolve(CartOrderDele)
+      })
+    }
 }

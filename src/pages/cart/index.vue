@@ -1,14 +1,22 @@
 <template>
   <div class="Cart">
     <Shopaddr :shopname="shopname"></Shopaddr>
-
-     <CartList v-for="(item,index) in shopList" :index='index' :key='item' :Shop_List='item'></CartList>
+      <div class="ShopHeader"><text>购物车</text><text @click="Edits">{{EditsName}}</text></div>
+     <CartList :ShopList='ShopLists' @onSelect='SeleAllPrice' ref="childs"></CartList>
 
      <!--shopList end-->
      
+
+     <div class="DivHeigt"></div>
      <div class="footerBnt">
-       <div class="selectBtn"><icon type="circle" class="ico" size="21" /> 全选</div>
-       <div class="cartBtn"><div class="price">合计：9.9元</div><div class="btn">结算</div></div>
+       <div class="selectBtn"  @click="AllSelect(SelectBool)"><icon type="success" class="ico" size="21" v-show="SelectBool"/>
+                                                   <icon type="circle" class="ico" size="21" v-show="!SelectBool"/> 全选</div>
+       <div class="cartBtn">
+         <div class="price" v-show='!BtnDelete'>合计：{{AllPrice}}元</div>
+         <div class="price MaskInfo" v-show='BtnDelete'>注：请选择删除</div>
+         <div class="btn" @click="next"  v-show='!BtnDelete'>结算</div>
+         <div class="btn" @click="Delete" v-show='BtnDelete'>删除</div>
+       </div>
      </div>
      <!--footerBnt end-->
   </div>
@@ -19,6 +27,8 @@
  import config from "@/config"
  import Shopaddr from '@/components/shopaddr'
  import CartList from '@/components/cartlist'
+
+ let api= new Api 
 export default {
   components: {
     CartList
@@ -31,13 +41,105 @@ export default {
      shopList:[{shopImg:config.imgUrl+'/cart/shopimg01.jpg',shopTitle:'福建馆溪平柚子好吃好甜你好世界你好世界你好世界你好世界你好世界你好世界',mask:"你好世界",p1:19,p2:9},
           {shopImg:config.imgUrl+'/cart/shopimg01.jpg',shopTitle:'福建馆溪平柚子好吃好甜你好世界你好世界你好世界你好世界你好世界你好世界',mask:"你好世界",p1:19,p2:9},
           {shopImg:config.imgUrl+'/cart/shopimg01.jpg',shopTitle:'福建馆溪平柚子好吃好甜你好世界你好世界你好世界你好世界你好世界你好世界',mask:"你好世界",p1:19,p2:9}
-          ]
+          ],
+     memberId:186,
+     ShopLists:[],
+     SelectBool:false,
+     AllPrice:0,
+     BtnDelete:false,
+     EditsName:'编辑'
     }
   },
+  //事件
+  methods:{
+   //加载初始化数据
+   async onLoads(){
+     let that = this;
+     let parms = {};
+     parms.memberId = that.memberId;
+     let res = await api.CartList(parms) 
+     if(res.data.code != 1){
+        that.ShopLists = res.data.cartgoods.map(v=>{
+          v.selected = false
+          return v
+        })
+     }else{
+       that.ShopLists = [];
+     }
+     console.log(that.ShopLists,"显示数据")
+   },
 
-  created () {
-   
-  }
+   //选中时子组件触发父组件
+   SeleAllPrice(price){
+     this.AllPrice = price
+   },
+
+   //全部选中
+   AllSelect(bool){
+      let that = this;
+      that.SelectBool = !that.SelectBool
+      console.log("你好",that.SelectBool)
+      that.ShopLists.map(v =>{
+          v.selected =  that.SelectBool;
+      })
+ 
+    //父组件触发子组件
+    that.$refs.childs.getTotalPrice();
+   },
+
+   //编辑删除Edits
+   Edits(){
+   let that =this;
+   that.BtnDelete = !that.BtnDelete
+   if(that.BtnDelete){
+     that.EditsName = '删除'
+   }else{
+     that.EditsName = '编辑'
+   }
+   },
+
+   //商品删除事件
+  async Delete(){
+      let that = this
+      let parms = {}
+      let cartIdgood=[]
+      let cart = {}
+      that.ShopLists.map(v => {
+        if(v.selected){
+          cartIdgood.push(v.cartId) 
+        }
+      })
+      parms.cartS = cartIdgood
+      let res = await api.CartOrderDele(parms)
+      console.log("删除事件",res)
+      if(res.data.code == 0){
+        that.AllPrice = 0.00;
+        that.BtnDelete = !that.BtnDelete;
+        that.onLoads();
+        console.log("你好啊桑菊")
+      }
+   },
+
+   //跳转结算
+   next(){
+        // var that = this
+        // let total = 0;
+        // var weight=0;
+        // var gainedpoint = 0;
+        // var googitem = [];
+        // var Goods = {};
+        // var gooditemString = gooditemString
+        // var orderAmount = that.AllPrice
+        // var totalPrice = that.AllPrice
+        // var goodsAmount = that.AllPrice
+        //   var cartgoods = that.cartgoods;    
+   }
+  },
+  //初始化加载
+  mounted(){
+   let that = this;
+   that.onLoads();
+  },
 }
 </script>
 
@@ -53,6 +155,11 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
 }
 img{display: block;height: 100%;width: 100%;}
 
+.DivHeigt{height: 100rpx;}
+
+.ShopHeader{@include flexc;justify-content: space-between;padding: 10rpx 30rpx;border-bottom: 1px solid #f4f4f4;
+   text{color: rgb(252,155,45);font-weight: 100;font-size: 34rpx;}
+}
 
 .footerBnt{@include flexc;justify-content: space-between;position: fixed;bottom: 0;width: 100%;height: 95rpx;
     .selectBtn{@include flexc;padding-left: 15rpx;font-size: 36rpx;font-weight: 100;color: #8e8e8e;}

@@ -17,7 +17,16 @@
     "pages/kind/main",  
     "pages/myself/main",
     "pages/counter/main",
+<<<<<<< HEAD
     "pages/discount/main" 
+=======
+    "pages/discount/main",
+    "pages/discountInfo/main",
+    "pages/address/main",
+    "pages/addressList/main",
+    "pages/storePay/main"
+
+>>>>>>> 92bcaa19cfa96997abfd2d266c559ca18e3d2a41
   ],
   "window": {
     "backgroundTextStyle": "light",
