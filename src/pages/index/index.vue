@@ -64,15 +64,19 @@
      <div class="riliMore"><span class="time">11月</span><small class="more">查看更多</small></div>
      <div class="riliBg"><img :src="imgList.rilibg"/></div>
      <div class="liriWarp">
-      <div class="riliTop">
+      <!-- <div class="riliTop">
         <span>新品上市</span><span>超值特惠</span><span>店长推荐</span>
-      </div>
+      </div> -->
       <!-- <div class=""></div> -->
-      <div class="riliWarp">
-        <div class="Item" v-for="(item,index) in riliListImg" :index='index' :key='item'>
-          <img :src="item.riliImg"/>
+      <scroll-view  scroll-x style="height: 270rpx;">
+        <div class="riliWarp" >
+          <div class="Item" v-for="(item,index) in riliListImg" :index='index' :key='item'>
+             <div class="posIco"><img :src="imgList.riliico"/></div>
+            <img :src="item.riliImg"/>
+          </div>
         </div>
-      </div>
+      </scroll-view>
+
     </div>
   </div>
   <!--rili end-->
@@ -83,13 +87,13 @@
   </div>
   <div class="freeList">
     <div class="freeListBg"><img :src="imgList.freeImgBg" /></div>
-    <scroll-div class="scrollItem" scroll-x style="height: 335rpx;">
+    <scroll-view class="scrollItem" scroll-x style="height: 335rpx;">
       <div class="freeItemWarp">
         <div class="freeItem" v-for="(item,index) in freeShopList" :index='index' :key='item'>
           <img :src="item.shopImg" /><div class="freeInfo">{{item.shopName}}</div>
         </div>
       </div>
-    </scroll-div>
+    </scroll-view>
   </div>
   <div class="freeMore">更多热销<i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </div>
   <!--free end-->
@@ -100,13 +104,13 @@
   </div>
   <div class="freeList">
     <div class="freeListBg"><img :src="imgList.freeImgBg" /></div>
-    <scroll-div class="scrollItem" scroll-x style="height: 335rpx;">
+    <scroll-view class="scrollItem" scroll-x style="height: 335rpx;">
       <div class="freeItemWarp">
         <div class="freeItem" v-for="(item,index) in freeShopList" :index='index' :key='item'>
           <img :src="item.shopImg" /><div class="freeInfo">{{item.shopName}}</div>
         </div>
       </div>
-    </scroll-div>
+    </scroll-view>
   </div>
   <div class="freeMore">更多热销<i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </div>
   <!--free end-->
@@ -142,7 +146,7 @@
       return {
         imgList:{logo:config.imgUrl+'/index/logo.jpg',brand:config.imgUrl+'/index/banner0.jpg',
                  shopImg:config.imgUrl+'/index/news.jpg',hotImg:config.imgUrl+'/index/hot.jpg',
-                 activityImg:config.imgUrl+'/index/activityImg.jpg',rilibg:config.imgUrl+'/index/rili.jpg',
+                 activityImg:config.imgUrl+'/index/activityImg.jpg',rilibg:config.imgUrl+'/index/rili.png',riliico:config.imgUrl+'/index/rilico.png',
                  freeImg:config.imgUrl+'/index/free.jpg',freeImgBg:config.imgUrl+'/index/freeBg.jpg',
                  freeImg01:config.imgUrl+'/index/free01.jpg',bottomBrand:config.imgUrl+'/index/bottomBrand.jpg',
                  footerImg:config.imgUrl+'/index/footerImg.png', ico1:config.imgUrl+'/index/ico1.png',
@@ -312,13 +316,18 @@ img{display: block;width: 100%;height: 100%}
   .riliMore .more{font-weight: 100;font-size: 26rpx;color: rgb(184, 184, 184);}
 }
 
-.liriWarp{background: #fff;position: relative;z-index: 2;margin:0 25rpx;border-top-left-radius: 20rpx;border-top-right-radius: 20rpx;
+.liriWarp{position: relative;z-index: 2;margin:0 25rpx;border-top-left-radius: 20rpx;border-top-right-radius: 20rpx;
   .riliTop{display:flex;justify-content: space-around;align-items: center;padding: 10rpx 0 12rpx;}
   .riliTop span{color: #666;border-bottom: 3px solid red;font-weight: 100;font-size: 32rpx;}
 }
 
 .riliWarp{display: flex;
-  .Item{width: 25%;height: 218rpx;}
+
+  .Item{height: 250rpx;position: relative;}
+    .Item img{width: 250rpx;height: 250rpx;margin: 15rpx;border-radius: 10rpx;}
+    .posIco{position: absolute;left: 16%;top: -5rpx;margin-left: 32rpx;}
+    .posIco img{width: 95rpx;height: 75rpx;}
+    .posIco text{font-size: 26rpx;color: #fff}
 }
 
 /*公用头部*/
@@ -333,7 +342,7 @@ img{display: block;width: 100%;height: 100%}
 .freeList{position: relative;height: 335rpx;
   .freeListBg{position: absolute;top: 0;left: 0;height: 100%;width: 100%;}
 }
-.scrollItem{white-space:nowrap;display:block;
+.scrollItem{white-space:nowrap;display:block;position: relative;z-index: 2;
   .freeItemWarp{@include flexc;}
   .freeItem{height: 310rpx;background: #fff;border-radius: 15rpx;margin: 10rpx;}
   .freeItem img{height: 215rpx;width: 82%;margin: auto;}

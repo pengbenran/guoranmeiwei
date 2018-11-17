@@ -17,8 +17,8 @@
     "pages/discount/main",
     "pages/discountInfo/main",
     "pages/address/main",
-    "pages/addressList/main"
-
+    "pages/addressList/main",
+    "pages/storePay/main"
 
   ],
   "window": {

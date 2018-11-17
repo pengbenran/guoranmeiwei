@@ -1,24 +1,113 @@
 <template>
+   <div class="CartWarp">
+     <div  v-for="(Shop_List,index) in ShopList" :index='index' :key='Shop_List'>
+     <div class="CartHeader"><img :src="topImg"/><text>{{Shop_List.shopname}}</text></div>
      <div class="shopList">
-       <div class="selectico"> <icon type="circle" class="ico" size="21" /></div>
-       <div class="itemLeft"><img :src="Shop_List.shopImg"/></div>
+       <div class="selectico" @click="selectCheck(index)">
+         <icon type="success" class="ico" size="21" v-show='Shop_List.selected'/><icon type="circle" class="ico" size="21" v-show='!Shop_List.selected'/>
+       </div>
+       <div class="itemLeft"><img :src="Shop_List.image"/></div>
        <div class="itemRight">
-          <div class="title">{{Shop_List.shopTitle}}</div>
-          <small>{{Shop_List.mask}}</small>
+          <div class="title">{{Shop_List.name}}</div>
+          <small>{{Shop_List.specvalue}}</small>
           <div class="price">
-             <div class="priceleft"><text>￥{{Shop_List.p1}}元</text><span>￥{{Shop_List.p2}}</span></div>
+             <div class="priceleft"><text>￥{{Shop_List.price}}元</text>
+                <!-- <span>￥{{Shop_List.p2}}</span> -->
+              </div>
              <div class="priceright">
-                <i class="fa fa-plus" aria-hidden="true"></i>
-                  <span>1</span>
-                <i class="fa fa-minus" aria-hidden="true"></i>
+                <i class="fa fa-minus" aria-hidden="true" @click="Minu(index,Shop_List.cartId)"></i>
+                  <span>{{Shop_List.num}}</span>
+                <i class="fa fa-plus" aria-hidden="true" @click="Plus(index,Shop_List.cartId)"></i>
              </div>
           </div>
        </div>
      </div>
+    </div>
+   </div>
 </template>
 <script>
+ import Api from "@/utils/Api"
+import config from "@/config"
+
+ let api= new Api 
 export default {
-  props: ['Shop_List']
+  props: ['ShopList'],
+  data () {
+    return {
+      topImg:config.imgUrl+'/cart/home.jpg',
+      AllTotal:0
+    }
+  },
+  methods:{
+    //选中
+   selectCheck(index){
+     let that = this;
+     that.ShopList[index].selected = !that.ShopList[index].selected
+     that.getTotalPrice()
+  
+   },
+   //减
+  async Minu(index,cartId){
+     let that = this;
+ 
+    if(that.ShopList[index].num !=0){
+        let num = that.ShopList[index].num -1;
+        let res = await that.MinuPlusNum(index,cartId,num);
+        if(res.data.code == 0){
+          that.ShopList[index].num -=1;
+        }
+     }
+     if(that.ShopList[index].selected){
+       that.getTotalPrice()
+     }
+
+   },
+   //加
+   async Plus(index,cartId){
+      let that = this;
+      if(that.ShopList[index].num !=0){
+        let num = that.ShopList[index].num +1;
+        let res = await that.MinuPlusNum(index,cartId,num);
+        if(res.data.code == 0){
+        that.ShopList[index].num +=1;
+        }
+      }
+      if(that.ShopList[index].selected){
+       that.getTotalPrice()
+      }
+
+   },
+    
+   //数量修改
+   async MinuPlusNum(index,cartId,num){
+     let that = this;
+      let parms={}
+      let cart={}
+      cart.cartId = cartId
+      cart.num = num
+      parms.cart = cart
+      console.log(" 进来1")
+      let res = await api.CartOrderNum(parms)
+      return res;
+      console.log("查看是否修改",res)
+   },
+
+   //计算多少钱
+   getTotalPrice(){
+     let that = this;
+     let Total = 0;
+     if(that.ShopList != undefined){
+        that.ShopList.map(v =>{
+          if(v.selected){
+           Total += v.price * v.num
+          }
+        })
+     }
+     that.AllTotal = Total;
+    that.$emit("onSelect",that.AllTotal)  
+   }
+  },
+
 }
 
 </script>
@@ -32,7 +121,14 @@ display: flex;align-items: center;
 @mixin fontM{
 white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
 }
-.shopList{@include flexc;padding: 10rpx;border-bottom: 5px solid rgb(243,243,243);
+
+.CartHeader{@include flexc;padding: 10rpx 25rpx;border-bottom: 1px solid #f5f5f5;
+   img{width: 35rpx;height: 35rpx;margin-right: 15rpx;}
+   text{font-size: 32rpx;font-weight: 100;color: #666;}
+}
+
+.CartWarp{box-shadow: 0 0 40rpx rgba(0, 0, 0, 0.123);border-radius: 30rpx;margin: 15rpx;}
+.shopList{@include flexc;padding: 0 10rpx;
    .itemLeft{width: 35%}
    .itemLeft img{width: 230rpx;height: 230rpx;margin: auto}
    .itemRight{width: 65%;padding-right: 20rpx;}
@@ -40,7 +136,7 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
    .itemRight small{font-size: 26rpx;color: #ccc;font-weight: 100;}
    .price{@include flexc;justify-content: space-between;}
    .priceleft{
-     text{font-size: 36rpx;font-weight: 100;color: rgb(252,78,79);}
+     text{font-size: 32rpx;font-weight: 100;color: rgb(252,78,79);}
      span{font-size: 26rpx;font-weight: 100;color: #8e8e8e;text-decoration:line-through}
    }
    .priceright{background:#e7e7e7;@include flexc;height: 48rpx;
