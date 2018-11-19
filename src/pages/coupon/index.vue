@@ -1,12 +1,6 @@
 <template>
   <div class="bargain">
-     <div class="header">
-         <swiper class="swiper" indicator-dots='true' autoplay='true'>
-          <swiper-item v-for="(item,index) in Gallery" :key="item" :index="index"><img :src="item.original"></swiper-item>
-        </swiper>
-      </div>
-     
-  <Discountlist :Shop_item='apiLimit'></Discountlist>
+     <Tabs :find_item='Tabs' :wid='width'></Tabs>
   </div>
 </template>
 
@@ -14,16 +8,21 @@
  import Api from "@/utils/Api"
  import config from "@/config"
  import Discountlist from "@/components/discountlist"
+ import Tabs from "@/components/tab"
+
  let api=new Api
 export default {
   components: {
-    Discountlist
+    Discountlist,
+    Tabs
   },
 
   data () {
     return {
           ImgList:{brand:config.imgUrl+'/group/header01.jpg',ShopImg:config.imgUrl+'/cart/shopimg01.jpg',
           },
+          Tabs:[{name:'待领取',selected:true},{name:'未使用',selected:false},{name:'已使用',selected:false},{name:'已过期',selected:false}],
+          width:'25%',
           apiLimit:[],
           limitActive:[]
     }

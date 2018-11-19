@@ -37,8 +37,8 @@ export default class Api{
   getProduct(goodsId,memberId){
     let goodsParms = {}
     goodsParms.goodsId = goodsId
-    goodsParms.memberId = 187
-    let res=this.fly.get(this.baseUrl +'/api/collage/seleCollGoods/',{parms:JSON.stringify(goodsParms)})
+    goodsParms.memberId = memberId
+    let res=this.fly.get(this.baseUrl +'/api/Goods/getProduct',{parms:JSON.stringify(goodsParms)})
     resolve(res)
   }
   //获取拼团详细数据
@@ -135,14 +135,20 @@ export default class Api{
    return new Promise((resolve, reject) => {
     let collecparm={}
     collecparm.favorite=parms
-    let addCollectionRes=this.fly.get(this.baseUrl +'/api/favorite/add',{parms:JSON.stringify(collecparm)})
+    let addCollectionRes=this.fly.post(this.baseUrl +'/api/favorite/add',{parms:JSON.stringify(collecparm)},{headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }})
     resolve(addCollectionRes)
    })
   }
   // 取消收藏
   delCollection(parms){
    return new Promise((resolve, reject) => {
-    let delCollectionRes=this.fly.post(this.baseUrl +'/api/favorite/delete',{parms:parms})
+    let collecparm={}
+    collecparm.favorite=parms
+    let delCollectionRes=this.fly.post(this.baseUrl +'/api/favorite/delete',{parms:JSON.stringify(collecparm)},{headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }})
     resolve(delCollectionRes)
    })
   }
@@ -225,6 +231,29 @@ export default class Api{
       resolve(Orderres)
     })
   }
+  // 获取默认地址
+  getdefaultAddr(parms){
+    return new Promise((resolve,reject) => {
+      let addressRes = this.fly.get(this.baseUrl +'/api/address/defutaddress',{parms:JSON.stringify(parms)})
+      resolve(addressRes)
+    })
+  }
+  addAddress(parms){
+   return new Promise((resolve,reject) => {
+      let addressRes = this.fly.post(this.baseUrl +'/api/address/add',{parms:JSON.stringify(parms)},{headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+       }})
+      resolve(addressRes)
+    }) 
+  }
+  getAllAddress(memberId){
+     return new Promise((resolve,reject) => {
+      let params={}
+      params.memberId=memberId
+      let allAddressRes = this.fly.get(this.baseUrl +'/api/address/addressAll',{parms:JSON.stringify(params)})
+      resolve(allAddressRes)
+    }) 
+  }
     //购物车所有订单
     CartList(parms){
       return new Promise((resolve,reject) =>{
@@ -253,6 +282,7 @@ export default class Api{
         resolve(CartOrderDele)
       })
     }
+
     
     //获取地址
     SelectAddre(addParms){
@@ -261,4 +291,5 @@ export default class Api{
         resolve(SelectAddre)
       })
     }
+
 }

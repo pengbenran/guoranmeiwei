@@ -147,7 +147,7 @@ export default {
             Goods.gainedpoint = gainedpoint
             gooditemString = JSON.stringify(Goods)
         })
-        console.log("跳转查看数据",gooditemString,Goods)
+        // console.log("跳转查看数据",gooditemString,Goods)
         that.AllPrice=total.toFixed(2)
         if (googitem.length == "") {
           wx.showToast({

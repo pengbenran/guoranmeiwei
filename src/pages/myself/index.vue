@@ -71,6 +71,7 @@ export default {
      featureitem:[
      {name:'积分',icon:config.imgUrl+"/myself/point.png",PageUrl:'../sign/main'},
      {name:'微分销',icon:config.imgUrl+"/myself/fenxiao.png",PageUrl:'../sign/main'},
+     {name:'优惠券',icon:config.imgUrl+"/myself/address.png",PageUrl:'../counter/main'},
      {name:'地址管理',icon:config.imgUrl+"/myself/address.png",PageUrl:'../sign/main'},
      {name:'拼团',icon:config.imgUrl+"/myself/group.png",PageUrl:'../sign/main'},
      {name:'砍价',icon:config.imgUrl+"/myself/cut.png",PageUrl:'../sign/main'},

@@ -35,16 +35,16 @@
      </div>
       <!--Address end-->
 
-    <Shopaddr :shopname="shopname"></Shopaddr>
+    <!-- <Shopaddr :shopname="shopname"></Shopaddr> -->
      
-    <OrderList v-for="(item,index) in shopList" :index='index' :key='item' :Shop_List='item'></OrderList>
+    <OrderList v-for="(item,index) in GoodItem.googitem" :index='index' :key='item' :Shop_List='item'></OrderList>
     <!--OrderList end-->
 
     <div class="OrderMask">
         <div class="MaskItem"><text>优惠券</text><text class="fensi">粉丝专享 ></text></div>
         <div class="MaskItem">
           <text>积分</text>
-          <div class="jifen">可使用590积分，可抵扣5.90元  
+          <div class="jifen">可使用{{point}}积分，可抵扣5.90元  
             <icon type="circle" size="16" v-if="iconBool"/><icon type="success" size="16" v-else/>
           </div>
         </div>
@@ -63,15 +63,13 @@
 <script>
  import Api from "@/utils/Api"
  import config from "@/config"
- import Shopaddr from '@/components/shopaddr'
+//  import Shopaddr from '@/components/shopaddr'
  import OrderList from '@/components/shopList'
 
 let api = new Api
 export default {
   components: {
      OrderList,
-     Shopaddr,
-   
   },
    
   data () {
@@ -86,7 +84,11 @@ export default {
       iconBool:true,
       GoodItem:[],
       Cart:'',
-      addr:[]
+      paymoney:'',
+      quanquan:'',
+      gainedpoint:'',
+      addr:[],
+      point:''
     }
   },
   methods:{
@@ -116,6 +118,54 @@ export default {
         that.AddressBtn = false
      }
     },
+     
+     //提交订单
+     Order(){
+       let that = this;
+      if(that.Cart == 1){
+        var orderamount = Number(that.GoodItem.goodsAmount).toFixed(2)
+        let paymoney=0;
+        let quanquan=0;
+        that.GoodItem.gooditem.map(v => {
+            paymoney=Number(paymoney*1+v.num * v.weight).toFixed(2)
+            quanquan=Number(quanquan*1+v.num * v.point)
+        })
+        that.goodsAmount=orderamount;
+        that.list=that.GoodItem.googitem;
+        that.weight=that.GoodItem.weight;
+        that.orderAmount=orderamount;
+        that.gainedpoint= GoodItem.gainedpoint
+      }
+     },
+     
+     toast(){
+          let that = this;
+          if(that.addr == undefined){
+            wx.showToast({ title: '请添加地址',})
+          }else{
+            let bean = {}
+            let goodObj = {}
+            let orderParms = {}
+              wx.showLoading({
+                title: '请稍等',
+              })
+              // 判断是否使用积分抵扣
+              if (that.data.select == true) {
+                if (that.data.goodsAmount - that.data.point_price <= 0) {
+                  bean.orderAmount = 0.01
+                  bean.consumepoint = parseInt((that.data.goodsAmount - 0.01) * indexdata.pointCash)
+                } else {
+                  bean.orderAmount = that.data.orderAmount - that.data.point_price
+                  bean.consumepoint = that.data.point
+                }
+              }
+              else {
+                bean.orderAmount = that.data.orderAmount
+                bean.consumepoint = 0
+              }
+          }
+        },
+    
 
     //选择
     selectTo(index){
@@ -125,6 +175,7 @@ export default {
     },
     //跳转
     toAddress(){
+      wx.setStorageSync('GoodItem',this.GoodItem)
       wx.navigateTo({ url: '../address/main' });
     },
     toAddress(){
@@ -136,9 +187,21 @@ export default {
     //获取传过来的的参数
     that.GoodItem =JSON.parse(this.$root.$mp.query.gooditem);
     that.Cart = this.$root.$mp.query.cart;
-    that.SelectAdder();
-    //判断获取地址
-    that.SelectAdder();
+    that.point = wx.getStorageSync('point')
+    console.log("你好世界",that.GoodItem )
+    //判断跳转链接
+    let pages = getCurrentPages();
+    let prevpage = pages[pages.length - 2];
+    console.log("查看页面",pages,prevpage)
+    if(prevpage.route=="pages/addressList/main"){
+        that.GoodItem = wx.getStorageSync('GoodItem')
+        that.addr = wx.getStorageSync('addr')
+      }  
+      else{
+        that.GoodItem = JSON.parse(this.$root.$mp.query.gooditem)
+           //判断获取地址
+        that.SelectAdder();
+      }
   }
     
 }
