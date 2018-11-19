@@ -28,7 +28,7 @@
         <span class="all">全部订单</span>
       </div>
       <div class="orderitem">
-        <div class="orderlist" v-for="(item,index) in orderitem" :key="item" :index="index">
+        <div class="orderlist" v-for="(item,index) in orderitem" :key="item" :index="index" @click="jumpOrder(index)">
           <div class="ordericon">
             <img :src="item.icon">
           </div>
@@ -71,7 +71,7 @@ export default {
      featureitem:[
      {name:'积分',icon:config.imgUrl+"/myself/point.png",PageUrl:'../sign/main'},
      {name:'微分销',icon:config.imgUrl+"/myself/fenxiao.png",PageUrl:'../sign/main'},
-     {name:'地址管理',icon:config.imgUrl+"/myself/address.png",PageUrl:'../sign/main'},
+     {name:'地址管理',icon:config.imgUrl+"/myself/address.png",PageUrl:'../addressList/main'},
      {name:'拼团',icon:config.imgUrl+"/myself/group.png",PageUrl:'../sign/main'},
      {name:'砍价',icon:config.imgUrl+"/myself/cut.png",PageUrl:'../sign/main'},
      {name:'联系客服',icon:config.imgUrl+"/myself/connect.png",PageUrl:'../sign/main'},
@@ -97,6 +97,12 @@ export default {
    //
    topage(url){
     wx.navigateTo({ url: url });
+   },
+   jumpOrder(index){
+    let id=index+1
+    wx.navigateTo({
+      url:'../orderList/main?currentTarget='+id
+    })
    }
   }
 }

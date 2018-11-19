@@ -1,8 +1,7 @@
 <template>
   <div class="OrderList">
-      <div class="tab"><Tabs @select='onselect' :find_item='find_item' :wid='width'></Tabs></div>
+      <div class="tab"><Tabs @listenToChild='onselect' :find_item='find_item' :wid='width'></Tabs></div>
       <!--tab end-->
-
       <div class="shopList">
         <div class="Item" v-for="(orderItem,index) in orderList" :index='index' :key='orderItem'>
           <div class="ItemHeader">
@@ -71,19 +70,26 @@ export default {
           total_fee:'',
           orderId:'',
           btnSelect:0,
-          memberId:188
+          memberId:188,
+          orderArry:[]
     }
   },
   methods:{
    async OnAllGoodList(){
         let that = this;
-        var parms = {}
-        parms.memberId = that.memberId
-        let res = await api.AllGoodList(parms);
-        that.orderList =  res.data.orderList.map(v=>{ 
-          v.shopNum=v.item.length
-          return v
-       })
+        if(that.orderArry[0]!=undefined){
+          that.orderList=that.orderArry[0]
+        }else{
+          var parms = {}
+          parms.memberId = that.memberId
+          let res = await api.AllGoodList(parms); 
+          that.orderList =  res.data.orderList.map(v=>{ 
+            v.shopNum=v.item.length
+            return v
+         })
+          that.orderArry[0]=that.orderList
+        }
+       
       //  console.log("所有的商品",res,that.orderList )
      },
 
@@ -162,7 +168,11 @@ export default {
 
      onselect(e){
        let that = this;
-       console.log("你好",e)
+       that.find_item=that.find_item.map((item)=>{
+         item.selected=false;
+         return item
+        })
+       that.find_item[e].selected=true
        if(e==0){
            that.OnAllGoodList()
        }
@@ -192,18 +202,23 @@ export default {
 
       async OrderRequest(statuss, payStatus, shipStatus, status,cat){
         let that = this;
-        let parms = {}
-        let order = {}
-        order.statuss = statuss//状态
-        order.payStatus = payStatus
-        order.shipStatus = shipStatus
-        order.memberId = that.memberId
-        parms.order = order
-        let res = await api.OrderSelectList(parms)
-        that.orderList =  res.data.orderList.map(v=>{ 
-          v.shopNum=v.item.length
-          return v
-        })
+        if(that.orderArry[status]!=undefined){
+            that.orderList=that.orderArry[status]
+        }else{
+          let parms = {}
+          let order = {}
+          order.statuss = statuss//状态
+          order.payStatus = payStatus
+          order.shipStatus = shipStatus
+          order.memberId = that.memberId
+          parms.order = order
+          let res = await api.OrderSelectList(parms)
+          that.orderList =  res.data.orderList.map(v=>{ 
+            v.shopNum=v.item.length
+            return v
+          })
+          that.orderArry[status]=that.orderList
+        }
       },
 
      //支付
@@ -248,10 +263,38 @@ export default {
      }
 
   },
-  async mounted(){
-    console.log("进来")
+  onLoad(options){
     let that = this;
-    that.OnAllGoodList()
+    that.find_item=that.find_item.map((item)=>{
+         item.selected=false;
+         return item
+        })
+       that.find_item[options.currentTarget].selected=true
+    if(options.currentTarget==0){
+      that.OnAllGoodList()
+    }
+    else if(options.currentTarget==1){
+      let stauts=1;
+      let cat="待付款"
+      that.OrderRequest(0,0,0,stauts,cat)
+    }
+    else if(options.currentTarget==2){
+      let stauts = 2;
+      let cat = "待发货" 
+      var statuss = "2,1"
+      that.OrderRequest(statuss,2,0, stauts, cat)
+    }
+    else if(options.currentTarget==3){
+      let stauts = 3;
+      let cat = "已发货" 
+      that.OrderRequest(3,2,1, stauts, cat) 
+    }
+    else if(options.currentTarget==4){
+      let stauts = 4;
+      let cat = "已完成"
+      that.OrderRequest("3,4",2,2,stauts, cat) 
+    }
+    // that.OnAllGoodList()
   }
 
 }

@@ -199,7 +199,7 @@ export default {
    that.option=options
    that.memberId= wx.getStorageSync('memberId')
    let pages = getCurrentPages();
-   let prevpage = pages[pages.length - 2];
+   let prevpage = pages[pages-2];
    if(prevpage.route=="pages/addressList/main"){
       that.option=wx.getStorageSync('options')
       that.addr=wx.getStorageSync('addr')
@@ -207,8 +207,8 @@ export default {
    else{
     that.option=options
     that.getdefaultAddr()
-   }
    that.Type= that.option.Type;
+   }
    that.getProduct()
    if( that.option.Type=="K"){
      that.selectIndex=2

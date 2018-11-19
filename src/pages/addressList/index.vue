@@ -63,6 +63,9 @@ export default {
   async onLoad(){
    let that=this
    that.memberId = wx.getStorageSync('memberId')
+   // let pages = getCurrentPages();
+   // let prevpage = pages[pages-2];
+   // console.log(prevpage.route)
    let allAdderssRes=await api.getAllAddress(that.memberId)
    if(allAdderssRes.data.code==0){
       that.addressList=allAdderssRes.data.memberAddressList

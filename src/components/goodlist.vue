@@ -11,7 +11,7 @@
           </div>
           <div class="intro">
             <!-- {{item.intro}} -->
-            这是一段简介
+            {{item.moneyOffName}}
           </div>
         </div>
         <div class="goodbottom"> 
@@ -55,6 +55,7 @@ img{
   width:95%;
   margin: 0 auto;
   border-bottom: 1rpx solid #f4f4f4;
+  margin-top: 20rpx;
   .goodimg{
     width: 250rpx;
     height: 250rpx;
@@ -62,7 +63,9 @@ img{
   }
   .gooddetail{
     height: 250rpx;
+    padding-left: 20rpx;
     .goodtop{
+      height: 180rpx;
      .goodname{
        display: -webkit-box;
         width: 400rpx;

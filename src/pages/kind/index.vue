@@ -4,8 +4,8 @@
     <Tab :find_item="find_item"  @listenToChild="fromChild" :wid="width"></Tab>
   </div>
   <scroll-view style="height: 93vh;" scroll-y='true' @scrolltolower='getMore' @scroll="pageScroll" :scroll-top="scrollTop">
-    <div class="banner" >
-      <img :src="banner">
+    <div class="banner" @click="jumpGooddetail(find_item[indexdata].goodsId)">
+      <img :src="find_item[indexdata].image" mode="widthFix">
     </div>  
     <Goodlist :good_item="shopitem" :toView="toView"></Goodlist>
   </scroll-view>
@@ -26,8 +26,7 @@ export default {
 
   data () {
     return {
-     banner:config.imgUrl+"/kind/banner.jpg",
-     find_item:[],
+     find_item:[{image:''}],
      gooditem:[],
      shopitem:[],
      current:0,
@@ -37,17 +36,13 @@ export default {
      temp:[],
      gooditemIndex:0,
      width:'25%',
+     indexdata:0
     }
   },
   methods:{
     async fromChild(data){
       var that=this
-      console.log(data)
-      // that.gooditemIndex=data
-      // var scrollTotal=0
-      //  for(var i in that.temp){
-      //     scrollTotal+=that.temp[i]
-      //   }
+      that.indexdata=data;
        that.shopitem=[]
        that.find_item=that.find_item.map((item)=>{
          item.selected=false;
@@ -63,6 +58,15 @@ export default {
         that.shopitem=that.gooditem[data]
       }   
     },
+    jumpGooddetail(goodsId){
+      console.log(goodsId)
+      if(goodsId!=undefined){
+        console.log(1)
+      }
+      else{
+        console.log(2)
+      }
+    }
      // async getMore(){
      //    let that=this
      //    wx.showLoading({  
@@ -135,9 +139,12 @@ img{
 }
 .banner{
   width: 680rpx;
-  height: 201rpx;
-  margin: 20rpx auto;
+  margin: 0rpx auto;
   border-radius: 15rpx;
+  .banner img{
+    width: 100%;
+    display: block;
+  }
 }
 
 </style>
