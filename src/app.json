@@ -18,8 +18,8 @@
     "pages/discountInfo/main",
     "pages/address/main",
     "pages/addressList/main",
-    "pages/storePay/main"
-
+    "pages/storePay/main",
+    "pages/orderOne/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

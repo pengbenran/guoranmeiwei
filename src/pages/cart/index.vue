@@ -42,7 +42,7 @@ export default {
           {shopImg:config.imgUrl+'/cart/shopimg01.jpg',shopTitle:'福建馆溪平柚子好吃好甜你好世界你好世界你好世界你好世界你好世界你好世界',mask:"你好世界",p1:19,p2:9},
           {shopImg:config.imgUrl+'/cart/shopimg01.jpg',shopTitle:'福建馆溪平柚子好吃好甜你好世界你好世界你好世界你好世界你好世界你好世界',mask:"你好世界",p1:19,p2:9}
           ],
-     memberId:186,
+     memberId:'',
      ShopLists:[],
      SelectBool:false,
      AllPrice:0,
@@ -66,7 +66,6 @@ export default {
      }else{
        that.ShopLists = [];
      }
-     console.log(that.ShopLists,"显示数据")
    },
 
    //选中时子组件触发父组件
@@ -78,7 +77,6 @@ export default {
    AllSelect(bool){
       let that = this;
       that.SelectBool = !that.SelectBool
-      console.log("你好",that.SelectBool)
       that.ShopLists.map(v =>{
           v.selected =  that.SelectBool;
       })
@@ -116,28 +114,62 @@ export default {
         that.AllPrice = 0.00;
         that.BtnDelete = !that.BtnDelete;
         that.onLoads();
-        console.log("你好啊桑菊")
       }
    },
 
    //跳转结算
    next(){
-        // var that = this
-        // let total = 0;
-        // var weight=0;
-        // var gainedpoint = 0;
-        // var googitem = [];
-        // var Goods = {};
-        // var gooditemString = gooditemString
+        let that = this
+        var googitem = [];
+        var Goods = {};
+        let total = 0;
+        var weight=0;
+        var gainedpoint = 0;
+        var gooditemString = gooditemString
         // var orderAmount = that.AllPrice
-        // var totalPrice = that.AllPrice
-        // var goodsAmount = that.AllPrice
-        //   var cartgoods = that.cartgoods;    
+        var totalPrice = that.AllPrice
+        var goodsAmount = that.AllPrice
+        var cartgoods = that.ShopLists;   
+        that.ShopLists.map(v =>{
+           if(v.selected){
+             v.cart = 1;
+             googitem.push(v)
+             gainedpoint += v.point 
+             total  += v.num * v.price;   
+             weight += v.num * v.weight;    
+           }
+            Goods.googitem = googitem
+            Goods.weight = weight
+            Goods.gainedpoint = gainedpoint
+            Goods.goodsAmount = goodsAmount
+            Goods.shippingAmount = 0
+            // Goods.orderAmount = that.AllPrice
+            Goods.gainedpoint = gainedpoint
+            gooditemString = JSON.stringify(Goods)
+        })
+        console.log("跳转查看数据",gooditemString,Goods)
+        that.AllPrice=total.toFixed(2)
+        if (googitem.length == "") {
+          wx.showToast({
+            title: "请选择订单",
+            icon: "success",
+            durantion: 2000
+          })
+        }else {
+          wx.navigateTo({
+            url: "../orderOne/main?gooditem=" + gooditemString + '&cart=1',
+            success: function (res) {
+              that.SelectBool=false;
+              that.AllPrice=0.00;    
+            },
+          })
+        }
    }
   },
   //初始化加载
   mounted(){
    let that = this;
+   that.memberId = wx.getStorageSync('memberId');
    that.onLoads();
   },
 }
