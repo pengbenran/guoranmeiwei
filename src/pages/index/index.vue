@@ -180,6 +180,9 @@
         title: '加载中',
       })
      let memberRes=await api.getCode()
+     let GetMain = await api.getMain()
+     
+     console.log("你好啊",GetMain);
      wx.hideLoading()
      if (memberRes.data.memberDo != null) {
       wx.setStorageSync('memberId', memberRes.data.memberDo.memberId)
@@ -189,6 +192,7 @@
       wx.setStorageSync('uname', memberRes.data.memberDo.uname)
       wx.setStorageSync('face', memberRes.data.memberDo.face)
       wx.setStorageSync('openId',memberRes.data.memberDo.openId)
+      wx.setStorageSync('indexdata', GetMain.data.data.message)
       that.memberId=memberRes.data.memberDo.memberId
       }
       else {

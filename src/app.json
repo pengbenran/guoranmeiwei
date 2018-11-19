@@ -1,9 +1,10 @@
 {
   "pages": [
     "pages/index/main",
+    "pages/coupon/main",
+    "pages/index/main",
+    "pages/shopInfo/main",
     "pages/grouplist/main",
-    "pages/addressList/main",
-    "pages/address/main",
     "pages/order/main",
     "pages/discountInfo/main",
     "pages/orderList/main",
@@ -18,7 +19,10 @@
     "pages/myself/main",
     "pages/counter/main",
     "pages/discount/main",
-    "pages/storePay/main"
+    "pages/address/main",
+    "pages/addressList/main",
+    "pages/storePay/main",
+    "pages/orderOne/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -280,4 +280,14 @@ export default class Api{
         resolve(CartOrderDele)
       })
     }
+
+    
+    //获取地址
+    SelectAddre(addParms){
+      return new Promise((resolve, reject) =>{
+        let SelectAddre = this.fly.get(this.baseUrl +'/api/address/defutaddress',{parms:JSON.stringify(addParms)})
+        resolve(SelectAddre)
+      })
+    }
+
 }
