@@ -122,6 +122,7 @@ export default {
        item.selected=false;
        return item
     })
+          console.log("商品分类123",that.shopitem,kindRes)
     that.goodlength=that.find_item.length
     that.gooditem[0]=kindRes.data.Goods
     that.shopitem=kindRes.data.Goods

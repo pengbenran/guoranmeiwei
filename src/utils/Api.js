@@ -144,7 +144,7 @@ export default class Api{
     resolve(userInfoRes)
     })
   }
-  // 收藏
+  // 收藏收藏
   addCollection(parms){
    return new Promise((resolve, reject) => {
     let collecparm={}
@@ -329,6 +329,45 @@ export default class Api{
        }})
         resolve(delAddre)
       }) 
+    }
+    //加载优惠券
+    onCoupont(memberIdlvId){
+      return new Promise((resolve, reject) =>{
+        let onCoupont = this.fly.get(this.baseUrl +'/api/vocher/unclosed',{fitMemberType:JSON.stringify(memberIdlvId)})
+        resolve(onCoupont)
+      })
+    }
+
+    //领取优惠券
+    LiquCoupont(data){
+      return new Promise((resolve, reject) =>{
+        let LiquCoupont = this.fly.get(this.baseUrl +'/api/vocher/used',data)
+        resolve(LiquCoupont)
+      })
+    }
+
+    //已过期优惠券
+    CloseCoupont(memberId){
+      return new Promise((resolve, reject) =>{
+        let CloseCoupont = this.fly.get(this.baseUrl +'/api/vocher/closeUsed',{memberId:memberId})
+        resolve(CloseCoupont)
+      })
+    }
+
+    //获取商品信息
+    getGoodsInfo(goodparms){
+      return new Promise((resolve, reject) =>{
+        let getGoodsInfo = this.fly.get(this.baseUrl +'/api/Goods/getGoods',{parms:JSON.stringify(goodparms) })
+        resolve(getGoodsInfo)
+      })
+    }
+
+    //获取商品信息
+    GetProduct(goodparms){
+      return new Promise((resolve, reject) =>{
+        let GetProduct = this.fly.get(this.baseUrl +'/api/Goods/getProduct',{parms:JSON.stringify(goodparms) })
+        resolve(GetProduct)
+      })
     }
 
 }
