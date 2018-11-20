@@ -6,83 +6,100 @@
               <i class="fa fa-times-circle-o" aria-hidden="true"></i>
           </div>
          <div class="ModelTop">
-           <div class="topLeft"><img :src="ImgList.ShopImg"/></div>
+           <div class="topLeft"><img :src="GoodsInfo.thumbnail"/></div>
            <div class="topRight">
-             <div class="title fontHidden">桃子水蜜桃冻桃你好世界你好世界你好世界你好世界你好世界你好世界</div>
-             <div class="tagInfo">已选 <text>美国进口</text><text>3kg</text></div>
-             <div class="Price"><text>￥9.90</text><text>库存：100</text></div>
+             <div class="title fontHidden">{{GoodsInfo.name}}</div>
+             <div class="tagInfo">已选 <text>{{TagInfo}}</text></div>
+             <div class="Price"><text>￥{{GoodsInfo.price}}</text><text>库存：{{GoodsInfo.enableStore}}</text></div>
            </div>
          </div>
-         <div class="Area">
-           <div class="AreaTile"><span class="icoHeight"></span> 产地</div>
-           <text v-for="(item,index) in Area_item" :index='index' 
-                                                   :key='item' @click="AreaselectClick(index)" 
-                                                   :class="AreaselectIndex==index?'active':''">{{item.AreaName}}</text>
+         <div class="Area" v-for="(item,Pindex) in Guige" :index='Pindex' :key='item'>
+           <div class="AreaTile"><span class="icoHeight"></span> {{item.specName}}</div>
+           <text v-for="(items,indexs) in item.value" :index='indexs' 
+                                                   :key='items' @click="AreaselectClick(Pindex,indexs)" 
+                                                   :class="items.selected?'active':''">{{items.specvalue}}</text>
          </div>
-         <div class="Area">
-           <div class="AreaTile"><span class="icoHeight"></span> 重量</div>
-               <text v-for="(item,index) in Weight_item" :index='index' 
-                                                   :key='item' @click="WeightselectClick(index)" 
-                                                   :class="WeightselectIndex==index?'active':''">{{item.WeightName}}</text>
-         </div>
-          <div class="ModelBtn"><span>立即购买</span></div>
+  
+          <div class="ModelBtn"><span v-if='btnIndex == 1'>立即购买</span>
+                                <span v-if='btnIndex == 2' @click="toCart">加入购物车</span></div>
       </div>
 
       </div>
     <!--Model end-->
 </template>
 <script>
+ import Api from "@/utils/Api"
+ import Lib from "@/utils/lib"
+
 export default {
-  props: ['ImgList','modelShow','Area_item','Weight_item'],
+  props: ['GoodsInfo','modelShow'],
   data() {
       return {
               Animation:'',
               AreaselectIndex:0,
-              WeightselectIndex:0
+              WeightselectIndex:0,
+              btnIndex:0,
+              TagInfo:'',
+              Guige:[]
       }
   },
   methods: {
      //选中事件
-     AreaselectClick(index){
+     AreaselectClick(Pindex,indexs){
          let that = this;
-         that.AreaselectIndex = index;
+         let TagInfo =''
+         that.Guige = that.Guige.map((v,index) =>{
+           if(index == Pindex){
+            v.value.map(s =>{
+              s.selected = false
+              return s
+            })
+           }
+           return v
+         })
+         that.TagInfo = that.TagInfo + that.Guige[Pindex].value[indexs].specvalue;
+       
+         console.log("选中输出",that.TagInfo)
+         that.Guige[Pindex].value[indexs].selected = true
      },
-     //选中事件
-     WeightselectClick(index){
-         let that = this;
-         that.WeightselectIndex = index;
-     },
+   
      //点击隐藏
      hideModel(){
-         console.log("查看")
          let that=this;
          //通过子组件触发父组件
          that.$emit('hideModel')
      },
 
     //父组件触发的方法
-     emitEvent(){
+     emitEvent(index,Guige){
      let that = this;
-     console.log("我是父组件触发的")
-     let animation = wx.createAnimation({
-       duration: 200, timingFunction: 'linear', delay: 100,  transformOrigin: 'left top 0',
-         success: function(res) {
-            console.log(res)
-          }
-     })
-     
-     console.log("点击了吗",that.modelShow)
-      animation.translateY(300).step()
-        //输出动画
-       that.Animation=animation.export()
-       that.modelShow=true;
-       setTimeout(function () {
-       animation.translateY(0).step()
+     that.btnIndex = index;
+     that.Guige = Guige
+      let animation = wx.createAnimation({
+        duration: 200, timingFunction: 'linear', delay: 100,  transformOrigin: 'left top 0',
+          success: function(res) {
+              console.log(res)
+            }
+      })
+        animation.translateY(300).step()
+          //输出动画
         that.Animation=animation.export()
-      }.bind(that), 100)
-  }
-  },
+        that.modelShow=true;
+        setTimeout(function () {
+        animation.translateY(0).step()
+          that.Animation=animation.export()
+        }.bind(that), 100)
+    },
 
+    //点击加入购物车
+    toCart(){
+      this.$emit('toCart')
+    }
+  },
+  
+  mounted(){
+    console.log(this.GoodsInfo,"商品信息")
+  }
 
 }
 

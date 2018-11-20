@@ -1,6 +1,6 @@
 <template>
 	<div class="good">
-     <div class="goodlist" v-for="(item,index) in good_item" :index="index" :key="item">
+     <div class="goodlist" v-for="(item,index) in good_item" :index="index" :key="item" @click="toPage(item.goodsId,item.catId)">
       <div class="goodimg">
         <img :src="item.thumbnail">
       </div>
@@ -34,12 +34,16 @@ import config from "@/config"
 export default {
   props: ['good_item','toView'],
   data () {
-    return {
-    	addImg:config.imgUrl+'/kind/add.png',
-    }
+      return {
+        addImg:config.imgUrl+'/kind/add.png',
+      }
     },
     methods: {
-  		
+      //跳转
+  		toPage(goodsId,catId){
+       let that = this;
+       wx.navigateTo({ url: '/pages/shopInfo/main?goodsId='+goodsId+'&catId='+catId });
+      }
     }
 }
 </script>
