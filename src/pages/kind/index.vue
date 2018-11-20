@@ -115,7 +115,7 @@ export default {
       //   // }
       // }
   },
-  async onLoad () {
+  async onShow() {
     let that=this
     let kindRes=await api.getGoodKind()
     that.find_item=kindRes.data.GoodCatAll.map((item)=>{

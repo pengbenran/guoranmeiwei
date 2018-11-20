@@ -15,8 +15,8 @@
                 <div class="pople"><text>{{item.name}}</text> | <text>{{item.mobile}}</text></div>
             </div>
             <div class="right">
-                 <div class="deit" v-show='selectIndex==2'><i class="fa fa-pencil-square-o" aria-hidden="true"></i></div>
-                 <div class="deit" v-show='selectIndex==1'><icon type="cancel" color='rgb(252,154,47)' size="18"/> <text>删除</text></div>
+                 <div class="deit" v-show='selectIndex==2'><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit(index)"></i></div>
+                 <div class="deit" v-show='selectIndex==1'  @click="delAddr(index)"><icon type="cancel" color='rgb(252,154,47)' size="18"/> <text>删除</text></div>
             </div>
         </div>
     </div>
@@ -43,7 +43,8 @@ export default {
         ImgList:{addressImg:config.imgUrl+'/address/kong.png'},
         selectIndex:2,
         addressList:[],
-        memberId:''
+        memberId:'',
+        jumpfrom:''
     }
   },
   methods:{
@@ -56,19 +57,65 @@ export default {
       wx.navigateTo({ url: '../address/main' });
     },
     jumpOrder(e){
+      let that=this
       wx.setStorageSync('addr',this.addressList[e])
-      wx.navigateTo({ url: '../order/main' });
+      if(that.jumpfrom=='order'){
+        wx.navigateTo({ url: '../order/main' });
+      }
+      else if(that.jumpfrom=='orderOne'){
+        wx.navigateTo({ url: '../orderOne/main' });
+      }
+      else{
+
+      }
+      
+    },
+    edit(e){
+      let that=this
+      let url=`../address/main?addrId=${that.addressList[e].addrId}`
+      wx.navigateTo({
+        url:url
+      })
+    },
+    delAddr(e){
+      var that= this  
+      var parms = {}
+      parms.addrId = that.addressList[e].addrId
+      wx.showModal({
+        title: '提示',
+        content: '是否删除该地址',
+        success: function (res) {
+          api.deleteAddress(parms).then(function(res){
+            if(res.data.code==0){
+             that.addressList=that.addressList.filter((item => item.addrId!=that.addressList[e].addrId ))
+             wx.showToast({
+              title: '删除成功',
+              icon: 'none',
+              duration: 1500
+            })
+            }
+          })
+        }
+      })
     }
   },
   async onLoad(){
    let that=this
    that.memberId = wx.getStorageSync('memberId')
-   // let pages = getCurrentPages();
-   // let prevpage = pages[pages-2];
-   // console.log(prevpage.route)
    let allAdderssRes=await api.getAllAddress(that.memberId)
    if(allAdderssRes.data.code==0){
       that.addressList=allAdderssRes.data.memberAddressList
+   }
+   let pages = getCurrentPages();
+   let prevpage = pages[pages.length-2];
+   if(prevpage.route=="pages/myself/main"||prevpage.route=="pages/address/main"){
+     that.jumpfrom='myself'
+   }
+   else if(prevpage.route=="pages/order/main"){
+      that.jumpfrom='order'
+   }
+   else if(prevpage.route=="pages/orderOne/main"){
+      that.jumpfrom='orderOne'
    }
   }
 }

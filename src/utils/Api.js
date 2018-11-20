@@ -1,20 +1,34 @@
  import Fly from "flyio/dist/npm/wx";
 export default class Api{
   constructor() {
-     this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
+     // this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
      // this.baseUrl = "https://www.etuetf.com"
-     //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
+     this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
     // this.baseUrl = "http://192.168.2.131/guoranhuiwei" 
     this.fly = new Fly;
     // this.fly.config.baseUrl=
   }
 
-  //测试
-  getMain(){
+  //获取首页轮播图
+  getTopIndex(){
 	return new Promise((resolve, reject) => {
-      let res=this.fly.get(this.baseUrl +'/api/index/main')
-      resolve(res)
+      let topIndexRes=this.fly.get(this.baseUrl +'/api/index/topIndex')
+      resolve(topIndexRes)
 	})   
+  }
+  // 获取时令日历
+  getseasonalCalendar(){
+  return new Promise((resolve, reject) => {
+      let seasonalCalendarRes=this.fly.get(this.baseUrl +'/api/index/seasonalCalendar')
+      resolve(seasonalCalendarRes)
+  })   
+  }
+  // 获取楼层分类以及商品列表
+  getadvertisingIndex(){
+    return new Promise((resolve, reject) => {
+      let advertisingIndexRes=this.fly.get(this.baseUrl +'/api/index/advertisingIndex')
+      resolve(advertisingIndexRes)
+    })   
   }
   //获取拼团列表
   getGroupList(){
@@ -288,6 +302,33 @@ export default class Api{
         let SelectAddre = this.fly.get(this.baseUrl +'/api/address/defutaddress',{parms:JSON.stringify(addParms)})
         resolve(SelectAddre)
       })
+    }
+    // 根据addrId获取地址详情
+    getAddrById(addrId){
+      return new Promise((resolve, reject) =>{
+        let params={}
+        params.addrId=addrId
+        let detailAddre = this.fly.get(this.baseUrl +'/api/address/get',{parms:JSON.stringify(params)})
+        resolve(detailAddre)
+      })
+    }
+    // 修改地址
+    editAddr(params){
+      return new Promise((resolve, reject) =>{
+        let editAddre = this.fly.put(this.baseUrl +'/api/address/update',{parms:JSON.stringify(params)},{headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+       }})
+        resolve(editAddre)
+      })
+    }
+  // 删除地址
+    deleteAddress(params){
+      return new Promise((resolve, reject) =>{
+        let delAddre = this.fly.post(this.baseUrl +'/api/address/deleteAddress',{parms:JSON.stringify(params)},{headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+       }})
+        resolve(delAddre)
+      }) 
     }
 
 }

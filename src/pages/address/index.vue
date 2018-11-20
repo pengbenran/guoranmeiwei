@@ -9,7 +9,7 @@
     <div class="item"><text>详细地址：</text><input type="text" :value="addresInfo" placeholder="门牌号、街区号、单元号楼层" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;' v-model="detailaddr"/></div> 
     <div class="ico">
       <span>默认收货地址</span> <switch :checked="switch1Checked" @change="switch1Change" color='#F44156'/></div>
-    <div class="SubBtn" @click="addAddress"><text>完成</text></div>
+    <div class="SubBtn" @click="addAddress"><text>{{tip}}</text></div>
   </div>
 </template>
 
@@ -32,7 +32,10 @@ export default {
           userphone:'',
           addr:'',
           detailaddr:'',
-          memberId:''
+          memberId:'',
+          Type:'',
+          tip:'新增地址',
+          addrId:''
 
     }
   },
@@ -90,24 +93,69 @@ export default {
         address.province = ''
         address.city = ''
         parms.address=address
-        let addrresRes=await api.addAddress(parms)
-        if(addrresRes.data.code=='0'){
+        if(that.Type=='edit'){
+         address.addrId= that.addrId 
+          let editAddr=await api.editAddr(parms)
+          if(editAddr.data.code==0){
+           wx.showToast({
+            title: '修改成功',
+            icon: 'success',
+            duration: 1500
+          })
+         }
+        }
+        else{
+         let addrresRes=await api.addAddress(parms)
+         if(addrresRes.data.code=='0'){
            wx.showToast({
             title: '添加成功',
             icon: 'success',
             duration: 1500
-         })
-        wx.redirectTo({
+          })
+
+         }
+        }
+         wx.navigateTo({
           url: '../addressList/main',
         })
-        }
       }
 
+    },
+    async getAddrById(addrId){
+      let that=this
+     let addrDetail=await api.getAddrById(addrId)
+     if(addrDetail.data.code==0){
+      console.log(addrDetail.data)
+      that.addrId = addrDetail.data.getaddr.addrId
+      that.username=addrDetail.data.getaddr.name
+      that.userphone = addrDetail.data.getaddr.mobile
+      that.addr = addrDetail.data.getaddr.addr
+      that.detailaddr = addrDetail.data.getaddr.region
+      that.switch1Checked=addrDetail.data.getaddr.defAddr==1?true:false
+     }
+   
     }
  },
-  onLoad() {
+  onLoad(options) {
     let that=this
     that.memberId = wx.getStorageSync('memberId')
+    console.log(options);
+    if(options.addrId!=undefined){
+      that.getAddrById(options.addrId)
+      that.Type='edit'
+      that.tip="修改地址"
+      wx.setNavigationBarTitle({
+       title: "修改地址"//页面标题为路由参数
+     })
+    }
+    else{
+      that.addrId = ''
+      that.username=''
+      that.userphone = ''
+      that.addr = ''
+      that.detailaddr = ''
+      that.switch1Checked=false 
+    }
   }
 }
 </script>

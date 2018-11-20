@@ -2,7 +2,6 @@
   "pages": [
     "pages/index/main",
     "pages/coupon/main",
-    "pages/index/main",
     "pages/shopInfo/main",
     "pages/grouplist/main",
     "pages/order/main",

@@ -18,31 +18,27 @@
       <!--tip end-->
       <div class="brand skeleton-Mrect">
         <swiper class="swiper" indicator-dots='true' autoplay='true'>
-          <swiper-item><img :src="imgList.brand"></swiper-item>
+          <swiper-item v-for="(item,index) in banner" :key='item' :index="index"><img :src="item.imageUrl"></swiper-item>
         </swiper>
       </div>
       <!--brand end-->
       <div class="news  skeleton-Mrect">
-        <div class="shopImg"><img :src="imgList.shopImg"></div><small class="tag">火热</small><span> 全场特价9.9元起</span>
+        <div class="shopImg"><img :src="imgList.shopImg"></div>
+        <small class="tag">火热</small>
+        <swiper class="messageswiper" duration='1000' autoplay='true' interval='3000' vertical='true'>
+          <swiper-item v-for="(item,index) in messageDoList" :key="item" :index="index" style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">
+              {{item.content}}
+          </swiper-item>
+        </swiper>
       </div>
       <!--news end-->
-      <div class="hot ">
+      <div class="hot">
        <div class="hotBg "><img :src="imgList.hotImg" /></div>
        <div class="hotList">
-        <div class="hotItem skeleton-rect">
+        <div class="hotItem skeleton-rect" v-for="(item,index) in hotgoodsList" :key="item" :index="index">
           <div class="icoImg"><img :src="imgList.ico1"/></div>
-          <div class="hotShop"><img :src="imgList.shopImg1"/></div>
-          <span>已售100000件</span>
-        </div>
-        <div class="hotItem skeleton-rect">
-          <div class="icoImg"><img :src="imgList.ico2"/></div>
-          <div class="hotShop"><img :src="imgList.shopImg1"/></div>
-          <span>已售100000件</span>
-        </div>
-        <div class="hotItem skeleton-rect">
-          <div class="icoImg"><img :src="imgList.ico3"/></div>
-          <div class="hotShop"><img :src="imgList.shopImg1"/></div>
-          <span>已售100000件</span>
+          <div class="hotShop"><img :src="item.thumbnail"/></div>
+          <span>已售{{item.buyCount}}件</span>
         </div>
       </div>
     </div>
@@ -70,9 +66,9 @@
       <!-- <div class=""></div> -->
       <scroll-view  scroll-x style="height: 270rpx;">
         <div class="riliWarp" >
-          <div class="Item" v-for="(item,index) in riliListImg" :index='index' :key='item'>
+          <div class="Item" v-for="(item,index) in seasonalCalendarRes" :index='index' :key='item'>
              <div class="posIco"><img :src="imgList.riliico"/></div>
-            <img :src="item.riliImg"/>
+            <img :src="item.thumbnail"/>
           </div>
         </div>
       </scroll-view>
@@ -80,41 +76,26 @@
     </div>
   </div>
   <!--rili end-->
-
-  <div class="free">
-    <div class="freeTop"><span>满足馋嘴的你</span><p>每样精挑细选，只为等你</p></div>
-    <div class="freeBrand"><img :src="imgList.freeImg"/></div>
-  </div>
-  <div class="freeList">
-    <div class="freeListBg"><img :src="imgList.freeImgBg" /></div>
-    <scroll-view class="scrollItem" scroll-x style="height: 335rpx;">
-      <div class="freeItemWarp">
-        <div class="freeItem" v-for="(item,index) in freeShopList" :index='index' :key='item'>
-          <img :src="item.shopImg" /><div class="freeInfo">{{item.shopName}}</div>
+  <block v-for="(outitem,outindex) in advertisingIndex" :index="outindex" :key="outitem">
+    <div class="free">
+      <div class="freeTop"><span>{{outitem.bigTitle}}</span><p>{{outitem.smallTitle}}</p></div>
+      <div class="freeBrand"><img :src="outitem.imageUrl"/></div>
+    </div>
+    <div class="freeList">
+      <div class="freeListBg"><img :src="imgList.freeImgBg" /></div>
+      <scroll-view class="scrollItem" scroll-x style="height: 335rpx;">
+        <div class="freeItemWarp">
+          <div class="freeItem" v-for="(innerItem,innerIndex) in outitem.goodsDOList" :index='innerIndex' :key='innerItem'>
+            <img :src="innerItem.thumbnail" /><div class="freeInfo">{{innerItem.name}}</div>
+          </div>
         </div>
-      </div>
-    </scroll-view>
-  </div>
-  <div class="freeMore">更多热销<i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </div>
-  <!--free end-->
+      </scroll-view>
+    </div>
+    <div class="freeMore" @click="jumpmore(outitem.catid)">更多热销<i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </div>
 
-  <div class="free">
-    <div class="freeTop"><span>健康水果，美味到“家”</span><p>闻得到的香甜，看得到的新鲜</p></div>
-    <div class="freeBrand"><img :src="imgList.freeImg01"/></div>
-  </div>
-  <div class="freeList">
-    <div class="freeListBg"><img :src="imgList.freeImgBg" /></div>
-    <scroll-view class="scrollItem" scroll-x style="height: 335rpx;">
-      <div class="freeItemWarp">
-        <div class="freeItem" v-for="(item,index) in freeShopList" :index='index' :key='item'>
-          <img :src="item.shopImg" /><div class="freeInfo">{{item.shopName}}</div>
-        </div>
-      </div>
-    </scroll-view>
-  </div>
-  <div class="freeMore">更多热销<i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </div>
-  <!--free end-->
+  </block>
 
+  <!--free end-->
   <div class="bottomBrand">
     <img :src="imgList.bottomBrand" />
   </div>
@@ -144,74 +125,90 @@
   export default {
     data() {
       return {
-        imgList:{logo:config.imgUrl+'/index/logo.jpg',brand:config.imgUrl+'/index/banner0.jpg',
-                 shopImg:config.imgUrl+'/index/news.jpg',hotImg:config.imgUrl+'/index/hot.jpg',
-                 activityImg:config.imgUrl+'/index/activityImg.jpg',rilibg:config.imgUrl+'/index/rili.png',riliico:config.imgUrl+'/index/rilico.png',
-                 freeImg:config.imgUrl+'/index/free.jpg',freeImgBg:config.imgUrl+'/index/freeBg.jpg',
-                 freeImg01:config.imgUrl+'/index/free01.jpg',bottomBrand:config.imgUrl+'/index/bottomBrand.jpg',
-                 footerImg:config.imgUrl+'/index/footerImg.png', ico1:config.imgUrl+'/index/ico1.png',
-                 ico2:config.imgUrl+'/index/ico2.png',ico3:config.imgUrl+'/index/ico3.png',shopImg1:config.imgUrl+'/index/haotian01.png'
-                 },
-
-        activityImg:[{actName:'限时活动',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao0.jpg',pageUrl:'../discount/main'},
-                      {actName:'火爆拼团',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao1.jpg',pageUrl:'../grouplist/main'},
-                      {actName:'分享砍价',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao2.jpg',pageUrl:'../bargain/main'},
-                      {actName:'优惠券',acttall:'400减50',actBg:config.imgUrl+'/index/cuxiao3.jpg',pageUrl:'../bargain/main'}],
-        riliListImg:[{riliName:'芒果你好',riliImg:config.imgUrl+'/index/rili01.jpg'},
-                     {riliName:'橘子你好',riliImg:config.imgUrl+'/index/rili02.jpg'},
-                     {riliName:'苹果你好',riliImg:config.imgUrl+'/index/rili03.jpg'},
-                     {riliName:'世界你好',riliImg:config.imgUrl+'/index/rili01.jpg'},
-                    ],
-        freeShopList:[{shopName:'新鲜水果特价大优惠便宜卖便宜卖好甜好甜好甜好甜好甜好甜好甜',shopImg:config.imgUrl+'/index/haotian01.png'},
-                      {shopName:'新鲜水果特价大优惠便宜卖便宜卖好甜好甜好甜好甜好甜好甜好甜',shopImg:config.imgUrl+'/index/haotian02.png'},
-                      {shopName:'新鲜水果特价大优惠便宜卖便宜卖好甜好甜好甜好甜好甜好甜好甜',shopImg:config.imgUrl+'/index/haotian03.png'},
-                     ],
+        imgList:{logo:config.imgUrl+'/index/logo.jpg',shopImg:config.imgUrl+'/index/news.jpg',hotImg:config.imgUrl+'/index/hot.jpg',activityImg:config.imgUrl+'/index/activityImg.jpg',rilibg:config.imgUrl+'/index/rili.png',riliico:config.imgUrl+'/index/rilico.png',freeImgBg:config.imgUrl+'/index/freeBg.jpg',bottomBrand:config.imgUrl+'/index/bottomBrand.jpg',footerImg:config.imgUrl+'/index/footerImg.png', ico1:config.imgUrl+'/index/ico1.png'},
+        banner:[],
+        hotgoodsList:[],
+        seasonalCalendarRes:[],
+        messageDoList:[{content:''}],
+        activityImg:[
+        {actName:'限时活动',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao0.jpg',pageUrl:'../discount/main'},
+        {actName:'火爆拼团',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao1.jpg',pageUrl:'../grouplist/main'},
+        {actName:'分享砍价',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao2.jpg',pageUrl:'../bargain/main'},
+        {actName:'优惠券',acttall:'400减50',actBg:config.imgUrl+'/index/cuxiao3.jpg',pageUrl:'../bargain/main'}
+        ],
         showSkeleton: false ,
         isMember:false,
-        memberId:''    
+        memberId:'',
+        advertisingIndex:[]   
       }
     },
     components: {
       skeleton
     },
-    async mounted(){
+    onLoad(){
       let that=this
-      wx.showLoading({
-        title: '加载中',
-      })
-     let memberRes=await api.getCode()
-     let GetMain = await api.getMain()
-     
-     console.log("你好啊",GetMain);
-     wx.hideLoading()
-     if (memberRes.data.memberDo != null) {
-      wx.setStorageSync('memberId', memberRes.data.memberDo.memberId)
-      wx.setStorageSync('point', memberRes.data.memberDo.point)
-      wx.setStorageSync('memberIdlvId', memberRes.data.memberDo.lvId)
-      wx.setStorageSync('isAgent', memberRes.data.memberDo.isAgent)
-      wx.setStorageSync('uname', memberRes.data.memberDo.uname)
-      wx.setStorageSync('face', memberRes.data.memberDo.face)
-      wx.setStorageSync('openId',memberRes.data.memberDo.openId)
-      wx.setStorageSync('indexdata', GetMain.data.data.message)
-      that.memberId=memberRes.data.memberDo.memberId
-      }
-      else {
-        let memberId="00"
-        that.memberId=memberId
-        wx.setStorageSync('memberId', "00")
-        that.isMember=true
-        wx.hideTabBar({}) 
-      }
-    },
-    created () {
-      // const that = this;
-      // setTimeout(() => {
-      //   that.showSkeleton = false
-      // }, 1800)
+      that.userLogin()
+      that.getTopIndex()
+      that.getseasonalCalendar()
+      that.getadvertisingIndex()
+    
     },
     methods: {
+      jumpmore(catid){
+      
+      },
+      async userLogin(){
+        wx.showLoading({
+          title: '加载中',
+        })
+       let memberRes=await api.getCode()
+       wx.hideLoading()
+       if (memberRes.data.memberDo != null) {
+        wx.setStorageSync('memberId', memberRes.data.memberDo.memberId)
+        wx.setStorageSync('point', memberRes.data.memberDo.point)
+        wx.setStorageSync('memberIdlvId', memberRes.data.memberDo.lvId)
+        wx.setStorageSync('isAgent', memberRes.data.memberDo.isAgent)
+        wx.setStorageSync('uname', memberRes.data.memberDo.uname)
+        wx.setStorageSync('face', memberRes.data.memberDo.face)
+        wx.setStorageSync('openId',memberRes.data.memberDo.openId)
+        wx.setStorageSync('indexdata', GetMain.data.data.message)
+        that.memberId=memberRes.data.memberDo.memberId
+        }
+        else {
+          let memberId="00"
+          that.memberId=memberId
+          wx.setStorageSync('memberId', "00")
+          that.isMember=true
+          wx.hideTabBar({}) 
+        }
+      },
       toPage(url){
         this.toNav(url)
+      },
+      async getseasonalCalendar(){
+        let that=this
+        let seasonalCalendarRes= await api.getseasonalCalendar()
+        that.seasonalCalendarRes=seasonalCalendarRes.data.data
+      },
+      async getTopIndex(){
+        let that=this
+        let indexTopRes = await api.getTopIndex()
+        // console.log(indexTopRes.data);
+        that.banner=indexTopRes.data.data.AdpicDoList;
+        that.messageDoList=indexTopRes.data.data.messageDoList;
+        that.hotgoodsList=indexTopRes.data.data.goodsList;
+      },
+      async getadvertisingIndex(){
+        let that=this
+        let getadvertisingIndexRes=await api.getadvertisingIndex()
+        that.advertisingIndex=getadvertisingIndexRes.data.data.map((item)=>{
+          let titleArry=item.movieName.split(',')
+          item.bigTitle=titleArry[0]
+          item.smallTitle=titleArry[1]
+          return item
+        })
+        // that.advertisingIndex=getadvertisingIndexRes.data.data
+        console.log(that.advertisingIndex)
       },
       toNav(url){
         wx.navigateTo({ url: url });
@@ -287,7 +284,7 @@ img{display: block;width: 100%;height: 100%}
 .news{@include flexc;height: 65rpx;padding: 0 10rpx;
   .shopImg{width: 160rpx;height: 100%;}
   small{display: inline-block;margin: 0 10rpx;padding:0 12rpx;border-radius: 20rpx;font-size: 22rpx;color: #fff;background: rgb(242,42,71)}
-  span{font-size: 30rpx;font-weight: 100;}
+  .messageswiper{height: 50rpx;width: 440rpx;font-size: 0.8em;color:#8a8a8a;}
 }
 
 .hot{position: relative;height: 364rpx;margin-bottom: 10rpx;padding: 15rpx 20rpx;background: #f6f6f6;
