@@ -51,6 +51,9 @@
   <Model :GoodsInfo='Goods' 
          :modelShow='modelShow' 
          @toCart='toCart' 
+         @toNext='toNext'
+         @Num='Num'
+         @selectSpac='selectSpac'
          @hideModel='hideModel' ref="childs"></Model>
 
   </div>
@@ -91,7 +94,9 @@ export default {
           Gallery:[],
           Goods:{},
           Guige:[],
-          adjuncts:[],
+          space:'',
+          pic:1,
+          count:0,
           memberId:'',
           goodsId:'',
           catId:'',
@@ -125,11 +130,8 @@ export default {
     }else{
       let res = await api.GetProduct(goodparms)
       that.productId = res.data.product.productId
-      that.adjuncts = []
-      console.log("我的商品信息2",res)
+      that.Guige = []
     }
-
-    console.log("商品1231321",that.Goods)
    },
     async collection(){
       let that=this
@@ -160,10 +162,12 @@ export default {
       }
     },
     
+
     //加入购物车
-    toCart(){
+    async toCart(count){
       let that = this;
-      console.log("购物车触发事件")
+      that.count = count
+      console.log("购物车触发事件",count)
       if(wx.getStorageSync('memberId') == "00"){
        Lib.Show("你还没有登录","success",1000)
        setTimeout(function(){
@@ -173,21 +177,89 @@ export default {
         if(that.Goods.enableStore == 0){
           Lib.Show("暂无库存","success",1000)
         }else{
-          // let cartparms = {};
-          // cartparms.productId = that.productId
-          // cartparms.original = that.Goods.thumbnail
-          // cartparms.memberId = that.data.memberId
-          // cartparms.goodsId = that.data.goodDetail.goodsId,
-          // cartparms.itemtype = that.data.goodDetail.typeId,
-          // cartparms.image = that.data.goodDetail.thumbnail
-          // cartparms.num = that.data.pic,
-          // cartparms.point = that.data.goodDetail.point
-          // cartparms.weight = that.data.goodDetail.weight,
-          // cartparms.name = that.data.goodDetail.name,
-          // cartparms.price = that.data.goodDetail.price
-          // cartparms.cart = 1//判断购物车订单
+          let cartparms = {};
+          cartparms.productId = that.productId
+          cartparms.original = that.Goods.thumbnail
+          cartparms.memberId = that.memberId
+          cartparms.goodsId = that.Goods.goodsId,
+          cartparms.itemtype = that.Goods.typeId,
+          cartparms.image = that.Goods.thumbnail
+          cartparms.num = that.pic,
+          cartparms.point = that.Goods.point
+          cartparms.weight = that.Goods.weight,
+          cartparms.name = that.Goods.name,
+          cartparms.price = that.Goods.price
+          cartparms.cart = 1//判断购物车订单
+          console.log("查看购物车信息",cartparms)
+
+           if (that.Goods.haveSpec == 0) {
+             cartparms.specvalue = null;
+             let res = await api.toCartSave(cartparms)
+             Lib.Show("添加成功","success",2000)
+             that.hideModel()
+           }else{
+             cartparms.specvalue = that.space;
+             if (that.count == that.Guige.length) {
+               let res = await api.toCartSave(cartparms)
+               Lib.Show("添加成功","success",1000)
+               that.hideModel()
+             }else{
+               Lib.Show("请选择规格","success",1000)
+             }
+           }
         }
       }
+    },
+    
+    //立即购买
+    toNext(){
+      let that = this;
+      if(wx.getStorageSync('memberId') == '00'){
+         let res = Lib.ShopModel("提示","你还未登录,是否登录")
+      }else{
+        if(that.pic > that.Goods.enableStore){
+          Lib.Show("库存不够","success",2000)
+        }else{
+          //定义接收对象
+          var googitem = [];
+          var Goods = {};
+          let GoodsLIst = []
+          let GoodsInfo = that.Goods;
+          let GoodsItem = ''
+          
+          //商品信息赋值
+          GoodsInfo.specvalue = that.space
+          GoodsInfo.cart = 0
+          GoodsInfo.image = that.Goods.thumbnail
+          GoodsInfo.num = that.pic
+          delete GoodsInfo.intro
+          
+          //封装数据传值
+          GoodsLIst[0] = GoodsInfo
+          Goods.googitem = GoodsLIst
+          Goods.gainedpoint = that.pic * that.Goods.point
+          Goods.weight = that.pic * that.Goods.weight
+          Goods.goodsAmount = that.pic * that.Goods.price
+          Goods.shippingAmount = 2
+          GoodsItem = JSON.stringify(Goods)
+
+           if(GoodsLIst == undefined){return}
+            wx.navigateTo({ url: '/pages/orderOne/main?gooditem='+GoodsItem+'&cart=0' });
+
+        }
+      } 
+    },
+
+    //商品数量
+    Num(num){
+     let that = this;
+     that.pic = num;
+     console.log("查看数量",num)
+    },
+    
+    //子组件规格
+    selectSpac(space){
+     this.space = space
     },
 
     //立即购买淡出模态框
@@ -195,7 +267,7 @@ export default {
      let that = this;
      that.modelShow=true;
      //父组件控制子组件
-     that.$refs.childs.emitEvent(index,that.Guige);
+     that.$refs.childs.emitEvent(index,that.Guige,that.goodsId,that.productId);
     },
 
     hideModel(){
