@@ -9,7 +9,7 @@
            <div class="topLeft"><img :src="GoodsInfo.thumbnail"/></div>
            <div class="topRight">
              <div class="title fontHidden">{{GoodsInfo.name}}</div>
-             <div class="tagInfo">已选 <text>{{TagInfo}}</text></div>
+             <div class="tagInfo">已选 <text>{{space}}</text></div>
              <div class="Price"><text>￥{{GoodsInfo.price}}</text><text>库存：{{GoodsInfo.enableStore}}</text></div>
            </div>
          </div>
@@ -19,8 +19,14 @@
                                                    :key='items' @click="AreaselectClick(Pindex,indexs)" 
                                                    :class="items.selected?'active':''">{{items.specvalue}}</text>
          </div>
-  
-          <div class="ModelBtn"><span v-if='btnIndex == 1'>立即购买</span>
+          <div class="ModelNum"><text>数量：</text>
+             <div class="priceright">
+                <i class="fa fa-minus" aria-hidden="true" @click="Minu()"></i>
+                  <span>{{Num}}</span>
+                <i class="fa fa-plus" aria-hidden="true" @click="Plus()"></i>
+             </div>
+          </div>
+          <div class="ModelBtn"><span v-if='btnIndex == 1' @click="toNext">立即购买</span>
                                 <span v-if='btnIndex == 2' @click="toCart">加入购物车</span></div>
       </div>
 
@@ -30,7 +36,7 @@
 <script>
  import Api from "@/utils/Api"
  import Lib from "@/utils/lib"
-
+let api = new Api
 export default {
   props: ['GoodsInfo','modelShow'],
   data() {
@@ -39,13 +45,18 @@ export default {
               AreaselectIndex:0,
               WeightselectIndex:0,
               btnIndex:0,
+              Num:1,
+              count:0,
+              goodsId:0,
+              productId:0,
               TagInfo:'',
+              space:'',
               Guige:[]
       }
   },
   methods: {
      //选中事件
-     AreaselectClick(Pindex,indexs){
+    async AreaselectClick(Pindex,indexs){
          let that = this;
          let TagInfo =''
          that.Guige = that.Guige.map((v,index) =>{
@@ -58,9 +69,46 @@ export default {
            return v
          })
          that.TagInfo = that.TagInfo + that.Guige[Pindex].value[indexs].specvalue;
-       
-         console.log("选中输出",that.TagInfo)
          that.Guige[Pindex].value[indexs].selected = true
+         let count = 0;
+         that.Guige.map((v,index) =>{
+            v.value.map(s =>{
+              if(s.selected == true){
+                 count++
+              }
+            })
+         })
+         that.count = count
+
+        
+        console.log("选中参数",count,that.Guige.length,that.Guige)
+         if(count == that.Guige.length){
+             let specValueId = ''
+             let space =''
+             that.Guige.map(v => {
+                v.value.map(s => {
+                  if(s.selected == true){
+                    specValueId = specValueId + s.specValueId
+                    space = space + s.specvalue
+                  }
+                })
+             })
+             that.space = space
+             let goodparms = {}
+             goodparms.goodsId = that.goodsId
+             goodparms.specs = specValueId.slice(0,-1);
+             let res = await api.GetProduct(goodparms)
+             console.log("查看子组件商品信息",res)
+             if(res.data.code == 0){
+               that.productId = res.data.product.productId
+               that.GoodsInfo.price = res.data.product.price
+               that.GoodsInfo.cost = res.data.product.cost
+               that.GoodsInfo.enableStore = res.data.product.enableStore
+             }else{
+               that.GoodsInfo.enableStore = 0
+             }
+              that.$emit('selectSpac',that.space)
+         }
      },
    
      //点击隐藏
@@ -71,9 +119,12 @@ export default {
      },
 
     //父组件触发的方法
-     emitEvent(index,Guige){
+     emitEvent(index,Guige,goodsId,productId){
      let that = this;
+     that.space = ''
      that.btnIndex = index;
+     that.goodsId = goodsId
+     that.productId = productId
      that.Guige = Guige
       let animation = wx.createAnimation({
         duration: 200, timingFunction: 'linear', delay: 100,  transformOrigin: 'left top 0',
@@ -93,8 +144,25 @@ export default {
 
     //点击加入购物车
     toCart(){
-      this.$emit('toCart')
+      this.$emit('toCart',this.count)
+    },
+    
+    //立即购买
+    toNext(){
+      this.$emit('toNext')
+    },
+
+    Plus(){
+      this.Num +=1
+      this.$emit('Num',this.Num)
+    },
+    Minu(){
+      if(this.Num>0){
+         this.Num -=1
+        this.$emit('Num',this.Num)
+      }
     }
+
   },
   
   mounted(){
@@ -140,4 +208,9 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
      .ModelBtn span{
        display: block;width: 90%;margin: auto;line-height: 80rpx;text-align: center;border-radius: 40rpx;background: rgb(254,102,3);color: #fff;font-weight: 100;
      }
+     .ModelNum{@include flexc;justify-content: space-between;padding: 20rpx;font-weight: 100;font-size: 32rpx;}
+    .priceright{background:#e7e7e7;@include flexc;height: 48rpx;
+     i{color: #fff;display: inline-block;width: 48rpx;height: 30rpx;line-height: 30rpx;text-align: center;font-weight: 100;font-size: 28rpx;}
+     span{background: #fff;display: inline-block;width: 30rpx;text-align: center;height: 40rpx;line-height: 40rpx;color: rgb(248,193,92);padding:0 15rpx;font-size: 28rpx;}
+   }
 </style>

@@ -185,6 +185,8 @@ export default {
   mounted(){
     let that = this;
     //获取传过来的的参数
+    
+    console.log(JSON.parse(this.$root.$mp.query.gooditem),"这边拿到的商品参数")
     that.GoodItem =JSON.parse(this.$root.$mp.query.gooditem);
     that.Cart = this.$root.$mp.query.cart;
     that.point = wx.getStorageSync('point')

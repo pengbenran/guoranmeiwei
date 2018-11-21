@@ -1,10 +1,11 @@
  import Fly from "flyio/dist/npm/wx";
 export default class Api{
   constructor() {
-     // this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
+      // this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
      // this.baseUrl = "https://www.etuetf.com"
      // this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
      this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
+     //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
     // this.baseUrl = "http://192.168.2.131/guoranhuiwei" 
     this.fly = new Fly;
     // this.fly.config.baseUrl=
@@ -373,5 +374,14 @@ export default class Api{
         resolve(GetProduct)
       })
     }
-
+    
+    //提交购物车
+    toCartSave(cartparms){
+      return new Promise((resolve, reject) =>{
+        let toCartSave = this.fly.post(this.baseUrl +'/api/shoppingCart/save',{parms:JSON.stringify(cartparms)},{headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+       }})
+        resolve(toCartSave)
+      }) 
+    }
 }
