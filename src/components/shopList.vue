@@ -4,9 +4,9 @@
      <div class="shopList">
        <!-- <div class="selectico"> <icon type="circle" class="ico" size="21" /></div> -->
 
-       <div class="itemLeft"><img :src="Shop_List.image"/></div>
+       <div class="itemLeft"><img :src="Shop_List.shopImg"/></div>
        <div class="itemRight">
-          <div class="title">{{Shop_List.name}}</div>
+          <div class="title">{{Shop_List.shopTitle}}</div>
           <small>{{Shop_List.specvalue}}</small>
           <div class="price">
              <div class="priceleft"><text>￥{{Shop_List.price}}元</text></div>

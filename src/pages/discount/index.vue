@@ -2,10 +2,9 @@
   <div class="bargain">
      <div class="header">
          <swiper class="swiper" indicator-dots='true' autoplay='true'>
-          <swiper-item v-for="(item,index) in Gallery" :key="item" :index="index"><img :src="item.original"></swiper-item>
+          <swiper-item v-for="(item,index) in Gallery" :key="item" :index="index"><img :src="item.imageUrl"></swiper-item>
         </swiper>
-      </div>
-     
+      </div>  
   <Discountlist :Shop_item='apiLimit'></Discountlist>
   </div>
 </template>
@@ -19,13 +18,10 @@ export default {
   components: {
     Discountlist
   },
-
   data () {
     return {
-          ImgList:{brand:config.imgUrl+'/group/header01.jpg',ShopImg:config.imgUrl+'/cart/shopimg01.jpg',
-          },
           apiLimit:[],
-          limitActive:[]
+          Gallery:[]
     }
   },
   methods:{
@@ -33,14 +29,10 @@ export default {
   },
   async onLoad() {
     let that=this
-    let limitRes= await api.getLimit()
-    let limitActive = [];
-    for (var i = 0; i < limitRes.data.apiLimit.length; i++) {
-      limitActive = limitActive.concat(limitRes.data.apiLimit[i].apilimitGoods)
-    }
-    that.apiLimit=limitActive
+    let limitRes= await api.getLimit(0,3)
+    that.apiLimit=limitRes.data.page.rows
+    that.Gallery=limitRes.data.adList
     console.log(that.apiLimit)
-    that.limitActive= limitRes.data.apiLimit
   }
 }
 </script>

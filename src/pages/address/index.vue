@@ -115,9 +115,12 @@ export default {
 
          }
         }
-         wx.navigateTo({
-          url: '../addressList/main',
+        wx.navigateBack({
+          delta: 1
         })
+        //  wx.navigateTo({
+        //   url: '../addressList/main',
+        // })
       }
 
     },

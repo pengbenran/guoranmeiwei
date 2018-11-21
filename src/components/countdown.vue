@@ -37,6 +37,7 @@ export default {
 		line-height: 40rpx;
 		background: #fc9632;
 		border-radius: 5rpx;
+		font-size: 0.8em;
 	}
 	.maohao{
 		color: #fc9632;

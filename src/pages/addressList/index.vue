@@ -59,6 +59,7 @@ export default {
     jumpOrder(e){
       let that=this
       wx.setStorageSync('addr',this.addressList[e])
+      console.log(that.jumpfrom);
       if(that.jumpfrom=='order'){
         wx.navigateTo({ url: '../order/main' });
       }
@@ -99,25 +100,31 @@ export default {
       })
     }
   },
-  async onLoad(){
+  async onShow(){
    let that=this
    that.memberId = wx.getStorageSync('memberId')
    let allAdderssRes=await api.getAllAddress(that.memberId)
    if(allAdderssRes.data.code==0){
       that.addressList=allAdderssRes.data.memberAddressList
    }
+     console.log("onshow");
+  },
+  onLoad(){
+    let that=this
+    console.log("onload");
    let pages = getCurrentPages();
    let prevpage = pages[pages.length-2];
-   if(prevpage.route=="pages/myself/main"||prevpage.route=="pages/address/main"){
+   if(prevpage.route=="pages/myself/main"){
      that.jumpfrom='myself'
    }
    else if(prevpage.route=="pages/order/main"){
-      that.jumpfrom='order'
+     that.jumpfrom='order'
    }
    else if(prevpage.route=="pages/orderOne/main"){
       that.jumpfrom='orderOne'
    }
   }
+
 }
 </script>
 

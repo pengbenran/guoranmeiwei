@@ -8,7 +8,7 @@
     <!--header end-->
     <div class="priceWarp">
       <div class="left">
-         <div class="tag">精选水果</div><div class="price">￥<text class="newPrice">9.90</text><text class="oldPrice">￥{{Goods.price}}</text></div>
+         <div class="tag">精选水果</div><div class="price">￥<text class="newPrice">{{finalAmount}}</text><text class="oldPrice">￥{{Goods.price}}</text></div>
       </div>
       <div class="right">
         <Timedown :countdown="countdown"></Timedown>
@@ -19,7 +19,7 @@
    <div class="shopInfo">
      <div class="shopTile fontHidden">{{Goods.name}}</div>
      <div class="shopTag">
-       <text>快递包邮</text><text>销量1345</text><text>江西南昌</text>
+       <text>快递包邮</text><text>销量{{Goods.buyCount}}</text><text>江西南昌</text>
      </div>
    </div>
    <!--shopInfo end-->
@@ -57,7 +57,7 @@
        </div>
        <div class="right">
          <div class="btnWarp">
-            <text>加入购物车</text><span></span><text @click="showModel">立即购买</text>
+            <text>加入购物车</text><span></span><text @click="jumporder">立即购买</text>
          </div>
        </div>
      </div>
@@ -88,25 +88,28 @@ export default {
     return {
           Area_item:[{AreaName:'湖北'},{AreaName:'江西'}],
           Weight_item:[{WeightName:'1kg'},{WeightName:'2kg'}],
-          ImgList:{ShopImg:config.imgUrl+'/cart/shopimg01.jpg',home:config.imgUrl+'/group/home.png',
-                   kefu:config.imgUrl+'/group/kefu.png',noshouChang:config.imgUrl+'/group/shoucan.png',shouChang:config.imgUrl+'/group/shoucang.png',touxiang:config.imgUrl+'/group/touxiang.jpg',
-                   btnInfoImg:config.imgUrl+'/group/TionInfo.jpg', qiang:config.imgUrl+'/discount/qiang.png',
-                    wenhao:config.imgUrl+'/discount/wenhao .png',InfoTitle:config.imgUrl+'/discount/InfoTitle.jpg'
+          ImgList:{home:config.imgUrl+'/group/home.png',kefu:config.imgUrl+'/group/kefu.png',noshouChang:config.imgUrl+'/group/shoucan.png',shouChang:config.imgUrl+'/group/shoucang.png',qiang:config.imgUrl+'/discount/qiang.png',wenhao:config.imgUrl+'/discount/wenhao .png',InfoTitle:config.imgUrl+'/discount/InfoTitle.jpg'
           },
-          kanList:[{touxiang:config.imgUrl+'/group/touxiang.jpg',Time:'2018-11-10 16:54',price:2.33},
-                   {touxiang:config.imgUrl+'/group/touxiang.jpg',Time:'2018-11-10 16:54',price:2.33}
-               ],
           modelShow:false,
           countdown:{},
           Gallery:[],
           Goods:{},
           memberId:'',
           posts:false,
+          finalAmount:'',
+          limitId:''
 
     }
   },
    methods: {
- 
+    jumporder(){
+      let that=this
+      let url=`../order/main?pic=1&goodsId=${that.Goods.goodsId }&activityPrice=${that.finalAmount}&limitId=${that.limitId}&Type=Z&goodname=${that.Goods.name}&price=${that.Goods.price}&goodsImg=${that.Goods.thumbnail}`
+      console.log(url);
+      wx.navigateTo({
+        url:url,
+      })
+    },
     //立即购买淡出模态框
     showModel(){
      let that = this;
@@ -120,9 +123,9 @@ export default {
      that.modelShow=false;
      console.log("点击了吗",that.modelShow)
     },
-    async getGood(goodsId){
+    async getGood(goodsId,memberId){
       let that=this
-      let goodsRes=await api.getGoods(goodsId,187)
+      let goodsRes=await api.getGoods(goodsId,memberId)
       that.Gallery=goodsRes.data.Gallery
       that.Goods=goodsRes.data.Goods
       if (Goods.count == 0) {
@@ -161,32 +164,33 @@ export default {
       }
     },
     cutTime(starttime,endtime){
-      // var that=this; 
-      // var leftTime = endtime - starttime;
-      // if (leftTime >= 0) {
-      //   var interval = setInterval(function () {
-      //   let cutTime={}
-      //   cutTime.days = parseInt(leftTime / 1000 / 60 / 60 / 24, 10); //计算剩余的天数
-      //   cutTime.hours = parseInt(leftTime / 1000 / 60 / 60 % 24, 10); //计算剩余的小时
-      //   cutTime.minutes = parseInt(leftTime / 1000 / 60 % 60, 10);//计算剩余的分钟
-      //   cutTime.seconds = parseInt(leftTime / 1000 % 60, 10);//计算剩余的秒数
-      //   leftTime = leftTime - 1000;
-      //   that.countdown=cutTime      
-      //   }, 1000)
-      //   if (leftTime <= 0) {
-      //     clearinterval(interval)
-      //   }
-      // }
+      var that=this; 
+      var leftTime = endtime - starttime;
+      if (leftTime >= 0) {
+        var interval = setInterval(function () {
+        let cutTime={}
+        cutTime.days = parseInt(leftTime / 1000 / 60 / 60 / 24, 10); //计算剩余的天数
+        cutTime.hours = parseInt(leftTime / 1000 / 60 / 60 % 24, 10); //计算剩余的小时
+        cutTime.minutes = parseInt(leftTime / 1000 / 60 % 60, 10);//计算剩余的分钟
+        cutTime.seconds = parseInt(leftTime / 1000 % 60, 10);//计算剩余的秒数
+        leftTime = leftTime - 1000;
+        that.countdown=cutTime      
+        }, 1000)
+        if (leftTime <= 0) {
+          clearinterval(interval)
+        }
+      }
     },
   
 
   },
   onLoad(options){
      var that=this;
-    that.memberId= wx.getStorageSync('memberId')
-     that.getGood(options.goodsId)
-     console.log(options)
-     var endtime=1541995932000
+     that.finalAmount=options.finalAmount
+     that.memberId= wx.getStorageSync('memberId')
+     that.getGood(options.goodsId,that.memberId)
+     that.limitId=options.limitId
+     var endtime=options.endTime
      var starttime = (new Date()).valueOf();
      that.cutTime(starttime,endtime)
      //页面渲染完成创建一个动画
