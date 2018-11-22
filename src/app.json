@@ -21,7 +21,9 @@
     "pages/address/main",
     "pages/addressList/main",
     "pages/storePay/main",
-    "pages/orderOne/main"
+    "pages/orderOne/main",
+    "pages/Recharge/main",
+    "pages/ranking/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

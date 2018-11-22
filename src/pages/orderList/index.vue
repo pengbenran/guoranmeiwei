@@ -19,7 +19,7 @@
             <div class="List">
               <div class="left"><img :src="shopItme.image"/></div>
               <div class="right">
-                  <div class="Itemtitle">{{shopItme.name}}</div>
+                  <div class="Itemtitle fontHidden">{{shopItme.name}}</div>
                   <div class="NumInfo">
                      <text class="tag">桃子水密桃</text>
                      <span><text class="Num">x {{shopItme.num}}</text><text class="price">￥{{shopItme.price}}</text></span> 

@@ -7,17 +7,30 @@
         <img :src="panel">
       </div>
       <div class="paneldetail">
-        <div class="panelleft">
-          <div class="panelcount">{{userInfo.point}}</div>
-          <div class="panelname">积分</div>
+        <div class="panelbox">
+          <div class="boxWarp">
+            <div class="panelcount">{{userInfo.point}}</div>
+            <div class="panelname">积分</div>
+          </div>
         </div>
-        <div class="panelcenter">
-          <div class="panelcount">34343</div>
-          <div class="panelname">余额/充值</div>
+        <div class="panelbox">
+          <div class="boxWarp" @click="topage('../Recharge/main')">
+            <div class="panelcount"  >34343</div>
+            <div class="panelname">余额/充值</div>
+          </div>
         </div>
-        <div class="panelright">
-          <div class="panelcount">{{vouchercount}}张</div>
-          <div class="panelname">优惠劵</div>
+        <div class="panelbox">
+          <div class="boxWarp">
+            <div class="panelcount">{{vouchercount}}张</div>
+            <div class="panelname">优惠劵</div>
+          </div>
+
+        </div>
+        <div class="panelbox">
+          <div class="boxWarp" @click="topage('../storePay/main')">
+            <div class="panelcount maidan"><img :src="pianbao"/></div>
+            <div class="panelname">买单</div>
+          </div>
         </div>
       </div>
     </div>
@@ -61,7 +74,8 @@ export default {
   data () {
     return {
      userInfo:{},
-     panel:config.imgUrl+"/myself/panel.jpg",
+     panel:config.imgUrl+"/myself/panel.png",
+     pianbao:config.imgUrl+"/myself/qianbao.png",
      orderitem:[
      {name:'待付款',icon:config.imgUrl+"/myself/daifukuan.png",statuscount:0},
      {name:'待发货',icon:config.imgUrl+"/myself/daifahuo.png",statuscount:0},
@@ -97,6 +111,7 @@ export default {
   methods: {
    //
    topage(url){
+     console.log("6666666666666")
     wx.navigateTo({ url: url });
    },
    jumpOrder(index){
@@ -104,7 +119,9 @@ export default {
     wx.navigateTo({
       url:'../orderList/main?currentTarget='+id
     })
-   }
+   },
+
+  
   }
 }
 </script>
@@ -130,20 +147,26 @@ export default {
     top: 0;
     left: 0;
   }
+
+  .paneldetail .boxWarp{height: 98rpx;}
+  .maidan img{width: 50rpx;height: 50rpx;margin: auto;}
+  .panelbox{line-height: 85rpx;display: flex;align-items: center;justify-content: center;flex-wrap: wrap;}
   .paneldetail{
     width: 100%;
     height: 100%;
     display: flex;
     position: absolute;
+    font-weight: 100;
+    font-size: 32rpx;
     top: 0;
     left: 0;
     div{
       width: 33%;
       text-align: center;
       div{
-        height: 80rpx;
+ 
         width: 100%;
-        line-height: 80rpx;
+        line-height: 50rpx;
       }
       .panelcount{
         font-size: 0.8em;

@@ -229,13 +229,15 @@ export default {
           
           //商品信息赋值
           GoodsInfo.specvalue = that.space
-          GoodsInfo.cart = 0
+          GoodsInfo.cart = '0'
           GoodsInfo.image = that.Goods.thumbnail
           GoodsInfo.num = that.pic
+          GoodsInfo.productId = that.productId
           delete GoodsInfo.intro
           
           //封装数据传值
           GoodsLIst[0] = GoodsInfo
+                    // console.log("你好世界12313212",GoodsInfo,GoodsLIst[0])
           Goods.googitem = GoodsLIst
           Goods.gainedpoint = that.pic * that.Goods.point
           Goods.weight = that.pic * that.Goods.weight

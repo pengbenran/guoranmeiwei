@@ -129,7 +129,8 @@
   export default {
     data() {
       return {
-        imgList:{logo:config.imgUrl+'/index/logo.jpg',shopImg:config.imgUrl+'/index/news.jpg',hotImg:config.imgUrl+'/index/hot.jpg',activityImg:config.imgUrl+'/index/activityImg.jpg',rilibg:config.imgUrl+'/index/rili.png',riliico:config.imgUrl+'/index/rilico.png',freeImgBg:config.imgUrl+'/index/freeBg.jpg',bottomBrand:config.imgUrl+'/index/bottomBrand.jpg',footerImg:config.imgUrl+'/index/footerImg.png', ico1:config.imgUrl+'/index/ico1.png'},
+        imgList:{logo:config.imgUrl+'/index/logo.jpg',shopImg:config.imgUrl+'/index/news.jpg',hotImg:config.imgUrl+'/index/hot.jpg',activityImg:config.imgUrl+'/index/activityImg.jpg',
+        rilibg:config.imgUrl+'/index/rili.png',riliico:config.imgUrl+'/index/rilico.png',freeImgBg:config.imgUrl+'/index/freeBg.jpg',bottomBrand:config.imgUrl+'/index/bottomBrand.jpg',footerImg:config.imgUrl+'/index/footerImg.png', ico1:config.imgUrl+'/index/ico1.png'},
         banner:[],
         hotgoodsList:[],
         seasonalCalendarRes:[],

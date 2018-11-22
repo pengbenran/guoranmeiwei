@@ -414,4 +414,13 @@ export default class Api{
         resolve(openCollageRes)
       })
     }
+    //订单页提交订单
+    OrderSave(bean){
+      return new Promise((resolve, reject) =>{
+        let toCartSave = this.fly.post(this.baseUrl +'/api/order/save',{ order:JSON.stringify(bean)},{headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+        }})
+        resolve(toCartSave)
+      }) 
+    }
 }
