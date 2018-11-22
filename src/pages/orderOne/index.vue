@@ -42,19 +42,22 @@
 
     <div class="OrderMask">
         <div class="MaskItem"><text>优惠券</text><text class="fensi">粉丝专享 ></text></div>
-        <div class="MaskItem">
+        <div class="MaskItem" @click="jifen(selectIco)">
           <text>积分</text>
-          <div class="jifen">可使用{{point}}积分，可抵扣5.90元  
-            <icon type="circle" size="16" v-if="iconBool"/><icon type="success" size="16" v-else/>
+          <div class="jifen">可使用{{point}}积分，可抵扣{{point_price}}元  
+            <icon :type="selectIco?'success':'circle'" size="16" v-if="iconBool"/><icon type="success" size="16" v-else/>
           </div>
         </div>
-        <div class="MaskItem"><text>备注:</text><input type="text" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;'></div>
+        <div class="MaskItem"><text>备注:</text><input type="text" v-model="InputMask" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;'></div>
     </div>
     <!--OrderMask end-->
 
      <div class="footerBnt">
        <div class="selectBtn"></div>
-       <div class="cartBtn"><div class="price">合计：9.9元<span>优惠：5.6元</span></div><div class="btn">结算</div></div>
+       <div class="cartBtn">
+         <div class="price">合计：{{GoodItem.goodsAmount}}元<span v-if="selectIco">优惠：{{point_price}}元</span></div>
+         <div class="btn" @click="toast">结算</div>
+       </div>
      </div>
      <!--footerBnt end-->
   </div>
@@ -62,7 +65,9 @@
 
 <script>
  import Api from "@/utils/Api"
+ import Lib from "@/utils/lib"
  import config from "@/config"
+ import util from "@/utils/index"
 //  import Shopaddr from '@/components/shopaddr'
  import OrderList from '@/components/shopList'
 
@@ -82,11 +87,16 @@ export default {
       selectIndex:1,
       AddressBtn:false,
       iconBool:true,
+      selectIco:false,
       GoodItem:[],
+      InputMask:'',
+      code:'',
       Cart:'',
       paymoney:'',
       quanquan:'',
       gainedpoint:'',
+      ordername:'',
+      point_price:0,
       addr:[],
       point:''
     }
@@ -150,22 +160,132 @@ export default {
                 title: '请稍等',
               })
               // 判断是否使用积分抵扣
-              if (that.data.select == true) {
-                if (that.data.goodsAmount - that.data.point_price <= 0) {
+              if (that.selectIco == true) {
+                if (that.GoodItem.goodsAmount - that.point_price <= 0) {
                   bean.orderAmount = 0.01
-                  bean.consumepoint = parseInt((that.data.goodsAmount - 0.01) * indexdata.pointCash)
+                  bean.consumepoint = parseInt((that.GoodItem.goodsAmount - 0.01) * indexdata.pointCash)
                 } else {
-                  bean.orderAmount = that.data.orderAmount - that.data.point_price
-                  bean.consumepoint = that.data.point
+                  bean.orderAmount = that.GoodItem.goodsAmount - that.point_price
+                  bean.consumepoint = that.point
                 }
               }
               else {
-                bean.orderAmount = that.data.orderAmount
+                bean.orderAmount = that.GoodItem.goodsAmount
                 bean.consumepoint = 0
               }
-          }
+
+              //提交方式不同
+              if(that.Cart == 0){
+                  bean.memberId = wx.getStorageSync('memberId');
+                  bean.image = that.GoodItem.googitem[0].image
+                  bean.weight = that.GoodItem.googitem[0].weight * that.GoodItem.googitem[0].num
+                  bean.shippingAmount = 0
+                  bean.googitem = []
+                  goodObj.price = that.GoodItem.googitem[0].price
+                  goodObj.name = that.GoodItem.googitem[0].name
+                  goodObj.num = that.GoodItem.googitem[0].num * 1
+                  goodObj.cart = that.GoodItem.googitem[0].cart
+                  goodObj.goodsId = that.GoodItem.googitem[0].goodsId
+                  goodObj.catId = that.GoodItem.googitem[0].catId
+                  goodObj.image = that.GoodItem.googitem[0].image
+                  goodObj.goodsAmount = that.GoodItem.googitem[0].price * that.GoodItem.googitem[0].num
+                  goodObj.productId = that.GoodItem.googitem[0].productId
+
+                    bean.googitem[0] = goodObj
+                    bean.point = that.point
+                    bean.gainedpoint = that.GoodItem.googitem[0].point
+                    bean.province = that.addr.province
+                    bean.city = that.addr.city
+                    bean.addr = that.addr.addr
+                    bean.region = that.addr.region
+                    bean.shipMobile = that.addr.mobile
+                    bean.shipName = that.addr.name
+                    bean.addrId = that.addr.addrId
+                    bean.clickd = that.InputMask
+                    bean.goodsAmount = that.GoodItem.googitem[0].price * that.GoodItem.googitem[0].num
+                    // bean = JSON.stringify(bean)
+                    // orderParms.order=bean
+                    that.saveOrder(bean)
+              }else{
+                //购物车提交订单
+                  bean.weight = that.weight
+                  bean.gainedpoint = that.gainedpoint
+                  bean.memberId = wx.getStorageSync('memberId');
+                  bean.goodsAmount = that.GoodItem.goodsAmount
+                  bean.shippingAmount = 0
+                  bean.googitem = that.GoodItem.googitem
+                  // bean = JSON.stringify(bean)
+                  // orderParms.order = bean
+                  that.saveOrder(bean)
+              }
+          } 
         },
     
+    //提交订单并支付
+    async saveOrder(bean){
+      let that = this;
+      let res = await api.OrderSave(bean)
+      wx.hideLoading()
+      if(res.data.code == 0){
+        Lib.Show("订单提交成功","success",2000)
+      }
+      let parms = {}
+      that.order = res.data.order
+       
+       //暂无判断优惠券红包
+       let orderId = res.data.order.orderId
+       let ordername =''
+        res.data.order.item.map(v =>{
+          if(res.data.order.item.length == 1){
+              ordername = v.name
+          }else{
+              ordername = v.name + '...'
+          }
+        })
+
+      //赋值
+      that.ordername = ordername
+      let payorderamount = res.data.order.orderAmount
+      let payordertime = util.formatTime(new Date(res.data.order.createTime))
+      parms.orderid = orderId
+      parms.sn = that.order.sn
+      parms.total_fee = payorderamount * 100
+
+      //请求支付
+      let PayRes = await api.ConfirmPay(parms,that.code)
+      wx.requestPayment({
+        timeStamp: PayRes.data.timeStamp, //时间戳从1970年1月1日00:00:00至今的秒数,即当前的时间,
+        nonceStr: PayRes.data.nonceStr, //随机字符串，长度为32个字符以下,
+        package: PayRes.data.package, //统一下单接口返回的 prepay_id 参数值，提交格式如：prepay_id=*,
+        signType: PayRes.data.signType, //签名算法，暂支持 MD5,
+        paySign: PayRes.data.paySign, //签名,具体签名方案参见小程序支付接口文档,
+        success: res => {
+          util.sendMsg(PayRes.data.package, orderId,payordertime,
+                        that.ordername, that.order.orderAmount)
+          Lib.Show("支付成功","success",2000)
+          setTimeout(function(){
+            wx.switchTab({ url: '../index/main' });
+          },1000)
+        }
+      });
+    },
+
+
+    //使用积分
+    jifen(select){
+        let that = this;
+        if(!select){
+          that.selectIco = true
+          if(that.GoodItem.goodsAmount - that.point_price <= 0){
+            that.GoodItem.goodsAmount = 0.01
+          }else{
+            that.GoodItem.goodsAmount = that.GoodItem.goodsAmount - that.point_price
+          }
+        }else if(select){
+          that.selectIco = false
+        }
+      },
+      
 
     //选择
     selectTo(index){
@@ -184,17 +304,28 @@ export default {
   },
   mounted(){
     let that = this;
-    //获取传过来的的参数
-    
-    console.log(JSON.parse(this.$root.$mp.query.gooditem),"这边拿到的商品参数")
+ 
     that.GoodItem =JSON.parse(this.$root.$mp.query.gooditem);
     that.Cart = this.$root.$mp.query.cart;
     that.point = wx.getStorageSync('point')
-    console.log("你好世界",that.GoodItem )
+    that.indexdata = wx.getStorageSync('indexdata')
+     
+     that.Order();
+
     //判断跳转链接
     let pages = getCurrentPages();
     let prevpage = pages[pages.length - 2];
-    console.log("查看页面",pages,prevpage)
+    that.point_price = Number(that.point/that.indexdata.pointCash).toFixed(2)
+    
+    //微信登录获取Code
+    wx.login({
+      success: res => {
+        if(res.code){
+          that.code = res.code
+        }
+      },
+    });
+
     if(prevpage.route=="pages/addressList/main"){
         that.GoodItem = wx.getStorageSync('GoodItem')
         that.addr = wx.getStorageSync('addr')
@@ -250,8 +381,8 @@ img{display: block;height: 100%;width: 100%;}
            box-shadow: 0px -7px 30px rgba(0,0,0,0.1);
     .selectBtn{@include flexc;padding-left: 15rpx;font-size: 36rpx;font-weight: 100;color: #8e8e8e;}
     .selectBtn icon{margin-right: 10rpx;}
-    .cartBtn{display: flex;justify-content: center;font-size: 36rpx;font-weight: 100;color: #8e8e8e;}
-    .price{height: 95rpx;margin-right: 15rpx;font-size: 34rpx;}
+    .cartBtn{display: flex;justify-content: center;align-items: center;font-size: 36rpx;font-weight: 100;color: #8e8e8e;}
+    .price{margin-right: 15rpx;font-size: 34rpx;}
     .price span{display: block;font-size: 24rpx;color: rgb(252,110,1);}
     .btn{background-image: -webkit-linear-gradient(0deg, rgb(255,191,3), rgb(252,148,53));height: 95rpx;line-height: 95rpx; width: 180rpx;text-align: center;color: #fff;}
 }

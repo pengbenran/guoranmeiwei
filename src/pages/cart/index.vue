@@ -144,7 +144,7 @@ export default {
             Goods.goodsAmount = goodsAmount
             Goods.shippingAmount = 0
             // Goods.orderAmount = that.AllPrice
-            Goods.gainedpoint = gainedpoint
+            // Goods.gainedpoint = gainedpoint
             gooditemString = JSON.stringify(Goods)
         })
         // console.log("跳转查看数据",gooditemString,Goods)
