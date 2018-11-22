@@ -196,7 +196,7 @@ export default {
     let that=this
     that.memberId= wx.getStorageSync('memberId')
     // let goodsRes=await api.getGoods(option.goodsId,187)
-    let goodsRes=await api.getGoods(19,187)
+    let goodsRes=await api.getGoods(option.goodsId,that.memberId)
     that.Gallery=goodsRes.data.Gallery
     that.Goods=goodsRes.data.Goods
     if (goodsRes.data.Goods.count == 0) {
@@ -204,10 +204,10 @@ export default {
     } else {   
       that.posts= true
     }
-    let getseleCollGoodsRes=await api.getseleCollGoods(2)
+    let getseleCollGoodsRes=await api.getseleCollGoods(option.collageGoodsId)
     that.collageGoodsDO=getseleCollGoodsRes.data.collageGoodsDO
     that.collageDO=getseleCollGoodsRes.data.collageDO
-    let getallStartCollage=await api.getallStartCollage(19)
+    let getallStartCollage=await api.getallStartCollage(option.goodsId)
    
     for (var i = 0; i < getallStartCollage.data.length; i++) {
       getallStartCollage.data[i].countDownHour=0

@@ -1,23 +1,21 @@
 <template>
-     <div>
-      <div class="ShopList">
-         <div class="item" v-for="(item,index) in Shop_item" :index='index' :key='item'>
-            <div class="item-warp" @click="jumpdetail(item.goodsId,item.limitId,item.cutId)">
-             <div class="left">
-                 <img :src="item.goodsDO.thumbnail" />
-             </div>
-             <div class="tight">
-                 <div class="title fontHidden">{{item.goodsDO.name}}</div>
-                 <div class="mask">{{item.maskInfo}}</div>
-                 <div class="price">
-                     <div class="priceLedt ">￥<text class="newPrice">{{item.finalAmount}}</text><text class="oldPrice">{{item.goodsPrice}}</text></div>
-                     <div class="priceRight"><img :src="btn" mode='aspectFit'/></div>
-                 </div>
-             </div>
+  <div class="ShopList">
+   <div class="item" v-for="(item,index) in Shop_item" :index='index' :key='item'>
+    <div class="item-warp" @click="jumpdetail(item.goodsId,item.limitId,item.endTime,item.finalAmount)">
+       <div class="left">
+           <img :src="item.thumbnail" />
+       </div>
+       <div class="right">
+           <div class="title fontHidden">{{item.goodsName}}</div>
+           <div class="mask">{{item.limitName}}</div>
+           <div class="price">
+               <div class="priceLeft ">￥<text class="newPrice">{{item.finalAmount}}</text><text class="oldPrice">{{item.goodsPrice}}</text></div>
+               <div class="priceRight"><img :src="btn" mode='aspectFit'/></div>
            </div>
-         </div>
-     </div>
-     </div>
+       </div>
+   </div>
+</div>
+</div>
 </template>
 <script>
 import config from "@/config"
@@ -29,9 +27,10 @@ export default {
     }
     },
     methods: {
-      jumpdetail:function(option1,option2){
+      jumpdetail:function(goodsId,limitId,endTime,finalAmount){
+        let url=`../discountInfo/main?goodsId=${goodsId}&limitId=${limitId}&endTime=${endTime}&finalAmount=${finalAmount}`
         wx.navigateTo({
-           url: '../discountInfo/main?limitId=' + option2 + '&goodsId=' + option1,
+           url: url,
         })        
       }
     }
@@ -56,9 +55,9 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
     .mask{font-size: 26rpx;color: rgb(255,128,104);font-weight: 100;}
     .title{height: 102rpx;font-weight: 100;font-size: 30rpx;color: #8e8e8e;}
     .price{@include flexc;justify-content: space-between;}
-    .priceLedt{font-size: 30rpx;font-weight: 100;color: rgb(252,78,79);}
-    .priceLedt .newPrice{font-size: 36rpx;margin-right: 10rpx;}
-    .priceLedt .oldPrice{font-size: 26rpx;font-weight: 100;color: #8e8e8e;text-decoration:line-through}
+    .priceLeft{font-size: 30rpx;font-weight: 100;color: rgb(252,78,79);}
+    .priceLeft .newPrice{font-size: 36rpx;margin-right: 10rpx;}
+    .priceLeft .oldPrice{font-size: 26rpx;font-weight: 100;color: #8e8e8e;text-decoration:line-through}
     .priceRight img{height: 60rpx;width: 160rpx;}
 }
 

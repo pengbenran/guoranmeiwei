@@ -1,8 +1,10 @@
  import Fly from "flyio/dist/npm/wx";
 export default class Api{
   constructor() {
-      this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
+      // this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
      // this.baseUrl = "https://www.etuetf.com"
+     // this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
+     this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
      //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
     // this.baseUrl = "http://192.168.2.131/guoranhuiwei" 
     this.fly = new Fly;
@@ -70,9 +72,12 @@ export default class Api{
     })
   }
   // 获取限时活动的列表
-  getLimit(){
+  getLimit(offset,limit){
     return new Promise((resolve, reject) => {
-       let limitRes=this.fly.get(this.baseUrl +'/api/activity/limit')
+       let params={}
+       params.offset=offset
+       params.limit=limit
+       let limitRes=this.fly.get(this.baseUrl +'/api/activity/limit',{params:JSON.stringify(params)})
        resolve(limitRes)
     })
   }

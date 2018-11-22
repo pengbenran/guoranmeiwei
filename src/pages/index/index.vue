@@ -35,7 +35,7 @@
       <div class="hot">
        <div class="hotBg "><img :src="imgList.hotImg" /></div>
        <div class="hotList">
-        <div class="hotItem skeleton-rect" v-for="(item,index) in hotgoodsList" :key="item" :index="index">
+        <div class="hotItem skeleton-rect" v-for="(item,index) in hotgoodsList" :key="item" :index="index" @click="jumpshopInfo(item.goodsId)">
           <div class="icoImg"><img :src="imgList.ico1"/></div>
           <div class="hotShop"><img :src="item.thumbnail"/></div>
           <span>已售{{item.buyCount}}件</span>
@@ -66,7 +66,7 @@
       <!-- <div class=""></div> -->
       <scroll-view  scroll-x style="height: 270rpx;">
         <div class="riliWarp" >
-          <div class="Item" v-for="(item,index) in seasonalCalendarRes" :index='index' :key='item'>
+          <div class="Item" v-for="(item,index) in seasonalCalendarRes" :index='index' :key='item' @click="jumpshopInfo(item.goodsId)">
              <div class="posIco"><img :src="imgList.riliico"/></div>
             <img :src="item.thumbnail"/>
           </div>
@@ -85,14 +85,18 @@
       <div class="freeListBg"><img :src="imgList.freeImgBg" /></div>
       <scroll-view class="scrollItem" scroll-x style="height: 335rpx;">
         <div class="freeItemWarp">
-          <div class="freeItem" v-for="(innerItem,innerIndex) in outitem.goodsDOList" :index='innerIndex' :key='innerItem'>
+          <div class="freeItem" v-for="(innerItem,innerIndex) in outitem.goodsDOList" :index='innerIndex' :key='innerItem' @click="jumpshopInfo(innerItem.goodsId)">
             <img :src="innerItem.thumbnail" /><div class="freeInfo">{{innerItem.name}}</div>
           </div>
-        </div>
+          <div class="loadMore">
+          查<br>看<br>更<br>多<br>
+          <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> 
+          </div>
+        </div>   
       </scroll-view>
     </div>
-    <div class="freeMore" @click="jumpmore(outitem.catid)">更多热销<i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </div>
-
+<!--     <div class="freeMore" @click="jumpmore(outitem.catid)">更多热销<i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </div>
+ -->
   </block>
 
   <!--free end-->
@@ -157,6 +161,9 @@
     methods: {
       jumpmore(catid){
       
+      },
+      jumpshopInfo(goodsId){
+         wx.navigateTo({ url: '/pages/shopInfo/main?goodsId='+goodsId });
       },
       async userLogin(){
         wx.showLoading({
@@ -324,7 +331,6 @@ img{display: block;width: 100%;height: 100%}
 }
 
 .riliWarp{display: flex;
-
   .Item{height: 250rpx;position: relative;}
     .Item img{width: 250rpx;height: 250rpx;margin: 15rpx;border-radius: 10rpx;}
     .posIco{position: absolute;left: 16%;top: -5rpx;margin-left: 32rpx;}
@@ -349,6 +355,7 @@ img{display: block;width: 100%;height: 100%}
   .freeItem{height: 310rpx;background: #fff;border-radius: 15rpx;margin: 10rpx;}
   .freeItem img{height: 215rpx;width: 82%;margin: auto;}
   .freeInfo{width: 260rpx;@include fontM;font-size: 26rpx;color: rgb(175, 175, 175);padding: 0 12rpx;}
+  .loadMore{width: 100rpx;background: #fff;height: 310rpx;text-align: center;color:#8a8a8a;}
 }
 .freeMore{font-size: 28rpx;color:#aaa9a9;text-align: center;font-weight: 100;
   i{color:rgb(231,177,59);margin-left: 8rpx;font-size: 32rpx;}
@@ -403,5 +410,6 @@ img{display: block;width: 100%;height: 100%}
 button::after {
   border: none;
 }
+
 </style>
 

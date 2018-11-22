@@ -19,10 +19,10 @@
   <!-- ZitiTime end -->
 
     <div class="AddressWarp" v-show='selectIndex==2'>
-      <div class="AddressBtn" v-if="isAddr" @click="toAddress">
+      <div class="AddressBtn" v-if="!isAddr" @click="toAddress">
           <i class="fa fa-plus" aria-hidden="true"></i><text>请填写收货地址</text>
       </div>
-      <div class="Address" v-else @click="toAddresslist">
+      <div class="Address" v-if="isAddr" @click="toAddresslist">
           <div class="Address-item">
               <div class="itemLeft">收货人</div>
               <div class="itemRight"><text>{{addr.name}}</text><text>{{addr.mobile}}</text></div>
@@ -33,28 +33,25 @@
           </div>
       </div>
      </div>
-      <!--Address end-->
-
-    <Shopaddr :shopname="shopname"></Shopaddr>
-     
+      <!--Address end-->  
     <OrderList :Shop_List='shopList'></OrderList>
     <!--OrderList end-->
 
     <div class="OrderMask">
         <!-- <div class="MaskItem"><text>优惠券</text><text class="fensi">粉丝专享 ></text></div> -->
-        <div class="MaskItem">
+       <!--  <div class="MaskItem">
           <text>积分</text>
           <div class="jifen">可使用590积分，可抵扣5.90元  
             <icon type="circle" size="16" v-if="iconBool"/><icon type="success" size="16" v-else/>
           </div>
-        </div>
+        </div> -->
         <div class="MaskItem"><text>备注:</text><input type="text" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;' v-model="msg"></div>
     </div>
     <!--OrderMask end-->
 
      <div class="footerBnt">
        <div class="selectBtn"></div>
-       <div class="cartBtn"><div class="price">合计：{{shopList.activityPrice}}元<span>优惠：{{shopList.price-shopList.activityPrice}}元</span></div><div class="btn" @click="orderPay">结算</div></div>
+       <div class="cartBtn"><div class="price">合计：{{shopList.activityPrice}}元<span>优惠：{{shopList.price*1-shopList.activityPrice*1}}元</span></div><div class="btn" @click="orderPay">{{tip}}</div></div>
      </div>
      <!--footerBnt end-->
   </div>
@@ -77,7 +74,7 @@ export default {
     return {
       ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg'},
       shopname:"王小姐水果店(抚生路点)",
-      shopList:{shopImg:'',shopTitle:'',mask:"你好世界",activityPrice:'',price:''},
+      shopList:{shopImg:'',shopTitle:'',mask:"你好世界",activityPrice:'',price:'',num:1},
       time: '12:01',
       selectIndex:1,
       isAddr:false,
@@ -90,7 +87,8 @@ export default {
       option:{},
       collagePersons:'',
       product:{},
-      msg:''
+      msg:'',
+      tip:''
     }
   },
   methods:{
@@ -189,6 +187,7 @@ export default {
         that.isAddr=false
       }
       else {
+        that.isAddr=true
         that.addr=addressRes.data.memberAddressDO
       }
   }
@@ -196,6 +195,7 @@ export default {
   
   onLoad(options){
    var that=this
+   console.log(options);
    that.option=options
    that.memberId= wx.getStorageSync('memberId')
    let pages = getCurrentPages();
@@ -207,16 +207,21 @@ export default {
    else{
     that.option=options
     that.getdefaultAddr()
-   that.Type= that.option.Type;
+    that.Type= that.option.Type;
    }
    that.getProduct()
+   that.shopList.shopImg= that.option.goodsImg;
+   that.shopList.shopTitle= that.option.goodname;
+   that.shopList.price= that.option.price;
+   that.shopList.activityPrice= that.option.activityPrice;
    if( that.option.Type=="K"){
      that.selectIndex=2
-     that.shopList.shopImg= that.option.goodsImg;
-     that.shopList.shopTitle= that.option.goodname;
-     that.shopList.price= that.option.price;
-     that.shopList.activityPrice= that.option.activityPrice;
      that.collagePersons=that.option.collagePersons
+     that.tip='立即开团'
+   }
+   else if(that.option.Type=='Z'){
+    that.limitId=options.limitId
+    that.tip='立即抢购'
    }
   }
 }
