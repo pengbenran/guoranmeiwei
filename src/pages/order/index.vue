@@ -73,7 +73,6 @@ export default {
   data () {
     return {
       ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg'},
-      shopname:"王小姐水果店(抚生路点)",
       shopList:{shopImg:'',shopTitle:'',mask:"你好世界",activityPrice:'',price:'',num:1},
       time: '12:01',
       selectIndex:1,
@@ -88,7 +87,8 @@ export default {
       collagePersons:'',
       product:{},
       msg:'',
-      tip:''
+      tip:'',
+      shopDetail:{}
     }
   },
   methods:{
@@ -127,13 +127,7 @@ export default {
       wx.setStorageSync('options',this.option)
       wx.navigateTo({ url: '../addressList/main' });
     },
-    orderPay(){
-      let that=this
-      if(that.Type=="K"){
-        that.kaituan()
-      }
-    },
-    kaituan(){
+   async orderPay(){
       let that=this
      if(that.addr == {}) {
       wx.showToast({
@@ -146,25 +140,23 @@ export default {
         wx.showLoading({
           title: '请稍等',
         })
+        // shipStatus  0派送 3派送
         bean.image = that.shopList.shopImg
         bean.memberId = that.memberId
         bean.orderAmount = that.shopList.activityPrice
         bean.weight = 0
         bean.shippingAmount = 0
-        bean.goodsAmount = that.shopList.activityPrice
+        bean.goodsAmount = that.shopList.price
         bean.googitem = []
         goodObj.price = that.shopList.price
         goodObj.name = that.shopList.shopTitle
         goodObj.num = 1
         goodObj.cart = 0
         goodObj.goodsId = that.shopList.goodsId
-        // goodObj.catId = that.data.Goods.catId
         goodObj.image = that.shopList.shopImg
-        goodObj.goodsAmount = that.shopList.activityPrice 
-        goodObj.collagePersons = that.collagePersons
+        goodObj.goodsAmount = that.shopList.price 
         goodObj.productId = that.product.productId
         bean.googitem[0] = goodObj
-        // var googitem = that.data.list; 
         bean.province = that.addr.province
         bean.city = that.addr.city
         bean.addr = that.addr.addr
@@ -172,9 +164,72 @@ export default {
         bean.shipMobile = that.addr.mobile
         bean.shipName = that.addr.name
         bean.addrId = that.addr.addrId
-        bean.clickd = that.msg
-        bean = JSON.stringify(bean)
-       console.log(bean)
+        bean.clickd = that.msg  
+        if(that.Type=="K"){
+          goodObj.collagePersons = that.collagePersons
+        }
+        else if(that.Type=='Z'){
+          bean.limitId = that.shopList.limitId
+        }
+        bean.shipStatus=0
+        
+        
+        
+        
+        
+   
+        // goodObj.catId = that.data.Goods.catId
+        
+        
+       
+        // var googitem = that.data.list; 
+        let orderSave=await api.oderSave(bean)
+        if(orderSave.data.code==0){
+          wx.hideLoading()
+          that.order=orderSave.data.order
+          var params={}
+          params.orderid = that.order.orderId
+          params.sn = that.order.sn
+          params.total_fee = that.order.needPayMoney*100
+          wx.login({
+            success: function (res) {
+              if (res.code) {
+                api.prepay(res.code,params).then(function(res){
+                  var pay=res.data
+                  wx.requestPayment({
+                    timeStamp: pay.timeStamp,
+                    nonceStr: pay.nonceStr,
+                    package: pay.package,
+                    signType: pay.signType,
+                    paySign: pay.paySign,
+                    success: function (res) {
+                      wx.showToast({
+                        title: '支付成功',
+                        icon: 'success',
+                        duration: 2000
+                      })
+                      // 支付成功之后开团
+                      var orderparams = {}
+                      orderparams.goodsId = that.shopList.goodsId
+                      orderparams.price = that.shopList.price
+                      orderparams.sn = that.order.sn
+                      orderparams.amounts = that.order.needPayMoney * 100
+                      orderparams.amount = that.order.needPayMoney
+                      orderparams.memberId = that.memberId
+                      orderparams.collagePersons = that.collagePersons
+                      orderparams.productId = that.product.productId
+                      orderparams.num = 1
+                      orderparams.orderId = that.order.orderId
+                      api.openCollage(orderparams).then(function(res){
+                        console.log(res);
+                      })
+                    }
+                  })
+                })
+              }
+            }
+          })
+        }
     }
     },
     //获取默认地址
@@ -200,6 +255,7 @@ export default {
    that.memberId= wx.getStorageSync('memberId')
    let pages = getCurrentPages();
    let prevpage = pages[pages.length-2];
+   that.shopDetail=wx.getStorageSync('shopDetail')
    if(prevpage.route=="pages/addressList/main"){
       that.option=wx.getStorageSync('options')
       that.addr=wx.getStorageSync('addr')
@@ -214,6 +270,7 @@ export default {
    that.shopList.shopTitle= that.option.goodname;
    that.shopList.price= that.option.price;
    that.shopList.activityPrice= that.option.activityPrice;
+   that.shopList.shopname=that.shopDetail.shopName
    if( that.option.Type=="K"){
      that.selectIndex=2
      that.collagePersons=that.option.collagePersons

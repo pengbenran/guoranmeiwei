@@ -142,7 +142,6 @@ export default {
   onLoad(options) {
     let that=this
     that.memberId = wx.getStorageSync('memberId')
-    console.log(options);
     if(options.addrId!=undefined){
       that.getAddrById(options.addrId)
       that.Type='edit'

@@ -3,10 +3,7 @@
     <Shopaddr :shopname="shopname"></Shopaddr>
       <div class="ShopHeader"><text>购物车</text><text @click="Edits">{{EditsName}}</text></div>
      <CartList :ShopList='ShopLists' @onSelect='SeleAllPrice' ref="childs"></CartList>
-
      <!--shopList end-->
-     
-
      <div class="DivHeigt"></div>
      <div class="footerBnt">
        <div class="selectBtn"  @click="AllSelect(SelectBool)"><icon type="success" class="ico" size="21" v-show="SelectBool"/>
@@ -38,10 +35,6 @@ export default {
     return {
      ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg'},
      shopname:"王小姐水果店(抚生路点)",
-     shopList:[{shopImg:config.imgUrl+'/cart/shopimg01.jpg',shopTitle:'福建馆溪平柚子好吃好甜你好世界你好世界你好世界你好世界你好世界你好世界',mask:"你好世界",p1:19,p2:9},
-          {shopImg:config.imgUrl+'/cart/shopimg01.jpg',shopTitle:'福建馆溪平柚子好吃好甜你好世界你好世界你好世界你好世界你好世界你好世界',mask:"你好世界",p1:19,p2:9},
-          {shopImg:config.imgUrl+'/cart/shopimg01.jpg',shopTitle:'福建馆溪平柚子好吃好甜你好世界你好世界你好世界你好世界你好世界你好世界',mask:"你好世界",p1:19,p2:9}
-          ],
      memberId:'',
      ShopLists:[],
      SelectBool:false,
@@ -55,11 +48,9 @@ export default {
    //加载初始化数据
    async onLoads(){
      let that = this;
-     let parms = {};
-     parms.memberId = that.memberId;
-     let res = await api.CartList(parms) 
+     let res = await api.CartList(that.memberId) 
      if(res.data.code != 1){
-        that.ShopLists = res.data.cartgoods.map(v=>{
+        that.ShopLists = res.data.cartList.map(v=>{
           v.selected = false
           return v
         })
@@ -78,7 +69,8 @@ export default {
       let that = this;
       that.SelectBool = !that.SelectBool
       that.ShopLists.map(v =>{
-          v.selected =  that.SelectBool;
+        v.selected = v.marketEnable==1 ?  that.SelectBool:false;
+        return v
       })
  
     //父组件触发子组件

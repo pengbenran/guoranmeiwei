@@ -9,22 +9,11 @@
     <!--header end-->
     <div class="title">附近门店</div>
     <!--title end-->
-
-    <div class="storeList">
-      <div class="storeTitle">南昌洪城金街店</div>
-      <div class="info"><text class="fontHidden1">江西省南昌市西湖区洪城路桃元城路桃元城路桃元</text>
+    <div class="storeList" v-for="(item,index) in shopList" :key="item" :index="index" @click="chooseshop(index)">
+      <div class="storeTitle">{{item.shopName}}</div>
+      <div class="info"><text class="fontHidden1">{{item.address}}</text>
           <div class="inforight">
-             <span class="jili"><img :src="ImgList.juli"/><text>33.05</text></span>
-             <span> <icon type="circle" color='rgb(252,153,47)'  size='20' v-if="icoBool" /><icon type="success" color='rgb(252,153,47)' size='20' v-else/></span>
-          </div>
-      </div>
-    </div>
-
-     <div class="storeList">
-      <div class="storeTitle">南昌洪城金街店</div>
-      <div class="info"><text class="fontHidden1">江西省南昌市西湖区洪城路桃元城路桃元城路桃元</text>
-          <div class="inforight">
-             <span class="jili"><img :src="ImgList.juli"/><text>33.05</text></span>
+             <span class="jili"><img :src="ImgList.juli"/><text>{{item.distance>1000?item.distance/1000+'km':item.distance+'m'}}</text></span>
              <span> <icon type="circle" color='rgb(252,153,47)'  size='20' v-if="icoBool" /><icon type="success" color='rgb(252,153,47)' size='20' v-else/></span>
           </div>
       </div>
@@ -38,8 +27,7 @@
  import Api from "@/utils/Api"
  import config from "@/config"
  import globalLoca from  '@/utils/qqmap-wx-jssdk'
-
-
+ let api=new Api
 export default {
   components: {
 
@@ -50,7 +38,9 @@ export default {
     return {
      ImgList:{map01:config.imgUrl+'/address/map01.png',juli:config.imgUrl+'/address/juli.png'},
      icoBool:true,
-     addressInfo:''
+     addressInfo:'',
+     shopList:[],
+     shopDetail:{}
     }
   },
   methods:{
@@ -63,6 +53,29 @@ export default {
       wx.getLocation({
           type: 'wgs84',
             success: function (res) {
+              let myaddr=res
+              api.getshopList().then(function(res){
+                res.data=res.data.map((v)=>{
+                  let locaArr=v.location.split(',')
+                  v.distance=that.getDistance(myaddr.latitude,myaddr.longitude,locaArr[0],locaArr[1])
+                  return v
+                })
+                for(var i=0;i<res.data.length-1;i++){
+                  for(var j=i+1;j<res.data.length;j++){
+                   if(res.data[i].distance>res.data[j].distance){
+                    var temp=res.data[i];
+                    res.data[i]=res.data[j];
+                    res.data[j]=temp;
+                  }
+                }
+              }
+              that.shopList=res.data
+              that.shopDetail=that.shopList[0]
+            }).catch(function(reason){
+              wx.showLoading({
+                title: '网络错误',
+              })
+            });
               //2、根据坐标获取当前位置名称，显示在顶部:腾讯地图逆地址解析
               qqmapsdk.reverseGeocoder({
                 location: {
@@ -76,8 +89,22 @@ export default {
               })
             }
         })
-
-    }
+    },
+    chooseshop:function(index){
+      let that=this
+      wx.setStorageSync('shopDetail',that.shopList[index])
+      wx.navigateBack({
+        delta: 1
+      })
+    },
+    getDistance: function (lat1, lng1, lat2, lng2) {
+      var rad1 = lat1 * Math.PI / 180.0;
+      var rad2 = lat2 * Math.PI / 180.0;
+      var a = rad1 - rad2;
+      var b = lng1 * Math.PI / 180.0 - lng2 * Math.PI / 180.0;
+      var r = 6378137;
+      return parseInt(r * 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(rad1) * Math.cos(rad2) * Math.pow(Math.sin(b / 2), 2)))) 
+    },
   },
   mounted(){
    this.onLoadMap();

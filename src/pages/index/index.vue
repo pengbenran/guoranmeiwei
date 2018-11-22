@@ -13,7 +13,7 @@
       </div>
       <!--header end-->
       <div class="tip  skeleton-Mrect">
-        <div class="logo"><img :src="imgList.logo"></div><text>王小贱鲜果零食优选(湖北武汉店))</text><small>[切换]</small>
+        <div class="logo"><img :src="imgList.logo"></div><span>{{shopDetail.shopName}}</span><small @click="changeShop">[切换]</small>
       </div>
       <!--tip end-->
       <div class="brand skeleton-Mrect">
@@ -143,7 +143,9 @@
         showSkeleton: false ,
         isMember:false,
         memberId:'',
-        advertisingIndex:[]   
+        advertisingIndex:[] ,
+        shopList:[],
+        shopDetail:{}
       }
     },
     components: {
@@ -155,11 +157,56 @@
       that.getTopIndex()
       that.getseasonalCalendar()
       that.getadvertisingIndex()
-    
+      that.getLoca()
+    },
+    onShow(){
+      this.shopDetail=wx.getStorageSync('shopDetail')
     },
     methods: {
+      getLoca(){
+        let that=this
+        wx.getLocation({
+         type: 'wgs84',
+         success (res) {
+          let myaddr=res
+          api.getshopList().then(function(res){
+            res.data=res.data.map((v)=>{
+              let locaArr=v.location.split(',')
+              v.distance=that.getDistance(myaddr.latitude,myaddr.longitude,locaArr[0],locaArr[1])
+              return v
+            })
+            for(var i=0;i<res.data.length-1;i++){
+              for(var j=i+1;j<res.data.length;j++){
+               if(res.data[i].distance>res.data[j].distance){
+                  var temp=res.data[i];
+                  res.data[i]=res.data[j];
+                  res.data[j]=temp;
+                }
+              }
+            }
+           that.shopList=res.data
+           wx.setStorageSync('shopDetail',that.shopList[0])
+          }).catch(function(reason){
+              wx.showLoading({
+                title: '网络错误',
+              })
+          });
+         }
+       })
+      },
       jumpmore(catid){
       
+      },
+      changeShop(){
+        wx.navigateTo({ url: '/pages/store/main'});
+      },
+      getDistance: function (lat1, lng1, lat2, lng2) {
+        var rad1 = lat1 * Math.PI / 180.0;
+        var rad2 = lat2 * Math.PI / 180.0;
+        var a = rad1 - rad2;
+        var b = lng1 * Math.PI / 180.0 - lng2 * Math.PI / 180.0;
+        var r = 6378137;
+        return parseInt(r * 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(rad1) * Math.cos(rad2) * Math.pow(Math.sin(b / 2), 2)))) 
       },
       jumpshopInfo(goodsId){
          wx.navigateTo({ url: '/pages/shopInfo/main?goodsId='+goodsId });
@@ -281,7 +328,8 @@ img{display: block;width: 100%;height: 100%}
   @include flexc;font-size: 27rpx;font-weight: 100;color: rgb(170, 170, 170);height: 78rpx;padding: 0 10rpx;border-bottom: 6rpx solid rgb(243,243,243);
    .logo{width: 140rpx;height: 94%;display: inline-block}
    .logo img{width: 140rpx;}
-   small{display: inline-block;margin-left: 6rpx;color: rgb(236,189,87);}
+   span{display: inline-block;width: 380rpx;overflow: hidden;}
+   small{display: inline-block;margin-left: 6rpx;color: rgb(236,189,87);float: right;}
  }
 
 .brand{

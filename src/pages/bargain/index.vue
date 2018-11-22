@@ -1,11 +1,14 @@
 <template>
   <div class="bargain">
-     <div class="header">
-        <swiper class="swiper" indicator-dots='true' autoplay='true'>
-          <swiper-item><img :src="ImgList.brand"></swiper-item>
-        </swiper>
-      </div>  
-      <Barlist :Shop_item='cutList'></Barlist>
+     <div class="banner" v-if="Gallery.length==1">
+      <img :src="Gallery[0].imageUrl"  mode="widthFix">
+    </div>
+    <div class="header" v-if="Gallery.length!=1">
+     <swiper class="swiper" indicator-dots='true' autoplay='true'>
+      <swiper-item v-for="(item,index) in Gallery" :key="item" :index="index"><img :src="item.imageUrl" mode="widthFix"></swiper-item>
+    </swiper>
+  </div> 
+  <Barlist :Shop_item='cutList'></Barlist>
   </div>
 </template>
 
@@ -21,16 +24,16 @@ export default {
 
   data () {
     return {
-          ImgList:{brand:config.imgUrl+'/group/header01.jpg',ShopImg:config.imgUrl+'/cart/shopimg01.jpg',
-          },
-          cutList:[]
+     cutList:[],
+     Gallery:[]
     }
   },
    async onLoad(){
     let that=this
     let cutlistRes=await api.getCutlist()
     console.log(cutlistRes.data)
-    that.cutList=cutlistRes.data.data
+    that.cutList=cutlistRes.data.cutList
+    taht.Gallery=cutlistRes.data.adList
 
   }
 }

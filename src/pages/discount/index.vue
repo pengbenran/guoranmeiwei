@@ -48,10 +48,5 @@ display: flex;align-items: center;
 white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
 }
 img{display: block;height: 100%;width: 100%;}
-.header{
-.swiper{height: 380rpx;}
-}
-
-
 
 </style>

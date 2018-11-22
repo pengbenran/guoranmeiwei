@@ -1,8 +1,13 @@
 <template>
   <div class="group">
-   <div class="banner">
-    <img :src="banner"  mode="widthFix">
-   </div>
+    <div class="banner" v-if="Gallery.length==1">
+    <img :src="Gallery[0].imageUrl"  mode="widthFix">
+  </div>
+  <div class="header" v-if="Gallery.length!=1">
+   <swiper class="swiper" indicator-dots='true' autoplay='true'>
+    <swiper-item v-for="(item,index) in Gallery" :key="item" :index="index"><img :src="item.imageUrl" mode="widthFix"></swiper-item>
+  </swiper>
+</div> 
    <Grouplist  :group_item="group_item"></Grouplist> 
   </div>
 </template>
@@ -14,16 +19,18 @@ import config from "@/config"
 export default {
   data() {
     return {
-      bcgImg:config.imgUrl+"/group/111.png",
-      banner:config.imgUrl+"/group/3333.png",
-      group_item:[]
+      group_item:[],
+      Gallery:[]
     }
   },
   async mounted(){
     let that=this
     let api= new Api 
     let res=await api.getGroupList()
-    that.group_item=res.data
+    that.group_item=res.data.collageList
+    console.log(that.group_item);
+    that.Gallery=res.data.adList
+    console.log(that.Gallery);
   },
   components: {
    Grouplist,

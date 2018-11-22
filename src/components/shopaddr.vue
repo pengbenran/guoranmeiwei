@@ -1,6 +1,6 @@
 <template>
   <div class="addr">
-   <div class="topImg"><img :src="topImg"/></div><text>{{shopname}}</text><small>[切换]</small>
+   <div class="topImg"><img :src="topImg"/></div><text>{{shopname}}</text>
   </div>
 </template>
 

@@ -272,9 +272,9 @@ export default class Api{
     }) 
   }
     //购物车所有订单
-    CartList(parms){
+    CartList(memberId){
       return new Promise((resolve,reject) =>{
-        let CartList = this.fly.get(this.baseUrl +'/api/shoppingCart/select',{parms:JSON.stringify(parms)})
+        let CartList = this.fly.get(this.baseUrl +'/api/shoppingCart/select',{memberId:memberId})
         resolve(CartList)
       })
     }
@@ -378,10 +378,40 @@ export default class Api{
     //提交购物车
     toCartSave(cartparms){
       return new Promise((resolve, reject) =>{
-        let toCartSave = this.fly.post(this.baseUrl +'/api/shoppingCart/save',{parms:JSON.stringify(cartparms)},{headers:{
+        let toCartSave = this.fly.post(this.baseUrl +'/api/shoppingCart/save',{params:JSON.stringify(cartparms)},{headers:{
         'Content-Type': 'application/x-www-form-urlencoded'
        }})
         resolve(toCartSave)
       }) 
+    }
+    //订单提交
+    oderSave(orderParam){
+     return new Promise((resolve, reject) =>{
+      let orderSave = this.fly.post(this.baseUrl +'/api/order/save',{order:JSON.stringify(orderParam)},{headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }})
+      resolve(orderSave)
+    }) 
+    }
+    // 获取店铺
+    getshopList(){
+      return new Promise((resolve, reject) =>{
+        let listShopRes=this.fly.get(this.baseUrl +'/api/index/listShop')
+        resolve(listShopRes)
+      })
+    }
+    // 微信支付
+    prepay(code,params){
+      return new Promise((resolve, reject) =>{
+        let prepayRes=this.fly.get(this.baseUrl +'/api/pay/prepay',{code:code,parms:JSON.stringify(params)})
+        resolve(prepayRes)
+      })
+    }
+    // 开团
+    openCollage(orderparams){
+      return new Promise((resolve, reject) =>{
+        let openCollageRes=this.fly.get(this.baseUrl +'/api/collage/openCollage',{params:JSON.stringify(orderparams)})
+        resolve(openCollageRes)
+      })
     }
 }

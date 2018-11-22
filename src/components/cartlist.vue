@@ -8,6 +8,7 @@
        </div>
        <div class="itemLeft"><img :src="Shop_List.image"/></div>
        <div class="itemRight">
+          <div class="status">状态:<span>{{Shop_List.marketEnable==1?'热销中':'已下架'}}</span></div>
           <div class="title">{{Shop_List.name}}</div>
           <small>{{Shop_List.specvalue}}</small>
           <div class="price">
@@ -42,7 +43,17 @@ export default {
     //选中
    selectCheck(index){
      let that = this;
-     that.ShopList[index].selected = !that.ShopList[index].selected
+     console.log(that.ShopList[index]);
+     if(that.ShopList[index].marketEnable==1){
+      that.ShopList[index].selected = !that.ShopList[index].selected
+     }
+     else{
+       wx.showToast({
+          title: "商品已下架无法购买",
+          icon: "none",
+          durantion: 2000
+        })   
+     }
      that.getTotalPrice()
   
    },
@@ -129,9 +140,13 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
 
 .CartWarp{box-shadow: 0 0 40rpx rgba(0, 0, 0, 0.123);border-radius: 30rpx;margin: 15rpx;}
 .shopList{@include flexc;padding: 0 10rpx;
+   .selectico{padding-right: 15rpx;box-sizing: border-box;}
    .itemLeft{width: 35%}
    .itemLeft img{width: 230rpx;height: 230rpx;margin: auto}
-   .itemRight{width: 65%;padding-right: 20rpx;}
+   .itemRight{width: 65%;padding-right: 20rpx; padding-left: 20rpx;box-sizing: border-box;}
+   .itemRight .status{height: 40rpx;text-align: right;color:#8e8e8e;font-size: 0.8em;
+    span{color: #fc9b2d;}
+   }
    .itemRight .title{@include fontM;height: 102rpx;font-weight: 100;font-size: 30rpx;color: #8e8e8e;}
    .itemRight small{font-size: 26rpx;color: #ccc;font-weight: 100;}
    .price{@include flexc;justify-content: space-between;}
