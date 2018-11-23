@@ -1,30 +1,27 @@
 <template>
 	<div class="group">
-		<div class="grouplist" v-for="(item,index) in group_item" :index="index" :key="item" @click="jumpgroupdetail(item.collageGoodsId,item.goodsId)">
+		<div class="grouplist" v-for="(item,index) in group_item" :index="index" :key="item" @click="jumpgroupdetail(item.collageGoodsId,item.goodsId,item.productId)">
 			<div class="groupimg">
 				<img :src="item.thumbnail">
 			</div>
 			<div class="groupdetail">
 				<div class="grouptop"> 
 					<div class="groupname">
-						{{item.goodsName}}
-					</div>
-					<div class="intro">
-						{{item.intro}}
+						{{item.productName}}
 					</div>
 				</div>
-				<div class="groupcenter">{{item.collagePersons}}人团</div>
+				<div class="groupcenter">
+          <div class="intro">{{item.productSpace}}</div>
+          <div>{{item.collagePersons}}人团</div>
+        </div>
 				<div class="groupbottom"> 
 					<div class="groupprice"> 
 						<div class="groupprice">拼团价:{{item.activityPrice}}</div>
-						<div class="price">零售价{{item.goodsPrice}}</div>
+						<div class="price">零售价{{item.productPrice}}</div>
 					</div>
-					<div class="icon">
-						<div class="bcgImg">
-							<img :src="bcgImg">
-						</div>
+					<!-- <div class="icon">
 						<div class="title">立即开团</div>
-					</div>
+					</div> -->
 				</div>
 			</div>
 		</div>
@@ -32,17 +29,17 @@
 </template>
 
 <script>
+import config from "@/config"
 export default {
   props: ['group_item'],
   data () {
     return {
-    	
     }
     },
     methods: {
-  		jumpgroupdetail:function(collageGoodsId,goodsId){
+  		jumpgroupdetail:function(collageGoodsId,goodsId,productId){
          wx.navigateTo({
-           url: '../groupdetail/main?collageGoodsId=' + collageGoodsId + '&goodsId=' + goodsId,
+           url: '../groupdetail/main?collageGoodsId=' + collageGoodsId + '&goodsId=' + goodsId+'&productId='+productId,
         })
       }
     }
@@ -85,8 +82,13 @@ img{
       }
     }
     .groupcenter{
+      display: flex;
+      justify-content: space-between;
       color:#fc9632;
       font-size: 0.9em;
+      .intro{
+        color:#8e8e8e;
+      }
     }
     .groupbottom{
       display: flex;
@@ -112,13 +114,10 @@ img{
           overflow: hidden;
         }
         .title{
-          position: absolute;
-          top: 0;
-          left: 0;
           width: 100%;
           height: 30px;
           line-height: 30px;
-          color: #fff;
+          color: #fc9632;
           text-align: center;
           
         }

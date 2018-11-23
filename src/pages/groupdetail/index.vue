@@ -23,15 +23,16 @@
      
      <div class="JoinGroup padding815rpx">
         <div class="title"><span></span><text>立即加入</text></div>
-        <div class="item" v-for="(item,index) in collages" :key="item" :index="index">
+        <div class="item" v-for="(item,index) in collages" :key="item" :index="index" v-if="hascollages">
           <div class="left">
             <div class="itemimg"><img :src="item.face"/></div><span>{{item.uname}}的团</span>
           </div>
           <div class="right">
              <div class="itemInfo"><span class="info">还差<text>{{item.shortPerson}}人</text>成团</span><span class="time">剩余{{item.countDownHour}}:{{item.countDownMinute}}:{{item.countDownSecond}}</span></div>
-             <div class="btn">去参团</div>
+             <div class="btn" @click="jumpGroup(item.memberCollageId)">去参团</div>
           </div>
         </div>
+        <div class="tip" v-if="!hascollages">暂无拼团数据</div>
      </div>
      <!--JoinGroup end-->
      
@@ -97,7 +98,9 @@ export default {
       collageDO:{},
       collages:[],
       posts:false,
-      memberId:''
+      memberId:'',
+      productId:'',
+      hascollages:true
     }
   },
   components: {
@@ -111,10 +114,15 @@ export default {
      //父组件控制子组件
      that.$refs.childs.emitEvent();
     },
+    async getProduct(goodsId,memberId){
+      let that=this
+      let productRes=await api.getProduct(goodsId,memberId)
+      that.product=productRes.data.product
+    },
     jumpOrder(){
       var that = this;
       if (that.Goods.enableStore>0) {  
-        let url=`../order/main?goodsImg=${that.Goods.thumbnail}&goodname=${that.Goods.name}&activityPrice=${that.collageGoodsDO.activityPrice}&collagePersons='${that.collageDO.collagePersons}&Type=K&price=${that.Goods.price}&goodsId=${that.Goods.goodsId}`
+        let url=`../order/main?goodsImg=${that.Goods.thumbnail}&goodname=${that.Goods.name}&activityPrice=${that.collageGoodsDO.activityPrice}&collagePersons=${that.collageDO.collagePersons}&Type=K&price=${that.Goods.price}&goodsId=${that.Goods.goodsId}&productId=${that.productId}`
          wx.navigateTo({
           url:url,
         })
@@ -126,6 +134,38 @@ export default {
           durantion: 2000
         })   
       }  
+    },
+   async jumpGroup(memberCollageId){
+      let that=this;
+      let cantuanParams = {}
+      cantuanParams.memberId = that.memberId
+      cantuanParams.memberCollageId = memberCollageId
+
+     let collageRes=await api.joinCollageRepetition(cantuanParams)
+     if(collageRes.data.code==0){
+      // 可以参团
+      if (that.Goods.enableStore>0) { 
+        let url= `../order/main?goodsImg=${that.Goods.thumbnail}&goodname=${that.Goods.name}&activityPrice=${that.collageGoodsDO.activityPrice}&memberCollageId=${memberCollageId}&Type=C&price=${that.Goods.price}&goodsId=${that.Goods.goodsId}&productId=${that.productId}`
+        wx.navigateTo({
+          url: url,
+        })
+      }
+      else{
+         wx.showToast({
+          title: "库存不够！",
+          icon: "success",
+          durantion: 2000
+        })   
+      }
+     }
+     else{
+      // 不能参团
+      wx.showToast({
+        title: '您已经参过这个团了哦',
+        icon: 'none',
+        duration: 2000
+      })
+     }
     },
     hidebuyModel(){
        //是否传值
@@ -197,6 +237,7 @@ export default {
     that.memberId= wx.getStorageSync('memberId')
     // let goodsRes=await api.getGoods(option.goodsId,187)
     let goodsRes=await api.getGoods(option.goodsId,that.memberId)
+    that.productId=option.productId
     that.Gallery=goodsRes.data.Gallery
     that.Goods=goodsRes.data.Goods
     if (goodsRes.data.Goods.count == 0) {
@@ -207,15 +248,21 @@ export default {
     let getseleCollGoodsRes=await api.getseleCollGoods(option.collageGoodsId)
     that.collageGoodsDO=getseleCollGoodsRes.data.collageGoodsDO
     that.collageDO=getseleCollGoodsRes.data.collageDO
-    let getallStartCollage=await api.getallStartCollage(option.goodsId)
+    api.getallStartCollage(option.productId).then(function(getallStartCollage){
+      console.log('z执行了');
+      for (var i = 0; i < getallStartCollage.data.length; i++) {
+        getallStartCollage.data[i].countDownHour=0
+        getallStartCollage.data[i].countDownMinute=0
+        getallStartCollage.data[i].countDownSecond=0
+        that.countdown(i, getallStartCollage.data[i].collageStarttime)
+      }
+      that.collages=getallStartCollage.data
+    }).catch(function(res){
+      that.collages=[]
+      clearinterval(interval)
+      that.hascollages=false
+    })
    
-    for (var i = 0; i < getallStartCollage.data.length; i++) {
-      getallStartCollage.data[i].countDownHour=0
-      getallStartCollage.data[i].countDownMinute=0
-      getallStartCollage.data[i].countDownSecond=0
-      // that.countdown(i, getallStartCollage.data[i].collageStarttime)
-    }
-    that.collages=getallStartCollage.data
   },
   
   onShareAppMessage: function () {
@@ -257,7 +304,7 @@ img{display: block;height: 100%;width: 100%;}
 }
 
 .shopTitle{padding: 0 15rpx;@include flexc;
-  .left{font-weight: 100;font-size: 32rpx;height: 100rpx;}
+  .left{font-weight: 100;font-size: 32rpx;height: 100rpx;flex-grow:1;}
   .right{width: 180rpx;height: 110rpx;text-align: center;padding-top: 10rpx;}
   .right img{height: 60rpx;width: 60rpx;margin: auto;}
   .fenxiang{color: #8e8e8e;}

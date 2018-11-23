@@ -112,7 +112,6 @@ export default {
             icon: 'success',
             duration: 1500
           })
-
          }
         }
         wx.navigateBack({

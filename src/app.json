@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/main",
+    "pages/distribe/main",
     "pages/coupon/main",
     "pages/shopInfo/main",
     "pages/grouplist/main",

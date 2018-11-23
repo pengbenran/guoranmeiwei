@@ -58,7 +58,7 @@ export default {
     },
     jumpOrder(e){
       let that=this
-      wx.setStorageSync('addr',this.addressList[e])
+      wx.setStorageSync('addr',that.addressList[e])
       if(that.jumpfrom=='order'){
         wx.navigateTo({ url: '../order/main' });
       }

@@ -146,8 +146,9 @@
         memberId:'',
         advertisingIndex:[] ,
         shopList:[],
-        shopDetail:{}
-      }
+        shopDetail:{},
+        addr:{a:'2222'}
+      } 
     },
     components: {
       skeleton
@@ -161,6 +162,7 @@
       that.getLoca()
     },
     onShow(){
+      wx.setStorageSync('addr','noaddr')
       this.shopDetail=wx.getStorageSync('shopDetail')
     },
     methods: {
@@ -213,6 +215,7 @@
          wx.navigateTo({ url: '/pages/shopInfo/main?goodsId='+goodsId });
       },
       async userLogin(){
+        let that=this
         wx.showLoading({
           title: '加载中',
         })
@@ -272,7 +275,7 @@
         var that=this;
         if (e.mp.detail.rawData){
           //用户按了允许授权按钮
-          that.getUserInfo();
+          // that.getUserInfo();
         } else {
           //用户按了拒绝按钮
         }
@@ -288,9 +291,9 @@
               success: function (res_user) {
                 console.log(res_user)
                 api.weCatLogin(res.code,res_user.userInfo.avatarUrl,res_user.userInfo.nickName,res_user.userInfo.gender,res_user.userInfo.country,res_user.userInfo.province,res_user.userInfo.city).then(function(res){
-                  console.log(res.data.code==0)
                   if(res.data.code==0){
                     that.isMember=false
+                    that.userLogin()
                     wx.showTabBar({})
                   }
                 }) 

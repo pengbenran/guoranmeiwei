@@ -19,7 +19,7 @@
   <!-- ZitiTime end -->
 
     <div class="AddressWarp" v-show='selectIndex==2'>
-      <div class="AddressBtn" v-if="!isAddr" @click="toAddress">
+      <div class="AddressBtn" v-if="!isAddr" @click="toAddresslist">
           <i class="fa fa-plus" aria-hidden="true"></i><text>请填写收货地址</text>
       </div>
       <div class="Address" v-if="isAddr" @click="toAddresslist">
@@ -73,7 +73,7 @@ export default {
   data () {
     return {
       ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg'},
-      shopList:{shopImg:'',shopTitle:'',mask:"你好世界",activityPrice:'',price:'',num:1},
+      shopList:{shopImg:'',shopTitle:'',mask:"你好世界",activityPrice:'',price:'',num:1,goodsId:'',productId:''},
       time: '12:01',
       selectIndex:1,
       isAddr:false,
@@ -88,7 +88,8 @@ export default {
       product:{},
       msg:'',
       tip:'',
-      shopDetail:{}
+      shopDetail:{},
+      memberCollageId:''
     }
   },
   methods:{
@@ -101,7 +102,7 @@ export default {
     //选择
     selectTo(index){
       let that = this;
-      if(that.Type=="K"){
+      if(that.Type=="K"||that.Type=="C"){
         wx.showToast({
           title: "拼团暂不支持自提",
           icon: "none",
@@ -113,34 +114,58 @@ export default {
       
     },
     // 获取货品信息
-    async getProduct(){
-      let that=this
-      let productRes=await api.getProduct(that.shopList.goodsId,that.memberId)
-      that.product=productRes.data.product
-    },
+    // async getProduct(){
+    //   let that=this
+    //   let productRes=await api.getProduct(that.shopList.goodsId,that.memberId)
+    //   that.product=productRes.data.product
+    // },
     //跳转
-    toAddress(){
-      wx.setStorageSync('options',this.option)
-      wx.navigateTo({ url: '../address/main' });
-    },
+    // toAddress(){
+    //   wx.setStorageSync('options',this.option)
+    //   wx.navigateTo({ url: '../address/main' });
+    // },
     toAddresslist(){
       wx.setStorageSync('options',this.option)
       wx.navigateTo({ url: '../addressList/main' });
     },
    async orderPay(){
       let that=this
+      console.log(that.shopList);
      if(that.addr == {}) {
       wx.showToast({
         title: '请添加地址',
       })
     }
     else{
+        if(that.Type=='C'){
+         var judgeIsCollagedRes=await api.judgeIsCollaged(that.memberCollageId)
+         if(judgeIsCollagedRes.data.code==1){
+           wx.showToast({
+            icon:'none',
+            title: '手慢了，已成团'
+          })
+           setTimeout(function(){
+            wx.switchTab({
+              url: '../index/main',
+            })
+          },1000) 
+         }else{
+           that.orderSave()
+         }
+        }
+        else{
+          that.orderSave()
+        }   
+        // shipStatus  0派送 3派送
+      }
+    },
+   async orderSave(){
+        let that=this
         var bean = {}
         var goodObj={}
         wx.showLoading({
           title: '请稍等',
         })
-        // shipStatus  0派送 3派送
         bean.image = that.shopList.shopImg
         bean.memberId = that.memberId
         bean.orderAmount = that.shopList.activityPrice
@@ -155,7 +180,7 @@ export default {
         goodObj.goodsId = that.shopList.goodsId
         goodObj.image = that.shopList.shopImg
         goodObj.goodsAmount = that.shopList.price 
-        goodObj.productId = that.product.productId
+        goodObj.productId = that.shopList.productId
         bean.googitem[0] = goodObj
         bean.province = that.addr.province
         bean.city = that.addr.city
@@ -170,6 +195,9 @@ export default {
         }
         else if(that.Type=='Z'){
           bean.limitId = that.shopList.limitId
+        }
+        else if(that.Type=='C'){
+          goodObj.memberCollageId = that.memberCollageId
         }
         bean.shipStatus=0
         
@@ -190,17 +218,19 @@ export default {
           var params={}
           params.orderid = that.order.orderId
           params.sn = that.order.sn
+          // wxc6a44ea909442b31
           params.total_fee = that.order.needPayMoney*100
           wx.login({
             success: function (res) {
               if (res.code) {
                 api.prepay(res.code,params).then(function(res){
                   var pay=res.data
+                  console.log(pay.timeStamp,pay.nonceStr);
                   wx.requestPayment({
                     timeStamp: pay.timeStamp,
                     nonceStr: pay.nonceStr,
                     package: pay.package,
-                    signType: pay.signType,
+                    signType: pay.signType, 
                     paySign: pay.paySign,
                     success: function (res) {
                       wx.showToast({
@@ -208,21 +238,89 @@ export default {
                         icon: 'success',
                         duration: 2000
                       })
-                      // 支付成功之后开团
-                      var orderparams = {}
-                      orderparams.goodsId = that.shopList.goodsId
-                      orderparams.price = that.shopList.price
-                      orderparams.sn = that.order.sn
-                      orderparams.amounts = that.order.needPayMoney * 100
-                      orderparams.amount = that.order.needPayMoney
-                      orderparams.memberId = that.memberId
-                      orderparams.collagePersons = that.collagePersons
-                      orderparams.productId = that.product.productId
-                      orderparams.num = 1
-                      orderparams.orderId = that.order.orderId
-                      api.openCollage(orderparams).then(function(res){
-                        console.log(res);
+                      if(that.Type=='K'){
+                        // 支付成功之后开团
+                        var orderparams = {}
+                        orderparams.goodsId = that.shopList.goodsId
+                        orderparams.price = that.shopList.price
+                        orderparams.sn = that.order.sn
+                        orderparams.amounts = that.order.needPayMoney * 100
+                        orderparams.amount = that.order.needPayMoney
+                        orderparams.memberId = that.memberId
+                        orderparams.collagePersons = that.collagePersons
+                        orderparams.productId = that.shopList.productId
+                        orderparams.num = 1
+                        orderparams.orderId = that.order.orderId
+                        api.openCollage(orderparams).then(function(res){
+                          var kaituanrest=res.data 
+                          return api.collagePayReturn(orderparams)
+                        }).then(function(res){
+                          wx.showToast({
+                            title: '开团成功',
+                            icon: 'success',
+                            duration: 2000
+                          })
+                          var parmss = {}
+                          parmss.price = kaituanrest.price
+                          parmss.activityPrice = kaituanrest.activityPrice
+                          parmss.goodsId = kaituanrest.goodsId
+                          parmss.goodsName = kaituanrest.goodsName
+                          parmss.memberCollageId = kaituanrest.memberCollageId
+                          parmss.img = kaituanrest.img
+                          parmss.shortPerson = kaituanrest.shortPerson
+                          if (kaituanrest.shortPerson == 0) {
+                            parmss.iscollage = 1
+                          }
+                          else {
+                            parmss.iscollage = 2
+                          }
+                          parmss = JSON.stringify(parmss)
+                          // wx.navigateTo({
+                          //   url: '../cantuan/cantuan?shops= ' + parmss,
+                          // })
+                        })
+                      }
+                      else if(that.Type=="C"){
+                        // 参团
+                        let cantuanparams = {}
+                        cantuanparams.orderId = that.order.orderId
+                        api.collagePayReturn(cantuanparams).then(function(res){
+                            let cantuanorderparams = {}
+                            cantuanorderparams.goodsId = that.shopList.goodsId
+                            cantuanorderparams.price = that.shopList.price
+                            cantuanorderparams.sn = that.order.sn
+                            cantuanorderparams.amounts = that.order.needPayMoney* 100
+                            cantuanorderparams.amount = that.order.needPayMoney
+                            cantuanorderparams.memberId = that.memberId
+                            cantuanorderparams.memberCollageId = that.memberCollageId
+                            cantuanorderparams.productId = that.shopList.productId
+                            cantuanorderparams.num = 1
+                            cantuanorderparams.orderId = that.order.orderId
+                         return api.joinCollage(cantuanorderparams)
+                        }).then(function(res){
+                          console.log(res);
+                          wx.showToast({
+                            title: '参团成功',
+                            icon: 'success',
+                            duration: 2000
+                          })
+                        })
+                      }
+                    
+                    },
+                    fail: function (res) {
+                      // fail   
+                      console.log(res);
+                      wx.showToast({
+                        title: '支付失败',
+                        icon: 'success',
+                        duration: 2000
                       })
+
+                    },
+                    complete: function (complete) {
+                      // complete   
+                      console.log(complete)
                     }
                   })
                 })
@@ -230,7 +328,6 @@ export default {
             }
           })
         }
-    }
     },
     //获取默认地址
     async getdefaultAddr(){
@@ -239,7 +336,13 @@ export default {
       addParms.memberId = that.memberId
       let addressRes=await api.getdefaultAddr(addParms)
       if (addressRes.data.code == 1) {
-        that.isAddr=false
+        that.addr=wx.getStorageSync('addr')
+        if(wx.getStorageSync('addr')=='noaddr'){
+           that.isAddr=false
+        }
+        else{
+          that.isAddr=true
+        }
       }
       else {
         that.isAddr=true
@@ -265,8 +368,10 @@ export default {
     that.getdefaultAddr()
     that.Type= that.option.Type;
    }
-   that.getProduct()
+   // that.getProduct()
    that.shopList.shopImg= that.option.goodsImg;
+   that.shopList.productId=that.option.productId
+   that.shopList.goodsId=that.option.goodsId
    that.shopList.shopTitle= that.option.goodname;
    that.shopList.price= that.option.price;
    that.shopList.activityPrice= that.option.activityPrice;
@@ -277,9 +382,19 @@ export default {
      that.tip='立即开团'
    }
    else if(that.option.Type=='Z'){
-    that.limitId=options.limitId
+    that.limitId=that.option.limitId
     that.tip='立即抢购'
    }
+   else if(that.option.Type=='C'){
+    that.selectIndex=2
+    that.memberCollageId=that.option.memberCollageId
+    that.tip='立即参团'
+   }
+  },
+  onShow(){
+    if(wx.getStorageSync('addr')!='noaddr'){
+      this.addr=wx.getStorageSync('addr')
+    }   
   }
 }
 </script>

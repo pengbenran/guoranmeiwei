@@ -5,7 +5,7 @@ export default class Api{
      // this.baseUrl = "https://www.etuetf.com"
      // this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
      this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
-     //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
+     // this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
     // this.baseUrl = "http://192.168.2.131/guoranhuiwei" 
     this.fly = new Fly;
     // this.fly.config.baseUrl=
@@ -45,7 +45,7 @@ export default class Api{
       let goodsParms = {}
       goodsParms.goodsId = goodsId
       goodsParms.memberId = memberId
-      let res=this.fly.get(this.baseUrl +'/api/Goods/getGoods',{parms:JSON.stringify(goodsParms)})
+      let res=this.fly.get(this.baseUrl +'/api/Goods/getGoods',{params:JSON.stringify(goodsParms)})
       resolve(res)
     })
   }
@@ -65,9 +65,9 @@ export default class Api{
     })
   }
   // 获取所有正在拼团的数据
-  getallStartCollage(goodsId){
+  getallStartCollage(productId){
      return new Promise((resolve, reject) => {
-      let res=this.fly.get(this.baseUrl +'/api/collage/allStartCollage',{goodsId:goodsId})
+      let res=this.fly.get(this.baseUrl +'/api/collage/allStartCollage',{productId:productId})
       resolve(res)
     })
   }
@@ -360,20 +360,20 @@ export default class Api{
     }
 
     //获取商品信息
-    getGoodsInfo(goodparms){
-      return new Promise((resolve, reject) =>{
-        let getGoodsInfo = this.fly.get(this.baseUrl +'/api/Goods/getGoods',{parms:JSON.stringify(goodparms) })
-        resolve(getGoodsInfo)
-      })
-    }
+    // getGoodsInfo(goodparms){
+    //   return new Promise((resolve, reject) =>{
+    //     let getGoodsInfo = this.fly.get(this.baseUrl +'/api/Goods/getGoods',{parms:JSON.stringify(goodparms) })
+    //     resolve(getGoodsInfo)
+    //   })
+    // }
 
     //获取商品信息
-    GetProduct(goodparms){
-      return new Promise((resolve, reject) =>{
-        let GetProduct = this.fly.get(this.baseUrl +'/api/Goods/getProduct',{parms:JSON.stringify(goodparms) })
-        resolve(GetProduct)
-      })
-    }
+    // GetProduct(goodparms){
+    //   return new Promise((resolve, reject) =>{
+    //     let GetProduct = this.fly.get(this.baseUrl +'/api/Goods/getProduct',{parms:JSON.stringify(goodparms) })
+    //     resolve(GetProduct)
+    //   })
+    // }
     
     //提交购物车
     toCartSave(cartparms){
@@ -422,5 +422,37 @@ export default class Api{
         }})
         resolve(toCartSave)
       }) 
+    }
+    // 开团成功回调修改订单状态
+    collagePayReturn(params){
+        return new Promise((resolve, reject) =>{
+        let collagePayReturn = this.fly.put(this.baseUrl +'/api/order/collagePayReturn',{ params:JSON.stringify(params)},{headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+        }})
+        resolve(collagePayReturn)
+      }) 
+    }
+    // 判断能否参团
+    joinCollageRepetition(params){
+       return new Promise((resolve, reject) =>{
+        let toCartSave = this.fly.post(this.baseUrl +'/api/collage/joinCollageRepetition',{ params:JSON.stringify(params)},{headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+        }})
+        resolve(toCartSave)
+      }) 
+    }
+    // 判断是否成团
+    judgeIsCollaged(memberCollageId){
+      return new Promise((resolve, reject) =>{
+        let judgeIsCollagedRes=this.fly.get(this.baseUrl +'/api/collage/judgeIsCollaged',{memberCollageId:memberCollageId})
+        resolve(judgeIsCollagedRes)
+      })
+    }
+    // 支付成功后参团
+    joinCollage(cantuanorderparams){
+      return new Promise((resolve, reject) =>{
+        let joinCollage=this.fly.get(this.baseUrl +'/api/collage/joinCollage',{ params:JSON.stringify(cantuanorderparams)})
+        resolve(joinCollage)
+      })
     }
 }

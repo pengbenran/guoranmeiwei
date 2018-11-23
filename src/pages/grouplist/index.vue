@@ -27,6 +27,12 @@ export default {
     let that=this
     let api= new Api 
     let res=await api.getGroupList()
+    res.data.collageList=res.data.collageList.map((v)=>{
+     let splitArry= v.productName.split('|')
+     v.productName=splitArry[0];
+     v.productSpace=splitArry[1]
+     return v
+    })
     that.group_item=res.data.collageList
     console.log(that.group_item);
     that.Gallery=res.data.adList
