@@ -306,6 +306,7 @@ export default {
     let that = this;
  
     that.GoodItem =JSON.parse(this.$root.$mp.query.gooditem);
+    console.log("显示商品信息",that.GoodItem)
     that.Cart = this.$root.$mp.query.cart;
     that.point = wx.getStorageSync('point')
     that.indexdata = wx.getStorageSync('indexdata')

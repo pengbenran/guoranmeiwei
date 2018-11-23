@@ -1,10 +1,10 @@
  import Fly from "flyio/dist/npm/wx";
 export default class Api{
   constructor() {
-      // this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
+       this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
      // this.baseUrl = "https://www.etuetf.com"
-     // this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
-     this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
+      //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
+     //this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
      //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
     // this.baseUrl = "http://192.168.2.131/guoranhuiwei" 
     this.fly = new Fly;
@@ -423,4 +423,29 @@ export default class Api{
         resolve(toCartSave)
       }) 
     }
+
+     //排行榜分页
+     RanKing(params){
+      return new Promise((resolve, reject) =>{
+        let RanKing = this.fly.get(this.baseUrl +'/api/index/listFruit',{ params:JSON.stringify(params)})
+        resolve(RanKing)
+      }) 
+    }
+     //时令日历查看全部
+     RiliListAll(params){
+      return new Promise((resolve, reject) =>{
+        let RiliListAll = this.fly.get(this.baseUrl +'/api/index/seasonalCalendarAll',{ params:JSON.stringify(params)})
+        resolve(RiliListAll)
+      }) 
+    }
+
+    //水果专区列表数据
+    FruList(params){
+      return new Promise((resolve, reject) =>{
+        let FruList = this.fly.get(this.baseUrl +'/api/index/advertisementGoods',{ params:JSON.stringify(params)})
+        resolve(FruList)
+      }) 
+    }
+
+
 }

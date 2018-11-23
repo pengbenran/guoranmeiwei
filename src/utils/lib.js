@@ -7,6 +7,13 @@ const Show=(text,icon,Num)=>{
       })
 }
 
+const Loading = (text) =>{
+    wx.showLoading({
+        title: text,
+      })
+      
+}
+
 const ShopModel=(title,content)=>{
    return new Promise((resolve, reject) =>{
     wx.showModal({
@@ -21,7 +28,8 @@ const ShopModel=(title,content)=>{
 
 const Lib={
     Show,
-    ShopModel
+    ShopModel,
+    Loading
 }
 
 
