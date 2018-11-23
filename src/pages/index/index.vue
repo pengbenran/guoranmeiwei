@@ -12,7 +12,7 @@
         </div>
       </div>
       <!--header end-->
-      <div class="tip  skeleton-Mrect">
+      <div class="tips  skeleton-Mrect">
         <div class="logo"><img :src="imgList.logo"></div><span>{{shopDetail.shopName}}</span><small @click="changeShop">[切换]</small>
       </div>
       <!--tip end-->
@@ -33,7 +33,7 @@
       </div>
       <!--news end-->
       <div class="hot">
-       <div class="hotBg "><img :src="imgList.hotImg" /></div>
+       <div class="hotBg" @click="toPage('../ranking/main')"><img :src="imgList.hotImg" /></div>
        <div class="hotList">
         <div class="hotItem skeleton-rect" v-for="(item,index) in hotgoodsList" :key="item" :index="index" @click="jumpshopInfo(item.goodsId)">
           <div class="icoImg"><img :src="imgList.ico1"/></div>
@@ -57,7 +57,7 @@
     </div>
    <!--activity end-->
    <div class="rili">
-     <div class="riliMore"><span class="time">11月</span><small class="more">查看更多</small></div>
+     <div class="riliMore"><span class="time">11月</span><small class="more" @click="toPage('../riliList/main?catId='+rilicatId)">查看更多</small></div>
      <div class="riliBg"><img :src="imgList.rilibg"/></div>
      <div class="liriWarp">
       <!-- <div class="riliTop">
@@ -72,7 +72,6 @@
           </div>
         </div>
       </scroll-view>
-
     </div>
   </div>
   <!--rili end-->
@@ -88,7 +87,7 @@
           <div class="freeItem" v-for="(innerItem,innerIndex) in outitem.goodsDOList" :index='innerIndex' :key='innerItem' @click="jumpshopInfo(innerItem.goodsId)">
             <img :src="innerItem.thumbnail" /><div class="freeInfo">{{innerItem.name}}</div>
           </div>
-          <div class="loadMore">
+          <div class="loadMore" @click="toPage('../fruitList/main?catId='+outitem.catid+'&bigTitle='+outitem.bigTitle+'&smallTitle='+outitem.smallTitle)">
           查<br>看<br>更<br>多<br>
           <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> 
           </div>
@@ -129,7 +128,7 @@
   export default {
     data() {
       return {
-        imgList:{logo:config.imgUrl+'/index/logo.jpg',shopImg:config.imgUrl+'/index/news.jpg',hotImg:config.imgUrl+'/index/hot.jpg',activityImg:config.imgUrl+'/index/activityImg.jpg',
+        imgList:{logo:config.imgUrl+'/index/logo1.jpg',shopImg:config.imgUrl+'/index/news.jpg',hotImg:config.imgUrl+'/index/hot.jpg',activityImg:config.imgUrl+'/index/activityImg.jpg',
         rilibg:config.imgUrl+'/index/rili.png',riliico:config.imgUrl+'/index/rilico.png',freeImgBg:config.imgUrl+'/index/freeBg.jpg',bottomBrand:config.imgUrl+'/index/bottomBrand.jpg',footerImg:config.imgUrl+'/index/footerImg.png', ico1:config.imgUrl+'/index/ico1.png'},
         banner:[],
         hotgoodsList:[],
@@ -143,6 +142,8 @@
         ],
         showSkeleton: false ,
         isMember:false,
+        rilicatId:0,
+        FrucatId:0,
         memberId:'',
         advertisingIndex:[] ,
         shopList:[],
@@ -247,6 +248,7 @@
         let that=this
         let seasonalCalendarRes= await api.getseasonalCalendar()
         that.seasonalCalendarRes=seasonalCalendarRes.data.data
+        that.rilicatId = seasonalCalendarRes.data.catId
       },
       async getTopIndex(){
         let that=this
@@ -265,6 +267,8 @@
           item.smallTitle=titleArry[1]
           return item
         })
+    
+        console.log(that.advertisingIndex,"查看数据asds",getadvertisingIndexRes)
         // that.advertisingIndex=getadvertisingIndexRes.data.data
         console.log(that.advertisingIndex)
       },
@@ -328,10 +332,10 @@ img{display: block;width: 100%;height: 100%}
  }
 }
 
- .tip{
+ .tips{
   @include flexc;font-size: 27rpx;font-weight: 100;color: rgb(170, 170, 170);height: 78rpx;padding: 0 10rpx;border-bottom: 6rpx solid rgb(243,243,243);
-   .logo{width: 140rpx;height: 94%;display: inline-block}
-   .logo img{width: 140rpx;}
+   .logo{height: 94%;display: inline-block}
+   .logo img{width: 80rpx;height: 80rpx;}
    span{display: inline-block;width: 380rpx;overflow: hidden;}
    small{display: inline-block;margin-left: 6rpx;color: rgb(236,189,87);float: right;}
  }
@@ -346,11 +350,11 @@ img{display: block;width: 100%;height: 100%}
   .messageswiper{height: 50rpx;width: 440rpx;font-size: 0.8em;color:#8a8a8a;}
 }
 
-.hot{position: relative;height: 364rpx;margin-bottom: 10rpx;padding: 15rpx 20rpx;background: #f6f6f6;
- .hotBg{height: 364rpx; width: 94%;margin-left: 3%;position: absolute;left: 0;top: 15rpx;}
+.hot{position: relative;height: 410rpx;margin-bottom: 10rpx;padding: 15rpx 20rpx;background: #f6f6f6;
+ .hotBg{height: 410rpx; width: 94%;margin-left: 3%;position: absolute;left: 0;top: 15rpx;}
 }
-.hotList{position:relative;display: flex;justify-content: space-around;padding:0 10rpx;
-  .hotItem{position: relative;margin-top: 110rpx;width: 32%;height: 240rpx;text-align: center;background: #fff;border-radius: 10rpx;}
+.hotList{position: absolute;bottom: 30rpx;width: 92%;display: flex;justify-content: space-around;align-items: flex-end;padding:0 10rpx;
+  .hotItem{position: relative;width: 32%;height: 240rpx;text-align: center;background: #fff;border-radius: 10rpx;}
   .hotShop{width: 92%;height: 172rpx;margin: auto;}
   .hotItem span{font-weight: 100;font-size: 30rpx;display: inline-block;margin: auto;color: #ccc;}
   .icoImg{position: absolute;top: 10rpx;left: 10rpx;width: 70rpx;height: 70rpx;}
@@ -384,7 +388,7 @@ img{display: block;width: 100%;height: 100%}
 .riliWarp{display: flex;
   .Item{height: 250rpx;position: relative;}
     .Item img{width: 250rpx;height: 250rpx;margin: 15rpx;border-radius: 10rpx;}
-    .posIco{position: absolute;left: 16%;top: -5rpx;margin-left: 32rpx;}
+    .posIco{position: absolute;left: -8%;top: -5rpx;margin-left: 32rpx;}
     .posIco img{width: 95rpx;height: 75rpx;}
     .posIco text{font-size: 26rpx;color: #fff}
 }

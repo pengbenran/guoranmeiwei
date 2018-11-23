@@ -139,7 +139,7 @@ img{
   overflow:hidden;
 }
 .banner{
-  width: 680rpx;
+ 
   margin: 0rpx auto;
   border-radius: 15rpx;
   .banner img{

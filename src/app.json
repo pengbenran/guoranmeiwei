@@ -1,7 +1,9 @@
 {
   "pages": [
+    "pages/commission/main",
     "pages/index/main",
     "pages/distribe/main",
+    "pages/ranking/main",
     "pages/coupon/main",
     "pages/shopInfo/main",
     "pages/grouplist/main",
@@ -24,7 +26,9 @@
     "pages/storePay/main",
     "pages/orderOne/main",
     "pages/Recharge/main",
-    "pages/ranking/main"
+    "pages/riliList/main",
+    "pages/fruitList/main"
+  
   ],
   "window": {
     "backgroundTextStyle": "light",
