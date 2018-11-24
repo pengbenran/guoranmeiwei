@@ -89,7 +89,8 @@ export default {
       msg:'',
       tip:'',
       shopDetail:{},
-      memberCollageId:''
+      memberCollageId:'',
+      kaituanrest:{}
     }
   },
   methods:{
@@ -252,7 +253,7 @@ export default {
                         orderparams.num = 1
                         orderparams.orderId = that.order.orderId
                         api.openCollage(orderparams).then(function(res){
-                          var kaituanrest=res.data 
+                          that.kaituanrest=res.data 
                           return api.collagePayReturn(orderparams)
                         }).then(function(res){
                           wx.showToast({
@@ -260,24 +261,24 @@ export default {
                             icon: 'success',
                             duration: 2000
                           })
+                          console.log(that.kaituanrest);
                           var parmss = {}
-                          parmss.price = kaituanrest.price
-                          parmss.activityPrice = kaituanrest.activityPrice
-                          parmss.goodsId = kaituanrest.goodsId
-                          parmss.goodsName = kaituanrest.goodsName
-                          parmss.memberCollageId = kaituanrest.memberCollageId
-                          parmss.img = kaituanrest.img
-                          parmss.shortPerson = kaituanrest.shortPerson
-                          if (kaituanrest.shortPerson == 0) {
+                          parmss.price = that.kaituanrest.price
+                          parmss.activityPrice = that.kaituanrest.activityPrice
+                          parmss.productId = that.shopList.productId
+                          parmss.goodsName = that.kaituanrest.goodsName
+                          parmss.memberCollageId = that.kaituanrest.memberCollageId
+                          parmss.img = that.kaituanrest.img
+                          parmss.shortPerson = that.kaituanrest.shortPerson
+                          if (that.kaituanrest.shortPerson == 0) {
                             parmss.iscollage = 1
                           }
                           else {
                             parmss.iscollage = 2
                           }
-                          parmss = JSON.stringify(parmss)
-                          // wx.navigateTo({
-                          //   url: '../cantuan/cantuan?shops= ' + parmss,
-                          // })
+                          wx.redirectTo({
+                            url: '../group/main?shops=' + JSON.stringify(parmss),
+                          })
                         })
                       }
                       else if(that.Type=="C"){

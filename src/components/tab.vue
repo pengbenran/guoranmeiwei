@@ -32,7 +32,7 @@ export default {
 
 <style>
 .tab{
-	height: 35px;
+	height: 40px;
 	overflow: hidden;
 }
 .find_item{
@@ -40,7 +40,7 @@ export default {
 	width:100%;
 	white-space: nowrap;
 	overflow-x:scroll; 
-	height: 35px;
+	height: 40px;
 	display: flex;
 	justify-content:center;
 	align-items: center

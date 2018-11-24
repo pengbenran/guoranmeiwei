@@ -231,7 +231,6 @@ export default {
       },
 
   },
-
  async onLoad(option){
     let that=this
     that.memberId= wx.getStorageSync('memberId')
@@ -259,8 +258,9 @@ export default {
       that.collages=getallStartCollage.data
     }).catch(function(res){
       that.collages=[]
-      clearinterval(interval)
       that.hascollages=false
+      clearinterval(interval)
+      
     })
    
   },
@@ -326,6 +326,7 @@ img{display: block;height: 100%;width: 100%;}
   .itemInfo .info text{color: rgb(238,129,26);}
   .btn{height: 55rpx;line-height: 55rpx; width: 180rpx;border-radius: 40rpx;background-image: -webkit-linear-gradient(0deg, rgb(255,191,3), rgb(252,148,53));text-align: center;color: #fff;}
 }
+.tip{height: 150rpx;line-height: 150rpx;text-align: center;color: #8e8e8e;font-size: 0.8em;}
 
 .Tion{padding-top:20rpx; 
   .tionTitle{@include flexc;justify-content: space-between;color: #8e8e8e;font-size: 20rpx;font-weight: 100;padding: 0 10rpx;}

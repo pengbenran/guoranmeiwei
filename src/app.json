@@ -1,7 +1,9 @@
 {
   "pages": [
-    "pages/commission/main",
     "pages/index/main",
+    "pages/groupitem/main",
+    "pages/group/main",
+    "pages/commission/main",
     "pages/distribe/main",
     "pages/ranking/main",
     "pages/coupon/main",
@@ -15,7 +17,6 @@
     "pages/store/main",
     "pages/groupdetail/main",   
     "pages/bargain/main",
-    "pages/group/main",
     "pages/cart/main",
     "pages/kind/main",  
     "pages/myself/main",

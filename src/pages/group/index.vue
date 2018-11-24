@@ -1,70 +1,90 @@
 <template>
   <div class="group">
-   <Shopaddr :shopname="shopname"></Shopaddr>
+   <Shopaddr :shopname="shopDetail.shopName"></Shopaddr>
    <div class="grouppanel">
      <div class="left">
-       <img :src="group.goodimg">
+       <img :src="pingtuandetail.img">
      </div>
      <div class="right">
-       <div class="top">{{group.goodname}}</div>
+       <div class="top">{{pingtuandetail.goodsName}}</div>
        <div class="center">
-         <div class="centerleft">
+         <!-- <div class="centerleft">
            <div class="bcg">
              <img :src="bcg">
            </div>
            <div class="groupperson">
              2人团
            </div>  
-         </div>
+         </div> -->
          <div class="centerright">
-           剩余人数:<span>2</span>人
+           剩余人数:<span>{{pingtuandetail.shortPerson}}</span>人
          </div>
        </div>
        <div class="bottom">
          <div class="bottomleft">
-           <span class="groupprice">￥{{group.groupprice}}</span>
-           <span class="price">￥{{group.price}}</span>
+           <span class="groupprice">￥{{pingtuandetail.activityPrice}}</span>
+           <span class="price">￥{{pingtuandetail.price}}</span>
          </div>
-         <Countdowns :countdown="countdown"></Countdowns>
+         <!-- <Countdowns :countdown="countdown"></Countdowns> -->
        </div>
      </div>
    </div>
-   <div class="result" v-if="type==1">
+   <div class="result" v-if="collageType==1">
      <img :src="pingsuccess">
    </div>
-   <div class="result" v-if="type==2">
+   <div class="result" v-if="collageType==2">
      <img :src="success">
    </div>
-   <div class="result" v-if="type==3">
+   <div class="result" v-if="collageType==3">
      <img :src="file">
    </div>
+   <div class="resultTime" v-if="collageType==4&&canJoin">
+      剩余{{countdown.hours}}时{{countdown.minutes}}分{{countdown.seconds}}秒结束</text>
+   </div>
    <!-- 拼团人头像 -->
-   <div class="userconten">
-     <div class="useravator" v-for="(item,index) in groupperson" :key="item" :index="index">
-       <img :src="item.avator">
-       <div class="captain" v-if="item.captain">
-         <img :src="captain">
-       </div>
+   <div class="userconten" v-if="canJoin">
+     <div class="useravator" v-for="(item,index) in collage" :key="item" :index="index">
+      <div class="avator">
+        <img :src="item.face">
+      </div>
+      <div class="captain" v-if="item.isStarter==1">
+       <img :src="captain">
      </div>
    </div>
-    <div class="tip" v-if="type==1">
-      已成团，等待发货
-   </div>
-    <div class="btn" v-if="type==1">
-     再开一团
-   </div>
-   <div class="tip" v-if="type==2">
-     还差1人，赶紧去邀请好友来参团吧
-   </div>
-   <div class="btn" v-if="type==2">
-     邀请好友来参团
-   </div>
-    <div class="tip" v-if="type==3">
-     未成团，重新开团
-   </div>
-   <div class="btn" v-if="type==3">
-     重新开团
-   </div>
+
+ </div>
+ <div class="tip" v-if="collageType==1">
+  已成团，等待发货
+</div>
+<div class="btn" v-if="collageType==1">
+ 再开一团
+</div>
+<div class="tip" v-if="collageType==2">
+ 还差{{pingtuandetail.shortPerson}}人，赶紧去邀请好友来参团吧
+</div>
+<div v-if="collageType==2" @click="inviteFriends">
+  <button class="btn" open-type='share'>邀请好友来参团</button> 
+</div>
+<div class="tip" v-if="collageType==3">
+ 未成团，重新开团
+</div>
+<div class="btn" v-if="collageType==3">
+ 重新开团
+</div>
+<div class="btn" v-if="collageType==4&&canJoin" @click="jumpOrder">
+ 立即参团
+</div>
+<div class="btn" v-if="collageType==4&&!canJoin">
+ 我要开团
+</div>
+<div class='mode' v-if="isMember">
+  <div class='bcg'></div>
+  <div class='loginmodel'>
+    <div class='title'>需要您的授权</div>
+    <div class='modeltip'>为了提供更好的服务请在稍后的提示框中点击允许</div>
+    <button class='modelbtn' open-type="getUserInfo" @click="getUserInfo" @getuserinfo="bindGetUserInfo">我知道了</button> 
+  </div> 
+</div>
   </div>
 </template>
 
@@ -74,32 +94,43 @@ import util from "@/utils/index";
 import Shopaddr from '@/components/shopaddr';
 import config from "@/config";
 import Countdowns from "@/components/countdown";
+let api=new Api
 export default {
   data() {
     return {
-      type:3,
+      collageType:'',
       shopname:"王小姐水果店(抚生路点)",
       pingsuccess:config.imgUrl+'/group/pingsuccess.png',
       success:config.imgUrl+'/group/success.png',
       file:config.imgUrl+'/group/file.png',
       bcg:config.imgUrl+"/group/quer.png",
       captain:config.imgUrl+"/group/cation.png",
-      group:{goodimg:config.imgUrl+'/group/good.png',goodname:'福建广西盘丝洞过节费iOSA级个iOS就技术都放假哦啊发基调集散地偶发酒叟安静的佛家说我键哦ID沙发飞机哦',groupprice:'9.99',price:'39.99',needperson:1,endtime:'123131313',groupperson:2},
-      groupperson:[
-      {avator:config.imgUrl+"/myself/avator.jpg",captain:true},
-      {avator:config.imgUrl+"/myself/avator.jpg",captain:false},
-      {avator:config.imgUrl+"/myself/avator.jpg",captain:false}
-      ],
-      countdown:{}
+      countdown:{},
+      collage:[],
+      pingtuandetail:{},
+      shopDetail:{},
+      memberId:'',
+      isMember:false,
+      countdown:{},
+      canJoin:false
     }
   },
  
   components: {
   Countdowns,
   Shopaddr,
- 
   },
   methods: {
+    inviteFriends:function(){
+
+    },
+    jumpOrder(){
+      let that=this
+      let url= `../order/main?goodsImg=${that.pingtuandetail.img}&goodname=${that.pingtuandetail.goodsName}&activityPrice=${that.pingtuandetail.activityPrice}&memberCollageId=${that.pingtuandetail.memberCollageId}&Type=C&price=${that.pingtuandetail.price}&goodsId=${that.pingtuandetail.goodsId}&productId=${that.pingtuandetail.productId}`
+        wx.navigateTo({
+          url: url,
+        })
+    },
     cutTime(starttime,endtime){
       var that=this; 
       var leftTime = endtime - starttime;
@@ -117,17 +148,166 @@ export default {
           clearinterval(interval)
         }
       }
-    }
+    },
+    async collageSucceed(productId,memberCollageId){
+      let params = {}
+      let that=this
+      params.productId =productId
+      params.memberCollageId = memberCollageId
+      let collageSucceedRes=await api.collageSucceed(params)
+      that.collage=collageSucceedRes.data.collageSucceed
+      if(that.collageType==4){
+        let starttime=(new Date()).valueOf()
+        let endtime = (that.collage[0].entertime + 86400000);
+        if(starttime>endtime){
+           wx.showToast({
+            title: "活动已过期！",
+            icon: "success",
+            durantion: 2000
+          })
+           that.canJoin=false
+        }
+        else{
+          that.canJoin=true
+          that.cutTime(starttime,endtime)
+        }    
+      }
+    },
+    bindGetUserInfo:function(e){
+      var that=this;
+      if (e.mp.detail.rawData){
+          //用户按了允许授权按钮
+          // that.getUserInfo();
+        } else {
+          //用户按了拒绝按钮
+        }
+      },
+      getUserInfo(){   
+        var that = this 
+        if(that.memberId=="00"){
+         wx.login({
+          success: res => {
+            // 发送 res.code 到后台换取 openId, sessionKey, unionId
+            if (res.code) {         
+             wx.getUserInfo({
+              success: function (res_user) {
+                console.log(res_user)
+                api.weCatLogin(res.code,res_user.userInfo.avatarUrl,res_user.userInfo.nickName,res_user.userInfo.gender,res_user.userInfo.country,res_user.userInfo.province,res_user.userInfo.city).then(function(res){
+                  if(res.data.code==0){
+                    that.isMember=false
+                    that.userLogin()
+                  }
+                }) 
+              }
+            }) 
+           }
+         }
+       })
+       }
+     },
+    async userLogin(){
+        let that=this
+        wx.showLoading({
+          title: '加载中',
+        })
+       let memberRes=await api.getCode()
+       wx.hideLoading()
+       if (memberRes.data.memberDo != null) {
+        wx.setStorageSync('memberId', memberRes.data.memberDo.memberId)
+        wx.setStorageSync('point', memberRes.data.memberDo.point)
+        wx.setStorageSync('memberIdlvId', memberRes.data.memberDo.lvId)
+        wx.setStorageSync('isAgent', memberRes.data.memberDo.isAgent)
+        wx.setStorageSync('uname', memberRes.data.memberDo.uname)
+        wx.setStorageSync('face', memberRes.data.memberDo.face)
+        wx.setStorageSync('openId',memberRes.data.memberDo.openId)
+        that.memberId=memberRes.data.memberDo.memberId
+        let friendCollageRes=await api.friendCollage(that.pingtuandetail.memberCollageId)
+        console.log(friendCollageRes);
+        if(friendCollageRes.data.code==0){
+          // 说明可以参团并且获取拼团成功数据
+         that.collageSucceed(that.pingtuandetail.productId,that.pingtuandetail.memberCollageId)
+          
+        }
+        else{
+         wx.showToast({
+           title: "团人数已满！",
+           icon: "success",
+           durantion: 2000
+         })
+
+          that.canJoin=false
+      
+        }
+
+
+
+        }
+        else {
+          let memberId="00"
+          that.memberId=memberId
+          wx.setStorageSync('memberId', "00")
+          that.isMember=true
+        }
+      },
   },
-   mounted(){
-     var that=this;
-     var endtime=1541995932000
-     var starttime = (new Date()).valueOf();
+   onLoad(options){
+    var that=this;
+    that.shopDetail=wx.getStorageSync('shopDetail')
+    that.memberId = wx.getStorageSync('memberId')
+    var pingtuandetail = JSON.parse(options.shops)
+    console.log(pingtuandetail)
+    that.pingtuandetail=pingtuandetail
+    if(that.pingtuandetail.Type=='FC'){
+      // 判断是否好友参团
+       that.collageType=4
+       wx.setNavigationBarTitle({
+         title: "参团"//页面标题为路由参数
+       })
+       // 判断时候是平台会员
+       that.userLogin()
+     
+
+    } 
+    else{
+     that.collageSucceed(pingtuandetail.productId,pingtuandetail.memberCollageId)
+     // var endtime=1541995932000
+     // var starttime = (new Date()).valueOf();
      // that.cutTime(starttime,endtime)
-     wx.setNavigationBarTitle({
-       title: "拼团成功"//页面标题为路由参数
+     if(pingtuandetail.iscollage==1){
+       that.collageType=1
+       wx.setNavigationBarTitle({
+         title: "拼团成功"//页面标题为路由参数
+       })
+     }
+     else if(pingtuandetail.iscollage==2){
+      that.collageType=2
+      wx.setNavigationBarTitle({
+       title: "待成团"//页面标题为路由参数
      })
-  }
+    }
+    else{
+      that.collageType=3
+      wx.setNavigationBarTitle({
+       title: "拼团失败"//页面标题为路由参数
+     })
+    } 
+    }
+
+
+   
+  },
+   onShareAppMessage: function () {
+    var that = this
+    var shops={}
+    shops = that.pingtuandetail
+    shops.memberId = wx.getStorageSync('memberId')
+    shops.Type='FC'
+    shops=JSON.stringify(shops)
+    console.log(shops);
+    return {
+      path: '/pages/group/main?shops=' + shops,
+    }
+  },  
 }
 </script>
 <style scoped lang='scss'>
@@ -148,6 +328,8 @@ img{
     overflow: hidden;
   }
   .right{
+    padding-left: 20rpx;
+    box-sizing: border-box;
     flex-grow:1;
     .top{
       display: -webkit-box;
@@ -214,15 +396,22 @@ img{
   margin: 20rpx auto;
   overflow: hidden;
 }
+.resultTime{
+  width: 100%;
+  text-align: center;
+}
 .userconten{
   display: flex;
-  justify-content: center;
+  justify-content: center; 
   .useravator{
     position: relative;
-    width: 120rpx;
-    height: 120rpx;
-    overflow: hidden;
-    margin-left: 10rpx;
+    .avator{
+      width: 120rpx;
+      height: 120rpx;
+      overflow: hidden;
+      margin-left: 10rpx;
+      border-radius: 50%;
+    }
     .captain{
       position: absolute;
       width: 140rpx;
@@ -231,6 +420,7 @@ img{
       left: -5rpx;
     }
   }
+
 }
 .tip{
   font-size: 0.8em;
@@ -249,5 +439,53 @@ img{
   margin: 30rpx auto;
   text-align: center;
 }
+
+/* 登录模态框 */
+.mode{
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+}
+.bcg{
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.5);
+}
+.loginmodel{
+  border-radius:10rpx; 
+  width: 60%;
+  height: 260rpx;
+  background: #fff;
+  position: absolute;
+  top: 500rpx;
+  left: 20%;
+}
+.title{
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+}
+.modeltip{
+  width: 90%;
+  margin: 0 auto;
+  font-size: 0.8em;
+  text-indent: 20px;
+  color: #8a8a8a;
+  height: 100rpx;
+}
+.modelbtn{
+  border: none;
+  outline: 0;
+  text-align: right;
+  background: #fff;
+  color: #3494ff
+}
+button::after {
+  border: none;
+}
+
 </style>
 

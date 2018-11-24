@@ -481,4 +481,28 @@ export default class Api{
         resolve(FruList)
       }) 
     }
+    // 获取拼团成功数据
+    collageSucceed(params){
+       return new Promise((resolve, reject) =>{
+        let collageSucceedRes = this.fly.get(this.baseUrl +'/api/collage/collageSucceed',{ params:JSON.stringify(params)})
+        resolve(collageSucceedRes)
+      }) 
+    }
+    // 获取我的所有参团数据
+    allMemberCollage(memberId,collageType){
+      return new Promise((resolve, reject) =>{
+        let allMemberCollageRes = this.fly.get(this.baseUrl +'/api/collage/allMemberCollage',{ memberId:memberId,collageType:collageType})
+        resolve(allMemberCollageRes)
+      }) 
+    }
+    // 好友参团
+    friendCollage(memberCollageId){
+      return new Promise((resolve, reject) =>{
+        let params={}
+        params.memberCollageId=memberCollageId
+        let friendCollageRes = this.fly.get(this.baseUrl +'/api/collage/friendCollage',{params:JSON.stringify(params)})
+        resolve(friendCollageRes)
+      }) 
+      
+    }
 }
