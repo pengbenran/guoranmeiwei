@@ -103,13 +103,15 @@ export default {
           productId:''
     }
   },
+  
   methods:{
    //获取用户信息
    async SelectShopInfo(){
      let that = this;
      let goodparms = {}
      goodparms.goodsId = that.goodsId
-     let res = await api.getGoodsInfo(goodparms)
+     let res = await api.getGoods(that.goodsId,that.memberId)
+
      that.Gallery = res.data.Gallery;
      that.Goods = res.data.Goods;
      if (res.data.Goods.count == 0) {

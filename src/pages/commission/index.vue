@@ -1,7 +1,10 @@
 <template>
   <div class="ComWarp">
+
     <div class="listWarp">
         <scroll-view  lower-threshold="0" class="scroll" scroll-y bindscrolltolower="loadMore">
+            <div class="btn"><text>产品分类</text> <i class="fa fa-angle-down" aria-hidden="true"></i></div>
+
             <div class="List">
                 <div class="item" >
                     <div class="topImg"><img :src="ImgList.fruShop" /></div>
@@ -20,6 +23,12 @@
                 </div>
             </div>
         </scroll-view>
+ 
+        <div class="ModelMask"></div>
+        <div class="Model">
+            <div class="ModelTile"><text>产品分类</text> <i class="fa fa-angle-down" aria-hidden="true"></i></div>
+          <text>当季水果</text><text>当季水果</text><text>当季水果</text><text>当季水果</text><text>当季水果</text><text>当季水果</text>
+        </div>
     </div>
 <!--List end-->
   </div>
@@ -38,20 +47,37 @@ export default {
 
   data () {
     return {
-     ImgList:{fruImg1:config.imgUrl+'/index/fruImg1.png', fen:config.imgUrl+'/distribution/fen.png',
+     ImgList:{fruImg1:config.imgUrl+'/index/fruImg1.png', fen:config.imgUrl+'/distribe/fen.png',
                 fruShop:config.imgUrl+'/index/fruilShop.jpg', },
- 
+     Animation:{}
     }
   },
   //事件
   methods:{
-  
+    OnClick(){
+        let that = this;
+        let animation = wx.createAnimation({
+            duration: 200, timingFunction: 'linear', delay: 100,  transformOrigin: 'left top 0',
+            success: function(res) {
+                console.log(res)
+                }
+        })
+        animation.translateY(-300).step()
+        that.Animation=animation.export()
+        that.modelShow=true;
+        setTimeout(function () {
+            animation.translateY(0).step()
+            that.Animation=animation.export()
+        }.bind(that), 100)
+    }
  
   },
   //初始化加载
   mounted(){
    let that = this;
-
+   let str = '123,456'
+   let str1 = str.split(',').reverse().join(',')
+   console.log(str1)
   },
 }
 </script>
@@ -68,6 +94,7 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
 }
 img{display: block;height: 100%;width: 100%;}
 
+.listWarp{padding-top: 15rpx; }
 .ComWarp{min-height: 100vh;background: #f8f8f8;}
 
 .List{@include flexc;justify-content: space-between;flex-wrap: wrap;margin: 20rpx 35rpx;
@@ -79,5 +106,9 @@ img{display: block;height: 100%;width: 100%;}
     .Price img{width: 50rpx;height: 50rpx;}
 }
 
+.btn{@include flexc;justify-content: center;font-weight: 100;line-height: 58rpx;font-size: 28rpx;background: #fff;margin-top: 15rpx;
+    width: 90%;border-radius: 25rpx;margin: auto;box-shadow: 0 0 25rpx rgba(0, 0, 0, 0.11)}
+.ModelMask{position: fixed;top: 0;left: 0;height: 100vh;width: 100%;z-index: 2;background: rgba(0, 0, 0, 0.144);}
+.Model{position: fixed;top: 0;left: 0;z-index: 3;background: #fff;border-bottom-left-radius: 20rpx;border-bottom-right-radius: 20rpx;height: 450rpx;}
 
 </style>

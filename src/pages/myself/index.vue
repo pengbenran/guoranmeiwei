@@ -84,7 +84,7 @@ export default {
      ],
      featureitem:[
      {name:'积分',icon:config.imgUrl+"/myself/point.png",PageUrl:'../sign/main'},
-     {name:'微分销',icon:config.imgUrl+"/myself/fenxiao.png",PageUrl:'../sign/main'},
+     {name:'微分销',icon:config.imgUrl+"/myself/fenxiao.png",PageUrl:'../distribestart/main'},
      {name:'地址管理',icon:config.imgUrl+"/myself/address.png",PageUrl:'../addressList/main'},
      {name:'优惠券',icon:config.imgUrl+"/myself/address.png",PageUrl:'../coupon/main'},
      {name:'拼团',icon:config.imgUrl+"/myself/group.png",PageUrl:'../groupitem/main'},
@@ -110,9 +110,22 @@ export default {
   },
   methods: {
    //
-   topage(url){
-     console.log("6666666666666")
-    wx.navigateTo({ url: url });
+  async topage(url){
+     let that = this;
+    //微分销条件跳转
+    if(url == '../distribestart/main'){
+      let memberId = wx.getStorageSync('memberId');
+      let res = await api.WhetherDistribe(memberId)
+      if(res.data.code == 0){
+        wx.navigateTo({ url: '../distribestart/main' });
+      }else{
+        wx.navigateTo({ url: '../distribe/main' });
+      }
+    }else{
+      wx.navigateTo({ url: url });
+    
+    }
+
    },
    jumpOrder(index){
     let id=index+1

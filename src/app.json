@@ -4,6 +4,8 @@
     "pages/groupitem/main",
     "pages/group/main",
     "pages/commission/main",
+    "pages/distribeUp/main",
+    "pages/distribestart/main",
     "pages/distribe/main",
     "pages/ranking/main",
     "pages/coupon/main",
@@ -28,8 +30,9 @@
     "pages/orderOne/main",
     "pages/Recharge/main",
     "pages/riliList/main",
-    "pages/fruitList/main"
-  
+    "pages/fruitList/main",
+    "pages/distribefrom/main"
+
   ],
   "window": {
     "backgroundTextStyle": "light",

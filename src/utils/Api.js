@@ -1,11 +1,11 @@
  import Fly from "flyio/dist/npm/wx";
 export default class Api{
   constructor() {
-       // this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
+     // this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
      // this.baseUrl = "https://www.etuetf.com"
-     // this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
+      //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
      this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
-     // this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
+      //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
       //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
      //this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
      //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
@@ -504,5 +504,48 @@ export default class Api{
         resolve(friendCollageRes)
       }) 
       
+    }
+     //微分销会员列表
+     MemberLvList(params){
+      return new Promise((resolve, reject) =>{
+        let MemberLvList = this.fly.get(this.baseUrl +'/api/distribe/memberLvList')
+        resolve(MemberLvList)
+      }) 
+    }
+
+      //微分销信息提交
+      SubmitDistribeApply(params){
+        return new Promise((resolve, reject) =>{
+          let SubmitDistribeApply = this.fly.post(this.baseUrl +'/api/distribe/submitDistribeApply',{ params:JSON.stringify(params)},{headers:{
+            'Content-Type': 'application/x-www-form-urlencoded'
+            }})
+          resolve(SubmitDistribeApply)
+        }) 
+      }
+
+      //微分销信息提交订单
+      PayOrder(params){
+        return new Promise((resolve, reject) =>{
+          let PayOrder = this.fly.post(this.baseUrl +'/api/distribe/payOrder',{ params:JSON.stringify(params)},{headers:{
+            'Content-Type': 'application/x-www-form-urlencoded'
+            }})
+          resolve(PayOrder)
+        })  
+      }
+
+         //判断微分销是否提交
+    WhetherDistribe(memberId){
+      return new Promise((resolve, reject) =>{
+        let WhetherDistribe = this.fly.get(this.baseUrl +'/api/distribe/whetherDistribe',{memberId:memberId})
+        resolve(WhetherDistribe)
+      }) 
+    }
+
+    //微分销详情页
+    DistribeInfo(memberId){
+      return new Promise((resolve, reject) =>{
+        let DistribeInfo = this.fly.get(this.baseUrl +'/api/distribe/distribe',{memberId:memberId})
+        resolve(DistribeInfo)
+      }) 
     }
 }
