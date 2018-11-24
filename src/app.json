@@ -1,8 +1,10 @@
 {
   "pages": [
-    "pages/commission/main",
     "pages/index/main",
+    "pages/distribeUp/main",
+    "pages/distribestart/main",
     "pages/distribe/main",
+    "pages/commission/main",
     "pages/ranking/main",
     "pages/coupon/main",
     "pages/shopInfo/main",
@@ -27,8 +29,9 @@
     "pages/orderOne/main",
     "pages/Recharge/main",
     "pages/riliList/main",
-    "pages/fruitList/main"
-  
+    "pages/fruitList/main",
+    "pages/distribefrom/main"
+
   ],
   "window": {
     "backgroundTextStyle": "light",
