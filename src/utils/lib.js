@@ -26,10 +26,37 @@ const ShopModel=(title,content)=>{
    }) 
 }
 
+  //缓存图片
+  function locaImg(v){
+    return new Promise(function (resolve, reject) { 
+      wx.getImageInfo({   //  小程序获取图片信息API
+        src: v,
+        success: function (res) {
+          // locaArr.push(res.path)
+          resolve(res.path) 
+        }
+      })
+    })
+  }
+  async function getlocaImg(arr){
+       let locaArr=[];
+      for(var i=0;i<arr.length;i++){
+        locaArr.push(await locaImg(arr[i]))
+      }
+      return locaArr
+  }
+
+  const getImageInfo=(arrimg)=>{    //  图片缓存本地的方法
+    return new Promise(function (resolve, reject) { 
+      resolve(getlocaImg(arrimg))
+    })
+  }
+
 const Lib={
     Show,
     ShopModel,
-    Loading
+    Loading,
+    getImageInfo
 }
 
 

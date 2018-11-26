@@ -3,7 +3,7 @@
      <div class="header"><img :src="listImg.headerImg" mode='aspectFit'/></div>
      <div class="Tou"><img :src="face"/></div>
      <div class="title">大众会员</div>
-     <div class="Btn"><text>立即升级</text></div>
+     <div class="Btn"><text @click="Membershioup">立即升级</text></div>
 
      <div class="List">
          <div class="ListTitle"><div class="line"></div><text>成长介绍</text></div>
@@ -52,6 +52,7 @@
 
 <script>
  import Api from "@/utils/Api"
+ import Lib from "@/utils/lib"
  import config from "@/config"
  let api=new Api
 export default {
@@ -76,6 +77,57 @@ export default {
   methods:{
    //选项点击加载   
    async onLoads(){
+
+   },
+   //立即升级
+   Membershioup(){
+    var that=this;
+    let payParms = {}
+    var sn = Date.parse(new Date())
+    payParms.orderid = Date.parse(new Date())
+    payParms.total_fee = that.needpay*100
+    payParms.sn = sn
+    
+    wx.login({
+      success: res => {
+        if(res.code){
+             api.ConfirmPay(res.code,payParms).then(function(Pres){
+               let pay = Pres.data
+               wx.requestPayment({
+                timeStamp: pay.timeStamp,
+                nonceStr: pay.nonceStr,
+                package: pay.package,
+                signType: pay.signType,
+                paySign: pay.paySign,
+                 success: res => {
+                   Lib.Show('支付成功','success',2000)
+                  let orderParm = {}
+                  orderParm.sn = sn
+                  orderParm.payMoney = that.needpay
+                  orderParm.payStatus = 1
+                  orderParm.nowlvid = that.memberLvList[1].lvId
+                  orderParm.memberId = that.memberId
+                  api.PayOrder(orderParm).then(function(PayRes){
+                    console.log("支付完成",PayRes)
+                     if (res.data.code == 0) {
+                        Lib.Show('升级成功','success',1000)
+                        setTimeout(function(){
+                          wx.redirectTo({
+                            url: '../distribe/main',
+                          })
+                        },1000)
+                       
+                      }
+                  })
+                 }
+               });
+             })
+        }
+      }
+    });
+
+
+
 
    }
   },

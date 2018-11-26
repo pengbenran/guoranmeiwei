@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/myself/main",
     "pages/index/main",
     "pages/groupitem/main",
     "pages/group/main",
@@ -21,7 +22,6 @@
     "pages/bargain/main",
     "pages/cart/main",
     "pages/kind/main",  
-    "pages/myself/main",
     "pages/counter/main",
     "pages/discount/main",
     "pages/address/main",
@@ -31,8 +31,8 @@
     "pages/Recharge/main",
     "pages/riliList/main",
     "pages/fruitList/main",
-    "pages/distribefrom/main"
-
+    "pages/distribefrom/main",
+    "pages/distribemoney/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
