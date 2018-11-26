@@ -1,11 +1,14 @@
 <template>
   <div class="bargain">
-     <div class="header">
-         <swiper class="swiper" indicator-dots='true' autoplay='true'>
-          <swiper-item v-for="(item,index) in Gallery" :key="item" :index="index"><img :src="item.imageUrl"></swiper-item>
-        </swiper>
-      </div>  
-  <Discountlist :Shop_item='apiLimit'></Discountlist>
+   <div class="header">
+     <swiper class="swiper" indicator-dots='true' autoplay='true'>
+      <swiper-item v-for="(item,index) in Gallery" :key="item" :index="index"><img :src="item.imageUrl"></swiper-item>
+    </swiper>
+  </div>  
+  <scroll-view scroll-y bindscrolltolower="loadMore">
+    <Discountlist :Shop_item='apiLimit' :hasmore='hasMore'></Discountlist>
+  </scroll-view> 
+ 
   </div>
 </template>
 
@@ -20,19 +23,59 @@ export default {
   },
   data () {
     return {
-          apiLimit:[],
-          Gallery:[]
+      apiLimit:[],
+      Gallery:[],
+      nowPage:0,
+      hasMore:true
     }
   },
   methods:{
-   
+   async getLimit(offset,limit){
+    let that=this
+    let limitRes= await api.getLimit(offset,limit)
+    if(limitRes.data.page.rows.length<limit){
+      that.hasMore=false
+    }
+    else{
+      that.hasMore=true
+    }
+    limitRes.data.page.rows.map((item)=>{
+      let nowtime=(new Date()).valueOf()
+      if(item.endTime<nowtime){
+        item.isOver=true
+      }
+      else{
+        item.isOver=false
+      }
+      return item
+    })
+    that.apiLimit=that.apiLimit.concat(limitRes.data.page.rows)
+    that.Gallery=limitRes.data.adList
+    wx.hideLoading();
+   }
   },
   async onLoad() {
     let that=this
-    let limitRes= await api.getLimit(0,3)
-    that.apiLimit=limitRes.data.page.rows
-    that.Gallery=limitRes.data.adList
-    console.log(that.apiLimit)
+    wx.showLoading({
+      title: '加载中',
+    })
+    that.getLimit(0,5)
+  },
+   onReachBottom() {
+    let that=this
+
+    if(that.hasMore){
+      wx.showLoading({
+        title: '玩命加载中',
+      })
+      that.nowPage+=1
+      that.getLimit(that.nowPage,5)
+    }
+    // 下拉触底，先判断是否有请求正在进行中
+    // 以及检查当前请求页数是不是小于数据总页数，如符合条件，则发送请求
+    // if (!this.loading && this.data.page < this.data.pages) {
+    //   this.fetchArticleList(this.data.page + 1)
+    // } 
   }
 }
 </script>

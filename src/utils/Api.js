@@ -244,9 +244,9 @@ export default class Api{
     })
   }
    //支付成功后
-   PaypassOrder(parms){
+   PaypassOrder(params){
     return new Promise((resolve,reject) => {
-      let Orderres = this.fly.put(this.baseUrl +'/api/order/passOrder',{parms:JSON.stringify(parms)},{headers:{
+      let Orderres = this.fly.put(this.baseUrl +'/api/order/passOrder',{params:JSON.stringify(params)},{headers:{
         'Content-Type': 'application/x-www-form-urlencoded'
        }})
       resolve(Orderres)

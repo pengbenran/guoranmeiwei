@@ -106,11 +106,9 @@ export default {
    if(allAdderssRes.data.code==0){
       that.addressList=allAdderssRes.data.memberAddressList
    }
-     console.log("onshow");
   },
   onLoad(){
-    let that=this
-    console.log("onload");
+   let that=this
    let pages = getCurrentPages();
    let prevpage = pages[pages.length-2];
    if(prevpage.route=="pages/myself/main"){

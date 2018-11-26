@@ -105,7 +105,6 @@ export default {
     jumporder(){
       let that=this
       let url=`../order/main?pic=1&goodsId=${that.Goods.goodsId }&activityPrice=${that.finalAmount}&limitId=${that.limitId}&Type=Z&goodname=${that.Goods.name}&price=${that.Goods.price}&goodsImg=${that.Goods.thumbnail}`
-      console.log(url);
       wx.navigateTo({
         url:url,
       })

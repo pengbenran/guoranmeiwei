@@ -42,7 +42,7 @@
       剩余{{countdown.hours}}时{{countdown.minutes}}分{{countdown.seconds}}秒结束</text>
    </div>
    <!-- 拼团人头像 -->
-   <div class="userconten" v-if="canJoin">
+   <div class="userconten" v-if="(collageType==4&&canJoin)||(collageType!=4&&!canJoin)">
      <div class="useravator" v-for="(item,index) in collage" :key="item" :index="index">
       <div class="avator">
         <img :src="item.face">
@@ -56,7 +56,7 @@
  <div class="tip" v-if="collageType==1">
   已成团，等待发货
 </div>
-<div class="btn" v-if="collageType==1">
+<div class="btn" v-if="collageType==1" @click="jumpGroupList">
  再开一团
 </div>
 <div class="tip" v-if="collageType==2">
@@ -68,13 +68,13 @@
 <div class="tip" v-if="collageType==3">
  未成团，重新开团
 </div>
-<div class="btn" v-if="collageType==3">
+<div class="btn" v-if="collageType==3" @click="jumpGroupList">
  重新开团
 </div>
 <div class="btn" v-if="collageType==4&&canJoin" @click="jumpOrder">
  立即参团
 </div>
-<div class="btn" v-if="collageType==4&&!canJoin">
+<div class="btn" v-if="collageType==4&&!canJoin" @click="jumpGroupList">
  我要开团
 </div>
 <div class='mode' v-if="isMember">
@@ -99,7 +99,6 @@ export default {
   data() {
     return {
       collageType:'',
-      shopname:"王小姐水果店(抚生路点)",
       pingsuccess:config.imgUrl+'/group/pingsuccess.png',
       success:config.imgUrl+'/group/success.png',
       file:config.imgUrl+'/group/file.png',
@@ -124,12 +123,31 @@ export default {
     inviteFriends:function(){
 
     },
-    jumpOrder(){
+    jumpGroupList(){
+     wx.navigateTo({
+      url: '../grouplist/main',
+     })
+    },
+   async jumpOrder(){
       let that=this
+      let cantuanParams = {}
+      cantuanParams.memberId = that.memberId
+      cantuanParams.memberCollageId = that.pingtuandetail.memberCollageId
+      let collageRes=await api.joinCollageRepetition(cantuanParams)
+      if(collageRes.data.code==0){
+      // 可以参团
       let url= `../order/main?goodsImg=${that.pingtuandetail.img}&goodname=${that.pingtuandetail.goodsName}&activityPrice=${that.pingtuandetail.activityPrice}&memberCollageId=${that.pingtuandetail.memberCollageId}&Type=C&price=${that.pingtuandetail.price}&goodsId=${that.pingtuandetail.goodsId}&productId=${that.pingtuandetail.productId}`
         wx.navigateTo({
           url: url,
         })
+      }
+      else{
+      wx.showToast({
+        title: '您已经参过这个团了哦',
+        icon: 'none',
+        duration: 2000
+      })
+      }
     },
     cutTime(starttime,endtime){
       var that=this; 
@@ -234,9 +252,7 @@ export default {
            icon: "success",
            durantion: 2000
          })
-
-          that.canJoin=false
-      
+          that.canJoin=false   
         }
 
 

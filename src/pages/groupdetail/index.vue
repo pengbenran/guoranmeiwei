@@ -140,7 +140,6 @@ export default {
       let cantuanParams = {}
       cantuanParams.memberId = that.memberId
       cantuanParams.memberCollageId = memberCollageId
-
      let collageRes=await api.joinCollageRepetition(cantuanParams)
      if(collageRes.data.code==0){
       // 可以参团

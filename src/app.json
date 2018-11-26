@@ -32,7 +32,6 @@
     "pages/riliList/main",
     "pages/fruitList/main",
     "pages/distribefrom/main"
-
   ],
   "window": {
     "backgroundTextStyle": "light",

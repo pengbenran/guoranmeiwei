@@ -1,37 +1,47 @@
 <template>
   <div class="ShopList">
    <div class="item" v-for="(item,index) in Shop_item" :index='index' :key='item'>
-    <div class="item-warp" @click="jumpdetail(item.goodsId,item.limitId,item.endTime,item.finalAmount)">
-       <div class="left">
-           <img :src="item.thumbnail" />
+    <div class="item-warp" @click="jumpdetail(item.goodsId,item.limitId,item.endTime,item.finalAmount,item.isOver,item.productId)">
+     <div class="left">
+       <img :src="item.thumbnail" />
+     </div>
+     <div class="right">
+       <div class="title fontHidden">{{item.goodsName}}</div>
+       <div class="mask">{{item.limitName}}</div>
+       <div class="price">
+         <div class="priceLeft ">￥<text class="newPrice">{{item.finalAmount}}</text><text class="oldPrice">{{item.goodsPrice}}</text></div>
+         <div class="priceRight"><img :src="btn" mode='aspectFit'/></div>
        </div>
-       <div class="right">
-           <div class="title fontHidden">{{item.goodsName}}</div>
-           <div class="mask">{{item.limitName}}</div>
-           <div class="price">
-               <div class="priceLeft ">￥<text class="newPrice">{{item.finalAmount}}</text><text class="oldPrice">{{item.goodsPrice}}</text></div>
-               <div class="priceRight"><img :src="btn" mode='aspectFit'/></div>
-           </div>
-       </div>
+     </div>
    </div>
-</div>
+ </div>
+ <div class="tip" v-if="!hasmore">~~~~小果是有底线的~~~~</div>
 </div>
 </template>
 <script>
 import config from "@/config"
 export default {
-   props: ['Shop_item'],
+   props: ['Shop_item','hasmore'],
    data(){
     return{
       btn:config.imgUrl+'/discount/btn.png'
     }
     },
     methods: {
-      jumpdetail:function(goodsId,limitId,endTime,finalAmount){
-        let url=`../discountInfo/main?goodsId=${goodsId}&limitId=${limitId}&endTime=${endTime}&finalAmount=${finalAmount}`
+      jumpdetail:function(goodsId,limitId,endTime,finalAmount,isover,productId){
+        if(isover){
+          wx.showToast({
+            icon:'none',
+            title: '该活动已结束',
+          })
+        }
+        else{
+        let url=`../discountInfo/main?goodsId=${goodsId}&limitId=${limitId}&endTime=${endTime}&finalAmount=${finalAmount}&productId=${productId}`
         wx.navigateTo({
            url: url,
-        })        
+        }) 
+        }
+               
       }
     }
 }
@@ -60,6 +70,13 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
     .priceLeft .oldPrice{font-size: 26rpx;font-weight: 100;color: #8e8e8e;text-decoration:line-through}
     .priceRight img{height: 60rpx;width: 160rpx;}
 }
-
+.tip{
+  width: 100%;
+  height: 100rpx;
+  line-height: 100rpx;
+  text-align: center;
+  font-size: 0.8em;
+  color: #949494;
+}
 
 </style>

@@ -9,7 +9,12 @@
    <div class="ZitiTimeWarp"  v-show='selectIndex==1'>
       <div class="ZitiTime">
           <text>预约时间</text>
-          <picker mode="time" :value="time" start="09:01" end="21:01" @change="bindTimeChange">
+          <picker mode="date" :value="data" :start="startdate"  @change="bindDateChange">
+            <view class="picker">
+              {{date}}
+            </view>
+          </picker>
+          <picker mode="time" :value="time" :start="starttime" :end="endtime" @change="bindTimeChange">
             <view class="picker">
               {{time}}
             </view>
@@ -45,6 +50,8 @@
             <icon type="circle" size="16" v-if="iconBool"/><icon type="success" size="16" v-else/>
           </div>
         </div> -->
+      <div class="MaskItem"><text>提货电话:</text><input type="text" placeholder="请输入提货电话" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;' v-model="mobile"></div>
+      <div class="MaskItem"><text>自提点:{{shopList.shopname}}</text></div>
         <div class="MaskItem"><text>备注:</text><input type="text" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;' v-model="msg"></div>
     </div>
     <!--OrderMask end-->
@@ -74,7 +81,11 @@ export default {
     return {
       ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg'},
       shopList:{shopImg:'',shopTitle:'',mask:"你好世界",activityPrice:'',price:'',num:1,goodsId:'',productId:''},
-      time: '12:01',
+      startdate:'',
+      date:'',
+      starttime:'',
+      time:'',
+      endtime:'21:01',
       selectIndex:1,
       isAddr:false,
       iconBool:true,
@@ -90,7 +101,10 @@ export default {
       tip:'',
       shopDetail:{},
       memberCollageId:'',
-      kaituanrest:{}
+      kaituanrest:{},
+      shipStatus:3,
+      mobile:'',
+      shopDetail:{}
     }
   },
   methods:{
@@ -98,7 +112,10 @@ export default {
       let that = this;
       console.log('picker发送选择改变，携带值为', e.mp.detail.value)
       that.time = e.mp.detail.value
-    
+    },
+    bindDateChange:function(e){
+      let that=this;
+      that.date = e.mp.detail.value
     },
     //选择
     selectTo(index){
@@ -112,7 +129,7 @@ export default {
       }else{
         that.selectIndex = index;
       }
-      
+      that.shipStatus=index==1?3:0   
     },
     // 获取货品信息
     // async getProduct(){
@@ -130,35 +147,47 @@ export default {
       wx.navigateTo({ url: '../addressList/main' });
     },
    async orderPay(){
-      let that=this
-      console.log(that.shopList);
-     if(that.addr == {}) {
-      wx.showToast({
-        title: '请添加地址',
-      })
-    }
-    else{
-        if(that.Type=='C'){
-         var judgeIsCollagedRes=await api.judgeIsCollaged(that.memberCollageId)
-         if(judgeIsCollagedRes.data.code==1){
-           wx.showToast({
+        let that=this
+        if(that.shipStatus==0){
+         if(that.addr == {}) {
+          wx.showToast({
             icon:'none',
-            title: '手慢了，已成团'
+            title: '请添加地址',
           })
-           setTimeout(function(){
-            wx.switchTab({
-              url: '../index/main',
-            })
-          },1000) 
-         }else{
-           that.orderSave()
-         }
         }
         else{
+          if(that.Type=='C'){
+           var judgeIsCollagedRes=await api.judgeIsCollaged(that.memberCollageId)
+           if(judgeIsCollagedRes.data.code==1){
+             wx.showToast({
+              icon:'none',
+              title: '手慢了，已成团'
+            })
+             setTimeout(function(){
+              wx.switchTab({
+                url: '../index/main',
+              })
+            },1000) 
+           }else{
+             that.orderSave()
+           }
+         }
+         else{
           that.orderSave()
-        }   
-        // shipStatus  0派送 3派送
+        } 
       }
+    }
+    else{
+      if(that.mobile==''){
+       wx.showToast({
+        icon:'none',
+        title: '请填写提货号码',
+      })
+     }
+     else{
+       that.orderSave()
+     } 
+    }
     },
    async orderSave(){
         let that=this
@@ -183,24 +212,38 @@ export default {
         goodObj.goodsAmount = that.shopList.price 
         goodObj.productId = that.shopList.productId
         bean.googitem[0] = goodObj
-        bean.province = that.addr.province
-        bean.city = that.addr.city
-        bean.addr = that.addr.addr
-        bean.region = that.addr.region
-        bean.shipMobile = that.addr.mobile
-        bean.shipName = that.addr.name
-        bean.addrId = that.addr.addrId
+        bean.shipStatus=that.shipStatus
+        bean.shopId=that.shopDetail.shopId
+        if(that.shipStatus==0){
+         bean.province = that.addr.province
+         bean.city = that.addr.city
+         bean.addr = that.addr.addr
+         bean.region = that.addr.region
+         bean.shipMobile = that.addr.mobile
+         bean.shipName = that.addr.name
+         bean.addrId = that.addr.addrId
+        }
+        else{
+         var stringTime =that.date+that.time;
+         var timestamp2 = Date.parse(new Date(stringTime));
+         bean.takeTimes=timestamp2
+         bean.addr = that.shopList.shopName
+         bean.shipMobile = that.mobile
+        } 
         bean.clickd = that.msg  
         if(that.Type=="K"){
-          goodObj.collagePersons = that.collagePersons
+          bean.collagePersons = that.collagePersons
+          bean.orderType = '2'
         }
         else if(that.Type=='Z'){
           bean.limitId = that.shopList.limitId
+          bean.orderType = '3'
         }
         else if(that.Type=='C'){
-          goodObj.memberCollageId = that.memberCollageId
+          bean.memberCollageId = that.memberCollageId
+          bean.orderType = '2'
         }
-        bean.shipStatus=0
+        
         
         
         
@@ -299,13 +342,33 @@ export default {
                             cantuanorderparams.orderId = that.order.orderId
                          return api.joinCollage(cantuanorderparams)
                         }).then(function(res){
-                          console.log(res);
                           wx.showToast({
                             title: '参团成功',
                             icon: 'success',
                             duration: 2000
                           })
                         })
+                      }
+                      else if(that.Type=="Z"){
+                       let orderParams = {}
+                       orderParams.orderId = that.order.orderId
+                       orderParams.code = 200
+                       orderParams.shipStatus = that.shipStatus
+                       orderParams.paymoney = that.order.orderAmount
+                       api.PaypassOrder(orderParams).then(function(paypassOrderRes){
+                    
+                         if(paypassOrderRes.data.code==0){
+                          wx.showToast({
+                            title: '抢购成功',
+                            icon: 'success',
+                            duration: 2000
+                          })
+                          wx.switchTab({
+                            url: '../index/main',
+                          })
+                        }
+                       })
+                      
                       }
                     
                     },
@@ -349,14 +412,29 @@ export default {
         that.isAddr=true
         that.addr=addressRes.data.memberAddressDO
       }
+  },
+  // 获取时间
+  getTime(){
+     let that=this
+     var myDate = new Date();
+     that.date=`${myDate.getFullYear()}-${myDate.getMonth()+1}-${myDate.getDate()}`
+     that.time=`${myDate.getHours()}:${myDate.getMinutes()}`
+     that.startdate=`${myDate.getFullYear()}-${myDate.getMonth()+1}-${myDate.getDate()}`
+     that.starttime=`${myDate.getHours()+1}:${myDate.getMinutes()}`
   }
 },
   
   onLoad(options){
    var that=this
-   console.log(options);
+   that.getTime()
+
+
+
+
+
    that.option=options
    that.memberId= wx.getStorageSync('memberId')
+   that.shopDetail= wx.getStorageSync('shopDetail')
    let pages = getCurrentPages();
    let prevpage = pages[pages.length-2];
    that.shopDetail=wx.getStorageSync('shopDetail')
@@ -395,6 +473,10 @@ export default {
   onShow(){
     if(wx.getStorageSync('addr')!='noaddr'){
       this.addr=wx.getStorageSync('addr')
+       that.isAddr=true
+    }
+    else{
+      this.isAddr=false
     }   
   }
 }
@@ -418,7 +500,9 @@ img{display: block;height: 100%;width: 100%;}
 }
 
 .ZitiTime{@include flexc;justify-content: space-between;font-weight: 100;font-size: 32rpx;padding: 15rpx 25rpx;}
-
+.inputList{
+  font-size: 0.8em;
+}
 .AddressWarp{padding: 20rpx 0;}
 .Address{padding: 10rpx 25rpx;border-bottom: 1px solid rgb(244,244,244);
     .Address-item{@include flexc;font-weight: 100;font-size: 32rpx;}
@@ -434,7 +518,7 @@ img{display: block;height: 100%;width: 100%;}
     .fensi{color: rgb(250,143,43);}
     .jifen{color: rgb(250,143,43);}
     .jifen icon{line-height: 12rpx;}
-    input{width: 85%;}
+    input{width: 80%;}
 }
 
 .footerBnt{@include flexc;justify-content: space-between;position: fixed;bottom: 0;width: 100%;height: 95rpx; 

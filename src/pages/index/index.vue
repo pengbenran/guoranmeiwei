@@ -165,6 +165,9 @@
     onShow(){
       wx.setStorageSync('addr','noaddr')
       this.shopDetail=wx.getStorageSync('shopDetail')
+      var stringTime = "2014-07-10 10:21";
+      var timestamp2 = Date.parse(new Date(stringTime));
+      console.log(timestamp2)
     },
     methods: {
       getLoca(){
