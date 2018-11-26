@@ -548,4 +548,46 @@ export default class Api{
         resolve(DistribeInfo)
       }) 
     }
+    
+    //分销商品
+    DistribeGoods(){
+      return new Promise((resolve, reject) =>{
+        let DistribeGoods = this.fly.get(this.baseUrl +'/api/distribe/goodsList')
+        resolve(DistribeGoods)
+      }) 
+    }
+
+    //分销分类商品
+    DistribeListGoods(params){
+      return new Promise((resolve, reject) =>{
+        let DistribeListGoods = this.fly.get(this.baseUrl +'/api/distribe/goods',{ params:JSON.stringify(params)})
+        resolve(DistribeListGoods)
+      }) 
+    }
+
+    //分销分类
+    Distribecats(){
+      return new Promise((resolve, reject) =>{
+        let Distribecats = this.fly.get(this.baseUrl +'/api/distribe/cats')
+        resolve(Distribecats)
+      }) 
+    }
+
+      //微分销提现
+      Withdraw(params){
+        return new Promise((resolve, reject) =>{
+          let Withdraw = this.fly.post(this.baseUrl +'/api/distribe/withdraw',{params:JSON.stringify(params)},{headers:{
+            'Content-Type': 'application/x-www-form-urlencoded'
+            }})
+          resolve(Withdraw)
+        }) 
+      }
+      //微分销提现
+      GetShare(page,scene){
+        return new Promise((resolve, reject) =>{
+          let GetShare = this.fly.get('https://www.guqinet.com:8444/uploadZhaoshang/getShare',{page:page,scene:scene})
+          resolve(GetShare)
+        }) 
+      }
+
 }

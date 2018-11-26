@@ -110,6 +110,7 @@ export default {
      let that = this;
      let goodparms = {}
      goodparms.goodsId = that.goodsId
+    //  console.log("商品信息",that.goodsId,that.memberId)
      let res = await api.getGoods(that.goodsId,that.memberId)
 
      that.Gallery = res.data.Gallery;
@@ -289,6 +290,7 @@ export default {
     let that = this;
     console.log(this.$root.$mp.query,"你好世界")
     that.goodsId = this.$root.$mp.query.goodsId;
+    // console.log(this.$root.$mp.query,"你好世界",that.goodsId)
     that.catId =  this.$root.$mp.query.catId;
     that.memberId = wx.getStorageSync('memberId');
     
