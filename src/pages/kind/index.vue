@@ -17,6 +17,7 @@ import Tab from '@/components/tab';
 import Api from "@/utils/Api"
 import Goodlist from '@/components/goodlist';
 import config from "@/config"
+
 let api=new Api
 export default {
   components: {
@@ -48,6 +49,7 @@ export default {
          item.selected=false;
          return item
         })
+        
        that.find_item[data].selected=true
       if(that.gooditem[data]==undefined){
         let moreKindRes=await api.getGoodsAll(that.find_item[data].catId)
@@ -59,7 +61,9 @@ export default {
       }   
     },
     jumpGooddetail(goodsId){
-      console.log(goodsId)
+      let that = this;
+      console.log(goodsId,"查看数据")
+      console.log("再次查看数据",that.find_item)
       if(goodsId!=undefined){
         console.log(1)
       }
@@ -128,6 +132,8 @@ export default {
     that.shopitem=kindRes.data.Goods
     // that.temp[0]=(that.gooditem[0].length*138+110)
     that.find_item[0].selected=true
+
+    console.log("查看商品信息",that.find_item)
   }
 }
 </script>

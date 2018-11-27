@@ -33,7 +33,8 @@
     "pages/riliList/main",
     "pages/fruitList/main",
     "pages/distribefrom/main",
-    "pages/distribemoney/main"
+    "pages/distribemoney/main",
+    "pages/distribePay/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

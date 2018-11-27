@@ -9,6 +9,11 @@
    <div class="ZitiTimeWarp"  v-show='selectIndex==1'>
       <div class="ZitiTime">
           <text>预约时间</text>
+          <picker mode="date" :value="data" :start="startdate"  @change="bindDateChange">
+            <view class="picker">
+              {{date}}
+            </view>
+          </picker>
           <picker mode="time" :value="time" start="09:01" end="21:01" @change="bindTimeChange">
             <view class="picker">
               {{time}}
@@ -41,17 +46,35 @@
     <!--OrderList end-->
 
     <div class="OrderMask">
-        <div class="MaskItem"><text>优惠券</text><text class="fensi">粉丝专享 ></text></div>
+        <div class="MaskItem"><text>优惠券</text><text class="fensi" @click="fenSi">粉丝专享 ></text></div>
         <div class="MaskItem" @click="jifen(selectIco)">
           <text>积分</text>
           <div class="jifen">可使用{{point}}积分，可抵扣{{point_price}}元  
             <icon :type="selectIco?'success':'circle'" size="16" v-if="iconBool"/><icon type="success" size="16" v-else/>
           </div>
         </div>
+       <div class="MaskItem" v-if='selectIndex==1'><text>自提电话:</text><input type="text" v-model="mobile" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;'></div>
+       <div class="MaskItem" v-if='selectIndex==1'><text>自提点:</text><input type="text" v-model="ShopName" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;'></div>
         <div class="MaskItem"><text>备注:</text><input type="text" v-model="InputMask" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;'></div>
     </div>
     <!--OrderMask end-->
 
+    
+
+    <div class="PayType">
+      <div class="PayItemTitle">支付方式</div>
+      <div class="Item">
+        <div class="Items"><img :src="ImgList.wxImg" /><text>微信支付</text></div>
+        <div class="ItemSelect" @click="selectPay(1)"><icon type="success" size="21" v-show='!PayBool'/><icon type="circle" size="21" v-show='PayBool'/></div>
+      </div>
+      <div class="Item">
+        <div class="Items"><img :src="ImgList.qianbao" /><text>余额支付</text></div>
+        <div class="ItemSelect" @click="selectPay(2)"><icon type="success" size="21" v-show='PayBool'/><icon type="circle" size="21" v-show='!PayBool'/></div>
+      </div>
+    </div>
+    <!--PayType end-->
+     
+     <div class="Divheight"></div>
      <div class="footerBnt">
        <div class="selectBtn"></div>
        <div class="cartBtn">
@@ -69,7 +92,7 @@
  import config from "@/config"
  import util from "@/utils/index"
 //  import Shopaddr from '@/components/shopaddr'
- import OrderList from '@/components/shopList'
+ import OrderList from '@/components/OrderOneList'
 
 let api = new Api
 export default {
@@ -79,16 +102,24 @@ export default {
    
   data () {
     return {
-     ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg'},
+     ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg',wxImg:config.imgUrl+"/store/wxzf.png",qianbao:config.imgUrl+"/store/qianbao.png"},
      shopname:"王小姐水果店(抚生路点)",
      shopList:[{shopImg:config.imgUrl+'/cart/shopimg01.jpg',shopTitle:'福建馆溪平柚子好吃好甜你好世界你好世界你好世界你好世界你好世界你好世界',mask:"你好世界",p1:19,p2:9},
+            
           ],
+      PayBool:false,
+      PayIndex:1,
+      shipStatus:1,
       time: '12:01',
+      date:'',
+      startdate:'',
+      starttime:'',
       selectIndex:1,
       AddressBtn:false,
       iconBool:true,
       selectIco:false,
       GoodItem:[],
+      AllPrice:0,
       InputMask:'',
       code:'',
       Cart:'',
@@ -98,7 +129,9 @@ export default {
       ordername:'',
       point_price:0,
       addr:[],
-      point:''
+      point:'',
+      mobile:'',
+      ShopName:'八一店'
     }
   },
   methods:{
@@ -107,6 +140,10 @@ export default {
       console.log('picker发送选择改变，携带值为', e.mp.detail.value)
       that.time = e.mp.detail.value
     
+    },
+    bindDateChange:function(e){
+      let that=this;
+      that.date = e.mp.detail.value
     },
 
     //判断是否有地址
@@ -163,7 +200,7 @@ export default {
               if (that.selectIco == true) {
                 if (that.GoodItem.goodsAmount - that.point_price <= 0) {
                   bean.orderAmount = 0.01
-                  bean.consumepoint = parseInt((that.GoodItem.goodsAmount - 0.01) * indexdata.pointCash)
+                  bean.consumepoint = parseInt((that.GoodItem.goodsAmount - 0.01) * that.indexdata.pointCash)
                 } else {
                   bean.orderAmount = that.GoodItem.goodsAmount - that.point_price
                   bean.consumepoint = that.point
@@ -202,6 +239,24 @@ export default {
                     bean.shipName = that.addr.name
                     bean.addrId = that.addr.addrId
                     bean.clickd = that.InputMask
+                    bean.payType = 1
+                    bean.orderType = 1
+                    bean.shipStatus = that.shipStatus
+                    if(that.shipStatus == 0){
+                        bean.province = that.addr.province
+                        bean.city = that.addr.city
+                        bean.addr = that.addr.addr
+                        bean.region = that.addr.region
+                        bean.shipMobile = that.addr.mobile
+                        bean.shipName = that.addr.name
+                        bean.addrId = that.addr.addrId
+                    }else{
+                      var stringTime =that.date+that.time;
+                      var timestamp2 = Date.parse(new Date(stringTime));
+                      bean.takeTimes=timestamp2
+                      bean.addr = that.ShopName
+                      bean.shipMobile = that.mobile
+                    }
                     bean.goodsAmount = that.GoodItem.googitem[0].price * that.GoodItem.googitem[0].num
                     // bean = JSON.stringify(bean)
                     // orderParms.order=bean
@@ -253,22 +308,30 @@ export default {
 
       //请求支付
       let PayRes = await api.ConfirmPay(parms,that.code)
-      wx.requestPayment({
-        timeStamp: PayRes.data.timeStamp, //时间戳从1970年1月1日00:00:00至今的秒数,即当前的时间,
-        nonceStr: PayRes.data.nonceStr, //随机字符串，长度为32个字符以下,
-        package: PayRes.data.package, //统一下单接口返回的 prepay_id 参数值，提交格式如：prepay_id=*,
-        signType: PayRes.data.signType, //签名算法，暂支持 MD5,
-        paySign: PayRes.data.paySign, //签名,具体签名方案参见小程序支付接口文档,
-        success: res => {
-          util.sendMsg(PayRes.data.package, orderId,payordertime,
-                        that.ordername, that.order.orderAmount)
-          Lib.Show("支付成功","success",2000)
-          setTimeout(function(){
-            wx.switchTab({ url: '../index/main' });
-          },1000)
-        }
-      });
+      if(that.PayIndex == 1){
+          that.wxPay(PayRes)
+      }
     },
+   
+   //微信支付方法封装
+   wxPay(PayRes){
+     let that = this;
+      wx.requestPayment({
+          timeStamp: PayRes.data.timeStamp, //时间戳从1970年1月1日00:00:00至今的秒数,即当前的时间,
+          nonceStr: PayRes.data.nonceStr, //随机字符串，长度为32个字符以下,
+          package: PayRes.data.package, //统一下单接口返回的 prepay_id 参数值，提交格式如：prepay_id=*,
+          signType: PayRes.data.signType, //签名算法，暂支持 MD5,
+          paySign: PayRes.data.paySign, //签名,具体签名方案参见小程序支付接口文档,
+          success: res => {
+            util.sendMsg(PayRes.data.package, orderId,payordertime,
+                          that.ordername, that.order.orderAmount)
+            Lib.Show("支付成功","success",2000)
+            setTimeout(function(){
+              wx.switchTab({ url: '../index/main' });
+            },1000)
+          }
+        });
+   },
 
 
     //使用积分
@@ -279,19 +342,48 @@ export default {
           if(that.GoodItem.goodsAmount - that.point_price <= 0){
             that.GoodItem.goodsAmount = 0.01
           }else{
-            that.GoodItem.goodsAmount = that.GoodItem.goodsAmount - that.point_price
+            that.GoodItem.goodsAmount =  that.GoodItem.goodsAmount - that.point_price
           }
         }else if(select){
           that.selectIco = false
+          that.GoodItem.goodsAmount = that.AllPrice
         }
       },
-      
+
+      //支付方式选择
+      selectPay(index){
+         let that = this;
+         that.PayBool = !that.PayBool;
+         that.PayIndex = index;
+         if(index == 1){
+             console.log("选择了微信支付")
+         }else if(index == 2){
+           console.log("选择了余额支付")
+         }
+      },
+
+      //优惠券跳转
+      fenSi(){
+        let that = this;
+        wx.navigateTo({ url: '../coupon/main' });
+      },
+
+    // 获取时间
+    getTime(){
+      let that=this
+      var myDate = new Date();
+      that.date=`${myDate.getFullYear()}-${myDate.getMonth()+1}-${myDate.getDate()}`
+      that.time=`${myDate.getHours()}:${myDate.getMinutes()}`
+      that.startdate=`${myDate.getFullYear()}-${myDate.getMonth()+1}-${myDate.getDate()}`
+      that.starttime=`${myDate.getHours()+1}:${myDate.getMinutes()}`
+    },
 
     //选择
     selectTo(index){
       console.log("输出",index)
       let that = this;
       that.selectIndex = index;
+      that.shipStatus=index==1?3:0   
     },
     //跳转
     toAddress(){
@@ -312,6 +404,9 @@ export default {
     that.indexdata = wx.getStorageSync('indexdata')
      
      that.Order();
+     that.getTime();
+     that.AllPrice = that.GoodItem.goodsAmount
+     console.log("商品信息",that.GoodItem)
 
     //判断跳转链接
     let pages = getCurrentPages();
@@ -370,14 +465,22 @@ img{display: block;height: 100%;width: 100%;}
    text{display: inline-block;text-align: center;}
 }
 
-.OrderMask{font-size: 28rpx;font-weight: 100;color: #666;padding: 10rpx 20rpx;
+.OrderMask{font-size: 28rpx;font-weight: 100;color: #666;padding: 10rpx 20rpx;border-bottom: 5px solid rgb(243,243,243);
     .MaskItem{@include flexc;justify-content: space-between;height: 75rpx;line-height: 75rpx;}
     .fensi{color: rgb(250,143,43);}
     .jifen{color: rgb(250,143,43);}
     .jifen icon{line-height: 12rpx;}
-    input{width: 85%;}
+    input{width: 80%;}
 }
 
+.PayType{padding: 10rpx 20rpx;font-weight: 100;font-weight: 100;font-size: 28rpx;color: #666;
+    .PayItemTitle{font-size: 34rpx;}
+    img{width: 40rpx;height: 40rpx;margin-right: 15rpx;}
+    .Item{padding: 10rpx 0;@include flexc;justify-content: space-between;}
+    .Items{@include flexc;}
+}
+
+.Divheight{height: 120rpx;}
 .footerBnt{@include flexc;justify-content: space-between;position: fixed;bottom: 0;width: 100%;height: 95rpx; 
            box-shadow: 0px -7px 30px rgba(0,0,0,0.1);
     .selectBtn{@include flexc;padding-left: 15rpx;font-size: 36rpx;font-weight: 100;color: #8e8e8e;}

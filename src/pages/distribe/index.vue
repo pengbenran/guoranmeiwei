@@ -25,7 +25,7 @@
     <div class="List">
       <div class="Item" @click="toPage('../commission/main')"><img :src="listImg.item01" /><text>分佣商品</text></div>
       <div class="line"></div>
-      <div class="Item"><img :src="listImg.item02" /><text>提现申请记录</text></div>
+      <div class="Item" @click="toPage('../distribePay/main')"><img :src="listImg.item02" /><text>提现申请记录</text></div>
       <div class="line"></div>
       <div class="Item" @click="toPage('../distribeUp/main')"><img :src="listImg.item03" /><text>会员升档</text></div>
     </div>

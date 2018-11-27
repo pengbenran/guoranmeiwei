@@ -127,7 +127,7 @@ export default {
       let goodsRes=await api.getGoods(goodsId,memberId)
       that.Gallery=goodsRes.data.Gallery
       that.Goods=goodsRes.data.Goods
-      if (Goods.count == 0) {
+      if (goodsRes.data.count == 0) {
         that.posts= false
       } else {   
         that.posts= true

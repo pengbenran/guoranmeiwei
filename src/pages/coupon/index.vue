@@ -53,6 +53,7 @@ export default {
         })
         that.Tabs[index].selected=true
         if(index == 0){
+            that.btnName = "去领取"
             that.onCoupon(index)
         }else if(index == 1){
             that.btnName = "点击使用"
@@ -111,7 +112,7 @@ export default {
    //领取优惠券
    async Linqu(voucherId){
        let that = this;  
-       let res = await api.LiquCoupont(that.memberId,voucherId)
+       let res = await api.LiquCouponts(that.memberId,voucherId)
        if(res.data.code == 1){
          that.tu = 2
          Lib.Show("领取次数已达上限","领取次数已达上限",1000)
