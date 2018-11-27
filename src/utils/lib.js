@@ -40,9 +40,11 @@ const ShopModel=(title,content)=>{
   }
   async function getlocaImg(arr){
        let locaArr=[];
+       
       for(var i=0;i<arr.length;i++){
         locaArr.push(await locaImg(arr[i]))
       }
+      
       return locaArr
   }
 

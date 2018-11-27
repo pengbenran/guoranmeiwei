@@ -3,7 +3,7 @@ export default class Api{
   constructor() {
      // this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
      // this.baseUrl = "https://www.etuetf.com"
-      //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
+     //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
      this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
       //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
       //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
@@ -355,6 +355,16 @@ export default class Api{
       })
     }
 
+    //领取优惠券
+    LiquCouponts(memberId,voucherId){
+      return new Promise((resolve, reject) =>{
+        let LiquCouponts = this.fly.post(this.baseUrl +'/api/vocher/received',{memberId:memberId,voucherId:voucherId},{headers:{
+          'Content-Type': 'application/x-www-form-urlencoded'
+         }})
+        resolve(LiquCouponts)
+      })
+    }
+
     //已过期优惠券
     CloseCoupont(memberId){
       return new Promise((resolve, reject) =>{
@@ -582,12 +592,22 @@ export default class Api{
           resolve(Withdraw)
         }) 
       }
-      //微分销提现
+
+      //生成小程序二维码
       GetShare(page,scene){
         return new Promise((resolve, reject) =>{
           let GetShare = this.fly.get('https://www.guqinet.com:8444/uploadZhaoshang/getShare',{page:page,scene:scene})
           resolve(GetShare)
         }) 
       }
+
+      //微分销提现记录
+      AccountManagement(memberId){
+      return new Promise((resolve, reject) =>{
+        let AccountManagement = this.fly.get(this.baseUrl +'/api/distribe/accountManagement',{memberId:memberId})
+        resolve(AccountManagement)
+      }) 
+      }
+    
 
 }

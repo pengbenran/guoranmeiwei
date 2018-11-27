@@ -13,30 +13,39 @@
       </div>
       <!--header end-->
       <div class="tips  skeleton-Mrect">
-        <div class="logo"><img :src="imgList.logo"></div><span>{{shopDetail.shopName}}</span><small @click="changeShop">[切换]</small>
+        <div class="logo"><img :src="imgList.logo"><span>{{shopDetail.shopName}}</span></div><small @click="changeShop">[切换]</small>
       </div>
       <!--tip end-->
       <div class="brand skeleton-Mrect">
         <swiper class="swiper" indicator-dots='true' autoplay='true'>
-          <swiper-item v-for="(item,index) in banner" :key='item' :index="index"><img :src="item.imageUrl"></swiper-item>
+          <swiper-item v-for="(item,index) in banner" :key='item' :index="index" @click="toPage('../shopInfo/main?goodsId='+item.goodsId)"><img :src="item.imageUrl"></swiper-item>
         </swiper>
       </div>
       <!--brand end-->
       <div class="news  skeleton-Mrect">
         <div class="shopImg"><img :src="imgList.shopImg"></div>
         <small class="tag">火热</small>
-        <swiper class="messageswiper" duration='1000' autoplay='true' interval='3000' vertical='true'>
+         <div class="contentWarp">
+            <div class="box-content">
+                <text v-for='(item,index) in messageDoList' :index='index' :key='item'>{{item.content}}</text>
+                <text style="display: inline-block; width: 5em;"></text>
+            </div>
+          </div>
+
+        <!-- <swiper class="messageswiper" duration='1500' autoplay='true' interval='2000' >
           <swiper-item v-for="(item,index) in messageDoList" :key="item" :index="index" style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">
               {{item.content}}
           </swiper-item>
-        </swiper>
+        </swiper> -->
       </div>
       <!--news end-->
       <div class="hot">
        <div class="hotBg" @click="toPage('../ranking/main')"><img :src="imgList.hotImg" /></div>
        <div class="hotList">
         <div class="hotItem skeleton-rect" v-for="(item,index) in hotgoodsList" :key="item" :index="index" @click="jumpshopInfo(item.goodsId)">
-          <div class="icoImg"><img :src="imgList.ico1"/></div>
+          <div class="icoImg" v-show="index == 0"><img :src="imgList.ico1"/></div>
+          <div class="icoImg" v-show="index == 1"><img :src="imgList.ico2"/></div>
+          <div class="icoImg" v-show="index == 2"><img :src="imgList.ico3"/></div>
           <div class="hotShop"><img :src="item.thumbnail"/></div>
           <span>已售{{item.buyCount}}件</span>
         </div>
@@ -57,6 +66,7 @@
     </div>
    <!--activity end-->
    <div class="rili">
+     <div class="riliTitle"><text>时令日历</text></div>
      <div class="riliMore"><span class="time">11月</span><small class="more" @click="toPage('../riliList/main?catId='+rilicatId)">查看更多</small></div>
      <div class="riliBg"><img :src="imgList.rilibg"/></div>
      <div class="liriWarp">
@@ -69,6 +79,7 @@
           <div class="Item" v-for="(item,index) in seasonalCalendarRes" :index='index' :key='item' @click="jumpshopInfo(item.goodsId)">
              <div class="posIco"><img :src="imgList.riliico"/></div>
             <img :src="item.thumbnail"/>
+            <div class="riliPrice">￥{{item.price}}</div>
           </div>
         </div>
       </scroll-view>
@@ -78,7 +89,7 @@
   <block v-for="(outitem,outindex) in advertisingIndex" :index="outindex" :key="outitem">
     <div class="free">
       <div class="freeTop"><span>{{outitem.bigTitle}}</span><p>{{outitem.smallTitle}}</p></div>
-      <div class="freeBrand"><img :src="outitem.imageUrl"/></div>
+      <div class="freeBrand"   @click="toPage('../shopInfo/main?goodsId='+outitem.goodsId)"><img :src="outitem.imageUrl"/></div>
     </div>
     <div class="freeList">
       <div class="freeListBg"><img :src="imgList.freeImgBg" /></div>
@@ -88,8 +99,9 @@
             <img :src="innerItem.thumbnail" /><div class="freeInfo">{{innerItem.name}}</div>
           </div>
           <div class="loadMore" @click="toPage('../fruitList/main?catId='+outitem.catid+'&bigTitle='+outitem.bigTitle+'&smallTitle='+outitem.smallTitle)">
-          查<br>看<br>更<br>多<br>
-          <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> 
+          <!-- 查<br>看<br>更<br>多<br>
+          <i class="fa fa-chevron-circle-right" aria-hidden="true"></i>  -->
+            <img :src="imgList.MoreImg" class="MoerImg" mode='aspectFit' />
           </div>
         </div>   
       </scroll-view>
@@ -100,7 +112,7 @@
 
   <!--free end-->
   <div class="bottomBrand">
-    <img :src="imgList.bottomBrand" />
+    <img :src="imgList.bottomBrand" mode='aspectFit' />
   </div>
   <!--bottomBrand end-->
 
@@ -129,7 +141,10 @@
     data() {
       return {
         imgList:{logo:config.imgUrl+'/index/logo1.jpg',shopImg:config.imgUrl+'/index/news.jpg',hotImg:config.imgUrl+'/index/hot.jpg',activityImg:config.imgUrl+'/index/activityImg.jpg',
-        rilibg:config.imgUrl+'/index/rili.png',riliico:config.imgUrl+'/index/rilico.png',freeImgBg:config.imgUrl+'/index/freeBg.jpg',bottomBrand:config.imgUrl+'/index/bottomBrand.jpg',footerImg:config.imgUrl+'/index/footerImg.png', ico1:config.imgUrl+'/index/ico1.png'},
+        rilibg:config.imgUrl+'/index/rili.png',riliico:config.imgUrl+'/index/rilico.png',freeImgBg:config.imgUrl+'/index/freeBg.jpg',bottomBrand:config.imgUrl+'/index/bottomBrand.jpg',
+        footerImg:config.imgUrl+'/index/footerImg.png', ico1:config.imgUrl+'/index/ico1.png',ico2:config.imgUrl+'/index/ico2.png',ico3:config.imgUrl+'/index/ico3.png',
+        MoreImg:config.imgUrl+'/shop/moreBtn.png'
+        },
         banner:[],
         hotgoodsList:[],
         seasonalCalendarRes:[],
@@ -138,7 +153,7 @@
         {actName:'限时活动',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao0.jpg',pageUrl:'../discount/main'},
         {actName:'火爆拼团',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao1.jpg',pageUrl:'../grouplist/main'},
         {actName:'分享砍价',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao2.jpg',pageUrl:'../bargain/main'},
-        {actName:'优惠券',acttall:'400减50',actBg:config.imgUrl+'/index/cuxiao3.jpg',pageUrl:'../bargain/main'}
+        {actName:'优惠券',acttall:'400减50',actBg:config.imgUrl+'/index/cuxiao3.jpg',pageUrl:'../coupon/main'}
         ],
         showSkeleton: false ,
         isMember:false,
@@ -233,7 +248,7 @@
         wx.setStorageSync('uname', memberRes.data.memberDo.uname)
         wx.setStorageSync('face', memberRes.data.memberDo.face)
         wx.setStorageSync('openId',memberRes.data.memberDo.openId)
-        wx.setStorageSync('indexdata', GetMain.data.data.message)
+      
         that.memberId=memberRes.data.memberDo.memberId
         }
         else {
@@ -252,14 +267,18 @@
         let seasonalCalendarRes= await api.getseasonalCalendar()
         that.seasonalCalendarRes=seasonalCalendarRes.data.data
         that.rilicatId = seasonalCalendarRes.data.catId
+        // console.log("查看数据12313213",that.seasonalCalendarRes)
       },
       async getTopIndex(){
         let that=this
         let indexTopRes = await api.getTopIndex()
         // console.log(indexTopRes.data);
         that.banner=indexTopRes.data.data.AdpicDoList;
+ 
         that.messageDoList=indexTopRes.data.data.messageDoList;
         that.hotgoodsList=indexTopRes.data.data.goodsList;
+        wx.setStorageSync('indexdata', indexTopRes.data.message)
+        console.log("查看商品信息",that.messageDoList,indexTopRes)
       },
       async getadvertisingIndex(){
         let that=this
@@ -336,8 +355,8 @@ img{display: block;width: 100%;height: 100%}
 }
 
  .tips{
-  @include flexc;font-size: 27rpx;font-weight: 100;color: rgb(170, 170, 170);height: 78rpx;padding: 0 10rpx;border-bottom: 6rpx solid rgb(243,243,243);
-   .logo{height: 94%;display: inline-block}
+  @include flexc;justify-content: space-between;font-size: 27rpx;font-weight: 100;color: rgb(170, 170, 170);height: 78rpx;padding: 0 15rpx;border-bottom: 6rpx solid rgb(243,243,243);
+   .logo{height: 90%;display: inline-block;display: flex;align-items: center;}
    .logo img{width: 80rpx;height: 80rpx;}
    span{display: inline-block;width: 380rpx;overflow: hidden;}
    small{display: inline-block;margin-left: 6rpx;color: rgb(236,189,87);float: right;}
@@ -357,8 +376,8 @@ img{display: block;width: 100%;height: 100%}
  .hotBg{height: 410rpx; width: 94%;margin-left: 3%;position: absolute;left: 0;top: 15rpx;}
 }
 .hotList{position: absolute;bottom: 30rpx;width: 92%;display: flex;justify-content: space-around;align-items: flex-end;padding:0 10rpx;
-  .hotItem{position: relative;width: 32%;height: 240rpx;text-align: center;background: #fff;border-radius: 10rpx;}
-  .hotShop{width: 92%;height: 172rpx;margin: auto;}
+  .hotItem{position: relative;width: 32%;height: 258rpx;text-align: center;background: #fff;border-radius: 10rpx;}
+  .hotShop{width: 92%;height: 172rpx;margin: auto;padding: 15rpx 0;}
   .hotItem span{font-weight: 100;font-size: 30rpx;display: inline-block;margin: auto;color: #ccc;}
   .icoImg{position: absolute;top: 10rpx;left: 10rpx;width: 70rpx;height: 70rpx;}
 }
@@ -381,7 +400,10 @@ img{display: block;width: 100%;height: 100%}
   .riliMore{position: relative;z-index: 2;@include flexc;justify-content: space-between;padding: 0 25rpx 8rpx;}
   .riliMore .time{font-weight: 300;font-size: 34rpx;}
   .riliMore .more{font-weight: 100;font-size: 26rpx;color: rgb(184, 184, 184);}
+  .riliTitle{position: absolute;z-index: 2;width: 100%;text-align: center;font-weight: 100;font-weight: 36rpx;top: 25rpx;}
 }
+
+.riliPrice{position: absolute;z-index: 2;width: 250rpx;text-align: center;bottom: -12rpx;margin-left: 16rpx;background: rgba(0, 0, 0, 0.199);font-weight: 100;font-size: 30rpx;color: #fff;}
 
 .liriWarp{position: relative;z-index: 2;margin:0 25rpx;border-top-left-radius: 20rpx;border-top-right-radius: 20rpx;
   .riliTop{display:flex;justify-content: space-around;align-items: center;padding: 10rpx 0 12rpx;}
@@ -405,12 +427,12 @@ img{display: block;width: 100%;height: 100%}
   .freeBrand{height: 215rpx;margin-bottom: 20rpx;}
 }
 
-.freeList{position: relative;height: 335rpx;
+.freeList{position: relative;height: 360rpx;
   .freeListBg{position: absolute;top: 0;left: 0;height: 100%;width: 100%;}
 }
 .scrollItem{white-space:nowrap;display:block;position: relative;z-index: 2;
   .freeItemWarp{@include flexc;}
-  .freeItem{height: 310rpx;background: #fff;border-radius: 15rpx;margin: 10rpx;}
+  .freeItem{height: 310rpx;background: #fff;border-radius: 15rpx;margin: 10rpx;padding-top: 15rpx;}
   .freeItem img{height: 215rpx;width: 82%;margin: auto;}
   .freeInfo{width: 260rpx;@include fontM;font-size: 26rpx;color: rgb(175, 175, 175);padding: 0 12rpx;}
   .loadMore{width: 100rpx;background: #fff;height: 310rpx;text-align: center;color:#8a8a8a;}
@@ -419,9 +441,34 @@ img{display: block;width: 100%;height: 100%}
   i{color:rgb(231,177,59);margin-left: 8rpx;font-size: 32rpx;}
 }
 
-.bottomBrand{height: 206rpx;margin-top: 30rpx;}
+.loadMore{border-radius: 16rpx;overflow: hidden;}
+.MoerImg{border-radius: 16rpx;}
+.bottomBrand{height: 150rpx;}
 .footer{height: 80rpx;padding: 20rpx 30rpx 10rpx 0;}
 
+//Css3动画移动
+@keyframes kf-marque-animation{ 0% { transform: translateX(0); } 100% { transform: translateX(-53.3%); } }
+.contentWarp{
+     width: 100%;
+    height: 64rpx;
+    line-height:64rpx;
+    background: #fff;
+    border: none;
+    display: block;
+    margin: 0 auto;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: clip;
+    position: relative;
+    font-size: 28rpx;
+    font-weight: 100;
+}
+
+.contentWarp .box-content{display: inline-block;position: relative;padding-right: 0px;animation: kf-marque-animation 6s linear infinite;
+    white-space: nowrap;
+}
+
+.tag{display: inline-block;width: 60rpx;}
 /* 登录模态框 */
 .mode{
   position: fixed;

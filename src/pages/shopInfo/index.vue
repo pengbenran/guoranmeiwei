@@ -1,5 +1,6 @@
 <template>
   <div class="shopList">
+    <div class="fenIco" @click="fenclick(true)"><img :src="ImgList.fenIco"/></div>
     <div class="header">
         <swiper class="swiper" indicator-dots='true' autoplay='true'>
           <swiper-item v-for="(item,index) in Gallery" :index='index' :key='item'><img :src="item.original"></swiper-item>
@@ -20,9 +21,10 @@
 
     <div class="PriceInfo">
         <div class="Box1"><text>积分</text><text>购买可得{{Goods.point}}积分</text></div>
-        <div class="Box1"><text>优惠券</text><text class="juan" @click="toCoupon">领劵 ></text></div>
+        <div class="Box1"><text>优惠券</text><text class="juan" @click="toCoupon('/pages/coupon/main')">领劵 ></text></div>
     </div>
     <!--PriceInfo end-->
+    
 
     <div class="Info">
         <div class="InfoTop"><img :src="ShopTopImg" mode='aspectFit'/></div>
@@ -34,12 +36,14 @@
         <div class="HeightDiv"></div>
      <div class="footerBnt">
        <div class="left">
-         <div class="leftItme"><img :src="ImgList.home" /><text>首页</text></div>
-         <div class="leftItme"><img :src="ImgList.kefu" /><text>客服</text></div>
+         <div class="leftItme"><img :src="ImgList.home" @click="toIndex('/pages/index/main')"/><text>首页</text></div>
+         <div class="leftItme">
+            <button class='homepage custom' open-type="contact" session-from="weapp"><img :src="ImgList.kefu" @click="kefu"/><text>客服</text> </button>
+         </div>
          <div class="leftItme"  @click="collection">
           <img :src="ImgList.noshouChang" v-if="posts" />
           <img :src="ImgList.shouChang" v-if="!posts"/>
-          <text >收藏</text></div>
+          <text>收藏</text></div>
        </div>
        <div class="right">
          <div class="btnWarp">
@@ -48,6 +52,36 @@
        </div>
      </div>
      <!--footerBnt end-->
+
+  <div class="footerMode" v-if="footerModel">
+    <div class="footerMask" @click="fenclick(false)"></div>
+    <div class="footerWarp">
+      <button class="fen" open-type="share"><img :src="ImgList.wxfen"/><text>分享</text></button>
+      <div class="line"></div>
+      <div class="fen" @click="eventDraw"><img :src="ImgList.haibao"/> <text>海报</text></div>
+     
+    </div>
+  </div>
+  <!--footerMode END-->
+
+    <div class='canvas' v-if='maskmodel'>
+    <div class='modelcard'>
+      <div class='model'>
+        <!-- <img :src="shareImage" class="share-image"/> -->
+        <!-- <image :src="shareImage" class="share-image"></image> -->
+        <canvasdrawer :painting="painting" class="canvasdrawer" @getImage="eventGetImage"/>
+      </div> 
+
+      <div class="BtnWarp">
+        <!-- <div class='modelbtn'  @click="eventSave">保存本地</div>
+        <div class='modelbtn modelbtntop' @click='guanbi'>关闭</div> -->
+      </div>
+      </div>
+    </div>
+  <!--modelcard end-->
+
+  <div class="ShopCart"  @click="toIndex('/pages/cart/main')"><i class="fa fa-shopping-cart" aria-hidden="true"></i></div>
+
   <Model :GoodsInfo='Goods' 
          :modelShow='modelShow' 
          @toCart='toCart' 
@@ -88,12 +122,18 @@ export default {
            ImgList:{home:config.imgUrl+'/group/home.png', kefu:config.imgUrl+'/group/kefu.png',
                    noshouChang:config.imgUrl+'/group/shoucan.png',shouChang:config.imgUrl+'/group/shoucang.png',
                    touxiang:config.imgUrl+'/group/touxiang.jpg', btnInfoImg:config.imgUrl+'/group/TionInfo.jpg', 
-                   qiang:config.imgUrl+'/discount/qiang.png',wenhao:config.imgUrl+'/discount/wenhao .png'
+                   qiang:config.imgUrl+'/discount/qiang.png',wenhao:config.imgUrl+'/discount/wenhao .png',
+                   fenIco:config.imgUrl+'/shop/fenico.png',wxfen:config.imgUrl+'/shop/wxfen.png',haibao:config.imgUrl+'/shop/haibao.png',
+ 
           },
           posts:false,
+          maskmodel:false,
+          footerModel:false,
           Gallery:[],
           Goods:{},
           Guige:[],
+          painting:{},
+          shareImage:'',
           space:'',
           pic:1,
           count:0,
@@ -115,11 +155,13 @@ export default {
 
      that.Gallery = res.data.Gallery;
      that.Goods = res.data.Goods;
-     if (res.data.Goods.count == 0) {
+
+     if (res.data.count == 0) {
         that.posts= false
       } else {   
         that.posts= true
       }
+      
     //判断是否开启规格
     if(res.data.Goods.haveSpec!=0){
       let Guige= JSON.parse(res.data.Goods.adjuncts)
@@ -170,7 +212,7 @@ export default {
     async toCart(count){
       let that = this;
       that.count = count
-      console.log("购物车触发事件",count)
+      // console.log("购物车触发事件",count)
       if(wx.getStorageSync('memberId') == "00"){
        Lib.Show("你还没有登录","success",1000)
        setTimeout(function(){
@@ -255,6 +297,135 @@ export default {
       } 
     },
 
+    //点击生成海报
+   async eventDraw(){
+     let that = this;
+     that.maskmodel=true;
+     Lib.Loading("图片绘制中")
+     let res = await api.GetShare('pages/index/main',that.goodsId)
+     let ImgArr = [res.data,that.Goods.thumbnail]
+     let ImgRes = await Lib.getImageInfo(ImgArr)
+         that.painting={
+              width: 375,
+              height: 510,
+              clear: true,
+                   views: [
+                   {
+                    type: 'image',
+                    url: ImgRes[1],
+                    top: 0,
+                    left: 0,
+                    width: 375,
+                    height: 375
+                  },
+                   {
+                    type: 'rect',
+                    background: '#fff',
+                    top: 375,
+                    left: 0,
+                    width: 385,
+                    height: 140
+                  },
+                   {
+                    type: 'image',
+                    url: ImgRes[0],
+                    top: 410,
+                    left: 260,
+                    width: 90,
+                    height: 90
+                  },
+                  {
+                    type: 'text',
+                    content: that.Goods.name,
+                    fontSize: 13,
+                    color: '#666',
+                    textAlign: 'left',
+                    breakWord: true,
+                    left: 15,
+                    top: 390,
+                    width:300
+                  },
+                  {
+                    type: 'text',
+                    content: '新鲜水果',
+                    fontSize: 13,
+                    color: '#ccc',
+                    textAlign: 'left',
+                    breakWord: true,
+                    left: 15,
+                    top: 430,
+                    width:130
+                  },
+                   {
+                    type: 'text',
+                    content: '新鲜水果',
+                    fontSize: 13,
+                    color: '#ccc',
+                    textAlign: 'left',
+                    breakWord: true,
+                    left: 85,
+                    top: 430,
+                    width:130
+                  },
+                  {
+                    type: 'text',
+                    content: '价格',
+                    fontSize: 15,
+                    color: '#FB8621',
+                    textAlign: 'left',
+                    breakWord: true,
+                    left: 15,
+                    top: 470,
+                    width:130
+                  },
+                   {
+                    type: 'text',
+                    content: '￥'+that.Goods.price,
+                    fontSize: 20,
+                    color: '#FB8621',
+                    textAlign: 'left',
+                    bolder: true,
+                    left: 45,
+                    top: 465,
+                    width:130
+                  },
+                
+              ]
+            }
+   },
+
+
+    eventSave() {
+      wx.saveImageToPhotosAlbum({
+        filePath: this.shareImage,
+        success(res) {
+          wx.showToast({
+            title: '保存图片成功',
+            icon: 'success',
+            duration: 2000
+          })
+        }
+      })
+    },
+
+    eventGetImage(event) {
+      console.log("执行了吗")
+      console.log(event)
+      wx.hideLoading()
+      console.log("s99",event)
+      console.log("s88",event.mp.detail)
+      const { tempFilePath, errMsg } = event.mp.detail
+
+      if (errMsg === 'canvasdrawer:ok') {
+          this.shareImage=tempFilePath
+          wx.previewImage({
+            current: this.shareImage, // 当前显示图片的http链接
+            urls: [this.shareImage] // 需要预览的图片http链接列表
+          })
+          this.maskmodel = false
+      }
+    },
+
     //商品数量
     Num(num){
      let that = this;
@@ -281,9 +452,29 @@ export default {
      that.modelShow=false;
      console.log("点击了吗",that.modelShow)
     },
+
+   //点击分享按钮
+   fenclick(bool){
+    this.footerModel = bool;
+   },
+
    //跳转
-   toCoupon(){
-    wx.navigateTo({ url: '/pages/coupon/main' });
+   toCoupon(url){
+     console.log("判断点击",url)
+    wx.navigateTo({ url: url });
+   },
+   
+   //跳转首页
+   toIndex(url){
+    wx.switchTab({ url: url });
+   },
+
+   kefu(){
+     //触发打电话
+     let that = this;
+      wx.makePhoneCall({
+        phoneNumber: '158XXXXXXXX',
+      })
    }
   },
   async mounted(){
@@ -296,6 +487,16 @@ export default {
     
     //获取商品信息
     that.SelectShopInfo();
+  },
+    onShareAppMessage: function (res) {
+    if (res.from === 'button') {
+      // 来自页面内转发按钮
+      console.log(res.target)
+    }
+    return {
+      title: '果冉回味',
+      path: '/shopinfo/main?goodsId='+this.goodsId
+    }
   }
 
 }
@@ -336,6 +537,10 @@ img{display: block;height: 100%;width: 100%;}
 .HeightDiv{height: 110rpx;}
 .footerBnt .left,.btnWarp{@include flexc;justify-content: space-around;}
 .leftItme{line-height: 28rpx;}
+.leftItme {
+  button{line-height: 36rpx;background: #fff;}
+  button::after{border: none;}
+}
 .footerBnt{@include flexc;justify-content: space-between;padding: 10rpx 2%;position: fixed;bottom: 0;width:96%;background: #fff;box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.164) ;
   .left{width: 45%;}
   .left img{width: 58rpx;height: 58rpx;margin: auto;}
@@ -344,6 +549,38 @@ img{display: block;height: 100%;width: 100%;}
   .btnWarp{background-image: -webkit-linear-gradient(0deg,rgb(252,148,53), rgb(255,191,3));border-radius: 45rpx;height: 75rpx;line-height: 75rpx;}
   .btnWarp text{font-size: 32rpx;color: #fff;font-weight: 100;padding: 0 15rpx;}
   .btnWarp span{width: 2rpx;height: 35rpx;background-color: #fff;}
+}
+
+.fenIco{position: absolute;right: 15rpx;top: 15rpx;z-index: 2;border-radius: 50%;
+  img{height: 55rpx;width: 55rpx;}
+}
+
+.footerMode{position:fixed;top: 0;left: 0;height: 100vh;width: 100%;
+   .footerMask{height: 100%;width: 100%;background: rgba(0, 0, 0, 0.15);}
+   .footerWarp{position: absolute;bottom: 0;background: #FFF;height: 150rpx;width: 100%;@include flexc;justify-content: space-between}
+   .footerWarp text{font-weight: 100;font-size: 34rpx;}
+   .footerWarp .fen{width: 48%;text-align: center;}
+   .footerWarp button{background: rgba(255, 255, 255, 0);line-height: 50rpx;}
+   .footerWarp button::after{border:none;}
+   .fen img{width: 75rpx;height: 75rpx;margin: auto}
+   .line{height: 60rpx;width: 1px;background: #ccc;}
+}
+
+/* 海报样式 */
+.canvas{z-index: 10;position: absolute;top: 0;left: 0;background: rgba(0, 0, 0, 0.600);height: 100vh;width: 750rpx;}
+/* .model{height: 700rpx;width: 100%;} */
+.model{width: 750rpx;}
+.model image{width:750rpx;height: 932rpx;}
+
+.modelbtn{width: 85%;line-height: 75rpx;border:1px solid #ff7903;;color:#fff;margin: auto;text-align: center;border-radius: 20rpx;}
+.modelcard{padding-top: 60rpx;}
+
+.BtnWarp{display:flex;align-items: center;margin-top: 15rpx;
+  .modelbtn{width: 230rpx;color: #ff7903}
+}
+
+.ShopCart{position: fixed;right: 0;bottom: 180rpx;text-align: center;width: 60rpx;height: 60rpx;line-height: 60rpx;background:rgba(0, 0, 0, 0.103);border-radius: 50%;
+   i{color: #fff;}
 }
 
 

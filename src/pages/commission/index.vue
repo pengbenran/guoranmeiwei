@@ -166,7 +166,7 @@ img{display: block;height: 100%;width: 100%;}
     .topImg{text-align: center;}
     .topImg img{height: 250rpx;width: 250rpx;margin: auto;}
     .Price{@include flexc;justify-content: space-between;margin-top: 20rpx;color: rgb(255,134,111);}
-    .Price img{width: 50rpx;height: 50rpx;}
+    .Price img{z-index: 3;width: 50rpx;height: 50rpx;}
 }
 
 .btn{@include flexc;justify-content: center;font-weight: 100;line-height: 58rpx;font-size: 28rpx;background: #fff;margin-top: 15rpx;
