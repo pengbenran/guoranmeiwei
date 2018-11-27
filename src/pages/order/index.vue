@@ -50,8 +50,8 @@
             <icon type="circle" size="16" v-if="iconBool"/><icon type="success" size="16" v-else/>
           </div>
         </div> -->
-      <div class="MaskItem"><text>提货电话:</text><input type="text" placeholder="请输入提货电话" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;' v-model="mobile"></div>
-      <div class="MaskItem"><text>自提点:{{shopList.shopname}}</text></div>
+      <div class="MaskItem" v-if='selectIndex==1'><text>提货电话{{selectIndex}}:</text><input type="text" placeholder="请输入提货电话" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;' v-model="mobile"></div>
+      <div class="MaskItem" v-if='selectIndex==1'><text>自提点:{{shopList.shopname}}</text></div>
         <div class="MaskItem"><text>备注:</text><input type="text" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;' v-model="msg"></div>
     </div>
     <!--OrderMask end-->

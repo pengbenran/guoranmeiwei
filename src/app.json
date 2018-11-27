@@ -1,6 +1,7 @@
 {
   "pages": [ 
     "pages/index/main",
+    "pages/helpdiscount/main",
     "pages/myself/main",
     "pages/groupitem/main",
     "pages/group/main",

@@ -16,13 +16,16 @@
     </div>
     <!--price end-->
     
-    <div class="peopleInfo">
+    <div class="peopleInfo" v-if="isjoin">
       <div class="left">
         <img :src="memberCut.face"/>
       </div>
       <div class="right">
         <div class="title">{{memberCut.uname}}</div><div class="info">已有{{cutPersonCount}}位好友帮忙砍价，共砍<text>￥{{cutTotal}}</text>元</div>
       </div>
+    </div>
+    <div class="peopleInfoTip" v-if="!isjoin">
+      少侠，赶紧砍一刀吧
     </div>
     <!--peopleInfo end-->
     
@@ -32,19 +35,23 @@
     </div>
    <!--shopinfo end-->
    <div class="tabWarp">
-     <Tabs :find_item='find_item' @select='onselect' :wid="width"></Tabs>
+     <Tabs :find_item='find_item' @listenToChild="fromChild" :wid="width"></Tabs>
    </div>
     <!--tabWarp-->
     <div class="tabInfo">
       <div class="TionInfo" v-if="selectIndex==0">
         <wxParse :content="Goods.intro" @preview="preview" @navigate="navigate" />
       </div>
-      <div class="tabInfoList" v-if="selectIndex==1">
+      <div class="tabInfoList" v-if="selectIndex==1&&isjoin">
          <div class="item" v-for="(item,index) in memberCut.cutHistoryDOs" :inedx='index' :key='item'>
            <div class="left"><img :src="item.face" /><div><p>{{item.uname}}</p><p>{{item.cutTime}}</p></div></div>
            <div class="right"><text class="selTile">已砍：</text><text class="selPrice">￥{{item.cutPersAmount}}元</text></div>
          </div>
       </div>
+      <div class="tabInfoListTip" v-if="selectIndex==1&&!isjoin">
+         砍价排行榜为空
+      </div>
+
     </div>
 
      <div class="HeightDiv"></div>
@@ -75,7 +82,18 @@
      <!--footerBnt end-->
       
    <!--    <Model :ImgList='ImgList' :modelShow='modelShow' :Area_item='Area_item' :Weight_item='Weight_item'  @hideModel='hideModel' ref="childs">></Model> -->
-
+    <div class="bcgmodel" v-if="cutModalStatus" @click="close"></div>
+    <div class="cutModel" v-if="cutModalStatus">     
+      <div class="bcg">
+        <img :src="bcg" mode="widthFix">
+      </div>
+      <div class="cutMoney">
+        <span>{{cutResult.cutHistoryDOs[0].cutPersAmount}}</span>元 
+      </div>
+      <div class="cutbtn">
+        <button open-type='share'></button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -103,14 +121,8 @@ export default {
           {name:"砍价排行榜",selected:false}],
           Area_item:[{AreaName:'湖北'},{AreaName:'江西'}],
           Weight_item:[{WeightName:'1kg'},{WeightName:'2kg'}],
-          ImgList:{brand:config.imgUrl+'/group/header01.jpg',ShopImg:config.imgUrl+'/cart/shopimg01.jpg',home:config.imgUrl+'/group/home.png',
-                   kefu:config.imgUrl+'/group/kefu.png',shouChang:config.imgUrl+'/group/shoucang.png',touxiang:config.imgUrl+'/group/touxiang.jpg',
-                   btnInfoImg:config.imgUrl+'/group/TionInfo.jpg',
+          ImgList:{home:config.imgUrl+'/group/home.png',kefu:config.imgUrl+'/group/kefu.png',shouChang:config.imgUrl+'/group/shoucang.png',
           },
-          ShopImg:[{ShopName:'你好世界桃子好吃好甜美味无限美味你好世界你好世界你好世界你好世界',
-                  ShopImg:config.imgUrl+'/cart/shopimg01.jpg',maskInfo:'当季水果',p1:9.9,p2:19.9},
-                  {ShopName:'你好世界桃子好吃好甜美味无限美味你好世界你好世界你好世界你好世界',
-                  ShopImg:config.imgUrl+'/cart/shopimg01.jpg',maskInfo:'当季水果',p1:9.9,p2:19.9}],
           countdown:{},
           selectIndex:0,
           modelShow:false,
@@ -123,16 +135,32 @@ export default {
           cutTotal:'',
           memberCut:{},
           cutPersonCount:'',
-          cutFinalAmount:''
+          cutFinalAmount:'',
+          memberId:'',
+          cutId:'',
+          goodsId:'',
+          bcg:config.imgUrl+'/group/cut.png',
+          cutModalStatus:false,
+          cutResult:{}
     }
   },
    methods: {
     //选项卡点击事件
-    onselect(e){
+    async fromChild(data){
       let that = this;
-      that.selectIndex=e
+      that.selectIndex=data
+      that.find_item=that.find_item.map((item)=>{
+         item.selected=false;
+         return item
+        })
+       that.find_item[data].selected=true
+     
     },
-
+    close(){
+      let that=this
+      that.cutModalStatus=false
+      that.getByCut()
+    },
     //立即购买淡出模态框
     showModel(){
      let that = this;
@@ -166,20 +194,20 @@ export default {
     },
     async getGood(){
     let that=this
-    let goodsRes=await api.getGoods(19,187)
+    let goodsRes=await api.getGoods(that.goodsId,that.memberId)
     that.Gallery=goodsRes.data.Gallery
     that.Goods=goodsRes.data.Goods
     },
     async getByCut(){
       let that=this
       var starttime = (new Date()).valueOf();
-      let cutDetailRes=await api.getByCutId(3)
+      let cutDetailRes=await api.getByCutId(that.cutId)
       that.cutGood=cutDetailRes.data
       that.cutTime(starttime,that.cutGood.endtime)
     },
     async isJoin(){
       let that=this
-      let isJoinRes=await api.isJoin(209,3)
+      let isJoinRes=await api.isJoin(that.memberId,that.cutId)
       if(isJoinRes.data.code==1){
         that.isjoin=false
       }else{
@@ -206,7 +234,7 @@ export default {
     async startCut(){
       var that=this
       var startcutparm = {}
-      startcutparm.memberId = 209
+      startcutparm.memberId = that.memberId
       startcutparm.cutId = that.cutGood.cutId
       startcutparm.cutType = that.cutGood.cutType
       if (that.cutGood.cutType == 0) {
@@ -217,19 +245,31 @@ export default {
         startcutparm.cutAverAmount = that.cutGood.cutAverAmount
       }
        let startCutRes=await api.startCut(startcutparm)
-       console.log(startCutRes);
+       that.cutResult=startCutRes.data.memberCutDate
+       that.cutModalStatus=true
     }
 
   },
-  mounted(){
+  onLoad(options){
      var that=this;
-  
+    console.log(options);
+    that.memberId = wx.getStorageSync('memberId');
+    that.goodsId=options.goodsId;
+    that.cutId=options.cutId;
      //页面渲染完成创建一个动画
     that.getGood()
     that.getByCut()
     that.isJoin()
   },
-  
+  onShareAppMessage: function () {
+    var that = this;
+    console.log(that.cutId);
+    return {
+      title: '分享砍价',
+      desc: '少侠，快帮我砍一刀',
+      path: '/pages/helpdiscount/main?memberId=' + that.memberId + '&cutId=' + that.cutId + '&goodsId=' + that.goodsId// 路径，传递参数到指定页面
+    }
+  },
 }
 </script>
 
@@ -258,7 +298,7 @@ img{display: block;height: 100%;width: 100%;}
   .oldPrice{color: #e9e9e9;font-size: 24rpx;text-decoration:line-through;}
 }
 
-.bottomright{height: 120rpx;;}
+.bottomright{height: 120rpx;}
 .peopleInfo{@include flexc;padding-bottom: 20rpx;border-bottom: 2px solid rgb(245,245,245);
    .left{width: 25%;}
    .left img{width: 100rpx;height: 100rpx;margin: auto;border-radius: 50%;}
@@ -267,20 +307,28 @@ img{display: block;height: 100%;width: 100%;}
    .right .info{color: #8e8e8e;font-weight: 100;font-size: 26rpx;}
    .right text{color: rgb(252,148,53);}
 }
-
+.peopleInfoTip{
+  color: rgb(252,148,53);text-align: center;height: 120rpx;line-height: 120rpx;
+}
 .shopInfo{padding: 10rpx 20rpx;
    span{font-size: 28rpx;font-weight: 100;}
    text{display: inline-block;padding: 0rpx 10rpx;margin-left: 15rpx;border-radius: 25rpx; background:rgb(252,148,53);font-weight: 100;font-size: 24rpx;color: #fff;}
 }
 
-.TionInfo{height: 1135rpx;}
+.TionInfo{}
 .tabInfoList{padding: 5rpx 25rpx;
    .item{@include flexc;justify-content: space-between;margin-bottom: 20rpx;padding-bottom: 15rpx;border-bottom: 2px solid rgb(243,243,243); font-weight: 100;font-size: 30rpx;color: #666;}
    .item .left{@include flexc; }
    .left img{border-radius: 50%;width: 70rpx;height: 70rpx;margin-right: 15rpx;}
    .right .selPrice{color: rgb(251,154,50);}
 }
-
+.tabInfoListTip{
+  color: #ccc;
+  font-size: 0.8em;
+  text-align: center;
+  height: 180rpx;
+  line-height: 180rpx;
+}
 .HeightDiv{height: 110rpx;}
 .footerBnt .left,.btnWarp{@include flexc;justify-content: space-around;}
 .leftItme{line-height: 28rpx;}
@@ -289,12 +337,64 @@ img{display: block;height: 100%;width: 100%;}
   .left img{width: 58rpx;height: 58rpx;margin: auto;}
   .left text{color: rgb(117,117,117);font-size: 28rpx;font-weight: 100;}
   .right{width: 55%;}
-  .btnWarp{background-image: -webkit-linear-gradient(0deg,rgb(252,148,53), rgb(255,191,3));border-radius: 45rpx;height: 75rpx;line-height: 75rpx; display: flex;}
+  .btnWarp{background-image: -webkit-linear-gradient(0deg,rgb(252,148,53), rgb(255,191,3));border-radius: 45rpx;height: 75rpx;line-height: 75rpx; display: flex; color:#fff;}
   .btnWarp .nowprice{font-size: 28rpx;color: #fff;font-weight: 100;padding: 0 15rpx 0 20rpx;display:block;box-sizing: border-box;}
   .btnWarp .nowprice p{height: 35rpx;line-height: 35rpx;}
   .btnWarp span{width: 2rpx;height: 35rpx;background-color: #fff;}
   .btnWarp .forhelp{background: none;border:none;color: #fff;}
 }
+.bcgmodel{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    background: #000;
+    opacity: 0.5;
+    overflow: hidden;
+  }
+.cutModel{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+  .bcg{ 
+    position: fixed;
+    width: 80%;
+    top:200rpx;
+    left:10%;
+  }
+  .cutMoney{
+    position: absolute;
+    top: 390rpx;
+    // left:15%;
+    width: 100%;
+    text-align: center;
+    font-size: 1.5em;
+    z-index: 30;
+    span{
+      font-size: 2em;
+      font: bold "Microsoft YaHei";
+      text-shadow: 4rpx 4rpx 5rpx #421a00;
+    }
+  }
+  .cutbtn{
+    position: absolute;
+    top: 850rpx;
+    width: 300rpx;
+    height: 100rpx;
+    left: 30%;
+    button{
+      background: none;border:none;width: 100%;height: 100%;
+    }
+  }
 
+}
 
+button::after {
+  border: none;
+}
 </style>

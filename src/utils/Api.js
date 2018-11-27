@@ -3,12 +3,8 @@ export default class Api{
   constructor() {
      // this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
      // this.baseUrl = "https://www.etuetf.com"
-      //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
      this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
-      //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
-      //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
-     //this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
-     //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
+     // this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
 
     // this.baseUrl = "http://192.168.2.131/guoranhuiwei" 
     this.fly = new Fly;
@@ -582,11 +578,27 @@ export default class Api{
           resolve(Withdraw)
         }) 
       }
-      //微分销提现
+      //微分销获取小程序二维码
       GetShare(page,scene){
         return new Promise((resolve, reject) =>{
           let GetShare = this.fly.get('https://www.guqinet.com:8444/uploadZhaoshang/getShare',{page:page,scene:scene})
           resolve(GetShare)
+        }) 
+      }
+      // 获取充值列表
+      accountSettingList(){
+          return new Promise((resolve, reject) =>{
+          let accountSettingListRes = this.fly.get(this.baseUrl+'/api/member/accountSettingList')
+          resolve(accountSettingListRes)
+        }) 
+      }
+      // 会员充值
+      topUp(memberId,id,shopId){
+        return new Promise((resolve, reject) =>{
+          let topUpRes = this.fly.post(this.baseUrl +'/api/member/topUp',{memberId:memberId,id:id,shopId:shopId},{headers:{
+            'Content-Type': 'application/x-www-form-urlencoded'
+            }})
+          resolve(topUpRes)
         }) 
       }
 

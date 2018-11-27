@@ -6,7 +6,7 @@
              <div class="left">
                  <img :src="item.thumbnail" />
              </div>
-             <div class="tight">
+             <div class="right">
                  <div class="title fontHidden">{{item.name}}</div>
                  <div class="mask">{{item.maskInfo}}</div>
                  <div class="price">

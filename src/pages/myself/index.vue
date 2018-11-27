@@ -15,7 +15,7 @@
         </div>
         <div class="panelbox">
           <div class="boxWarp" @click="topage('../Recharge/main')">
-            <div class="panelcount"  >34343</div>
+            <div class="panelcount"  >{{userInfo.advance}}</div>
             <div class="panelname">余额/充值</div>
           </div>
         </div>

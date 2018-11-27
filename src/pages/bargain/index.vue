@@ -33,7 +33,8 @@ export default {
     let cutlistRes=await api.getCutlist()
     console.log(cutlistRes.data)
     that.cutList=cutlistRes.data.cutList
-    taht.Gallery=cutlistRes.data.adList
+    that.Gallery=cutlistRes.data.adList
+
 
   }
 }
