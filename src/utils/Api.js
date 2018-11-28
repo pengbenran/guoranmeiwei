@@ -621,6 +621,13 @@ export default class Api{
         resolve(AccountManagement)
       }) 
       }
-    
+
+      //获取优惠券
+      VoucherUsed(params){
+        return new Promise((resolve, reject) =>{
+          let VoucherUsed = this.fly.get(this.baseUrl +'/api/vocher/voucherUsed',{params:JSON.stringify(params)})
+          resolve(VoucherUsed)
+        }) 
+        }
 
 }

@@ -30,11 +30,11 @@
       <div class="Address" v-else @click="toAddress">
           <div class="Address-item">
               <div class="itemLeft">收货人</div>
-              <div class="itemRight"><text>马登</text><text>15083845338</text></div>
+              <div class="itemRight"><text>{{addr.name}}</text><text>{{addr.mobile}}</text></div>
           </div>
             <div class="Address-item">
               <div class="itemLeft">收货地址</div>
-              <div class="itemRight">江西省南昌市西湖区洪城数码广场1101</div>
+              <div class="itemRight">{{addr.addr}}</div>
           </div>
       </div>
      </div>
@@ -54,7 +54,14 @@
           </div>
         </div>
        <div class="MaskItem" v-if='selectIndex==1'><text>自提电话:</text><input type="text" v-model="mobile" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;'></div>
-       <div class="MaskItem" v-if='selectIndex==1'><text>自提点:</text><input type="text" v-model="ShopName" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;'></div>
+       <div class="MaskItem" v-if='selectIndex==1'><text>自提点: </text>
+         <!-- <input type="text" v-model="ShopName" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;'> -->
+          <picker @change="bindPickerChange" :value="shopName" :range="shopArray">
+          <div class="picker">
+             {{shopName}}
+          </div>
+          </picker>
+         </div>
         <div class="MaskItem"><text>备注:</text><input type="text" v-model="InputMask" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;'></div>
     </div>
     <!--OrderMask end-->
@@ -69,10 +76,27 @@
       </div>
       <div class="Item">
         <div class="Items"><img :src="ImgList.qianbao" /><text>余额支付</text></div>
-        <div class="ItemSelect" @click="selectPay(2)"><icon type="success" size="21" v-show='PayBool'/><icon type="circle" size="21" v-show='!PayBool'/></div>
+        <div class="ItemSelect" @click="selectPay(0)"><icon type="success" size="21" v-show='PayBool'/><icon type="circle" size="21" v-show='!PayBool'/></div>
       </div>
     </div>
     <!--PayType end-->
+
+   <div class="couPonWarp" v-if="couponBool"></div>
+  <div class="couponModel" v-if="couponBool">
+    <div class="title">优惠卷</div>
+    <div class="CouItem"><img :src="ImgList.couponModel" />
+      <div class="couInfo">
+        <div class="left">
+          <span>新人优惠</span>
+          <text>有效期：10.8 - 10.3</text>
+        </div>
+        <div class="right">
+          <div class="btn">立即领取</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
      
      <div class="Divheight"></div>
      <div class="footerBnt">
@@ -102,15 +126,22 @@ export default {
    
   data () {
     return {
-     ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg',wxImg:config.imgUrl+"/store/wxzf.png",qianbao:config.imgUrl+"/store/qianbao.png"},
+     ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg',wxImg:config.imgUrl+"/store/wxzf.png",
+              qianbao:config.imgUrl+"/store/qianbao.png",couponModel:config.imgUrl+"/shop/coupon.png"},
      shopname:"王小姐水果店(抚生路点)",
      shopList:[{shopImg:config.imgUrl+'/cart/shopimg01.jpg',shopTitle:'福建馆溪平柚子好吃好甜你好世界你好世界你好世界你好世界你好世界你好世界',mask:"你好世界",p1:19,p2:9},
             
           ],
+      couponBool:false,
       PayBool:false,
+      shopNameIndex:0,
       PayIndex:1,
       shipStatus:1,
       time: '12:01',
+      shopListArry:[],
+      shopArray:[],
+      shopName:'',
+      shopId:'',
       date:'',
       startdate:'',
       starttime:'',
@@ -131,25 +162,46 @@ export default {
       addr:[],
       point:'',
       mobile:'',
-      ShopName:'八一店'
     }
   },
   methods:{
     bindTimeChange: function (e) {
       let that = this;
-      console.log('picker发送选择改变，携带值为', e.mp.detail.value)
-      that.time = e.mp.detail.value
-    
+      var jindata = new Date();
+      let time2 = that.date + ' ' + that.time
+      var startdate=new Date(time2.replace(/-/g,"/"));
+      if(startdate>jindata){
+              let that = this;
+              that.time = e.mp.detail.value
+      }else{
+        Lib.Show("抱歉你选的时间不符","none",1500)
+      }
     },
     bindDateChange:function(e){
-      let that=this;
-      that.date = e.mp.detail.value
+       let that = this;
+      var jindata = new Date();
+      let time2 = that.date + ' ' + that.time
+      var startdate=new Date(time2.replace(/-/g,"/"));
+      if(startdate>jindata){
+              let that = this;
+              that.data = e.mp.detail.value
+      }else{
+        Lib.Show("抱歉你选的时间不符","none",1500)
+      }
+    },
+
+    //店铺选择
+    bindPickerChange(e){
+      let that = this;
+      let index = e.mp.detail.value
+      that.shopName = that.shopArray[index]
+      // console.log( that.shopName,"点名")
     },
 
     //判断是否有地址
     async SelectAdder(){
      let that =this;
-     if(wx.getStorageSync('addr') == ''){
+     if(wx.getStorageSync('addr') == 'noaddr'){
        let addParms = {}
        addParms.memberId = wx.getStorageSync('memberId');
        let res = await api.SelectAddre(addParms)
@@ -161,7 +213,9 @@ export default {
           that.AddressBtn = false
        }
      }else{
+       
         that.addr=wx.getStorageSync('addr')
+        console.log("获取地址1",that.addr)
         that.AddressBtn = false
      }
     },
@@ -185,11 +239,32 @@ export default {
       }
      },
      
+     //提交按钮
      toast(){
           let that = this;
-          if(that.addr == undefined){
-            wx.showToast({ title: '请添加地址',})
+          let advance = wx.getStorageSync('advances');
+          if(that.selectIndex == 1){
+            if(that.mobile == ''){
+              Lib.Show("电话为空","none",1500)
+            }else{
+              if(advance >= that.GoodItem.goodsAmount){
+                that.OrderUp();
+              }else{
+                Lib.Show("余额不足","none",2000)
+              }
+            }
           }else{
+              if(that.addr == undefined){
+                wx.showToast({ title: '请添加地址',})
+              }else{
+                that.OrderUp();
+              } 
+          }
+        },
+
+    //订单提交参数赋值
+    OrderUp(){
+      let that = this;
             let bean = {}
             let goodObj = {}
             let orderParms = {}
@@ -239,7 +314,7 @@ export default {
                     bean.shipName = that.addr.name
                     bean.addrId = that.addr.addrId
                     bean.clickd = that.InputMask
-                    bean.payType = 1
+                    bean.payType = that.PayIndex
                     bean.orderType = 1
                     bean.shipStatus = that.shipStatus
                     if(that.shipStatus == 0){
@@ -254,7 +329,7 @@ export default {
                       var stringTime =that.date+that.time;
                       var timestamp2 = Date.parse(new Date(stringTime));
                       bean.takeTimes=timestamp2
-                      bean.addr = that.ShopName
+                      bean.addr = that.shopName
                       bean.shipMobile = that.mobile
                     }
                     bean.goodsAmount = that.GoodItem.googitem[0].price * that.GoodItem.googitem[0].num
@@ -273,8 +348,7 @@ export default {
                   // orderParms.order = bean
                   that.saveOrder(bean)
               }
-          } 
-        },
+    },
     
     //提交订单并支付
     async saveOrder(bean){
@@ -308,11 +382,16 @@ export default {
 
       //请求支付
       let PayRes = await api.ConfirmPay(parms,that.code)
+      console.log("查看asdasd",that.PayIndex)
+
       if(that.PayIndex == 1){
           that.wxPay(PayRes)
+      }else{
+         console.log("查看支付方式",PayRes,that.PayIndex)
       }
     },
    
+
    //微信支付方法封装
    wxPay(PayRes){
      let that = this;
@@ -332,7 +411,18 @@ export default {
           }
         });
    },
-
+   
+   //获取优惠券
+   VoucherUsed(){
+     let that = this;
+     var parms = {}
+     var parmss = JSON.parse(option.parms)
+     var orderAmount = parmss.orderAmount
+     parms.goodsIds = parmss.goodsIds
+     parms.memberId = memberId
+     parms = JSON.stringify(parms)
+     let res = api.VoucherUsed()
+   },
 
     //使用积分
     jifen(select){
@@ -350,18 +440,26 @@ export default {
         }
       },
 
+      //获取所有店铺
+      GetShopName(){
+        let that = this;
+        api.getshopList().then(function(res){
+          that.shopListArry=res.data
+          that.shopArray=res.data.map((item)=>{
+            return item.shopName
+          })
+          that.shopName=that.shopArray[0]
+          that.shopId=that.shopListArry[0].shopId
+        })
+      },
+
       //支付方式选择
       selectPay(index){
          let that = this;
          that.PayBool = !that.PayBool;
          that.PayIndex = index;
-         if(index == 1){
-             console.log("选择了微信支付")
-         }else if(index == 2){
-           console.log("选择了余额支付")
-         }
       },
-
+     
       //优惠券跳转
       fenSi(){
         let that = this;
@@ -388,16 +486,13 @@ export default {
     //跳转
     toAddress(){
       wx.setStorageSync('GoodItem',this.GoodItem)
-      wx.navigateTo({ url: '../address/main' });
-    },
-    toAddress(){
-      wx.navigateTo({ url: '../addressList/main' });  
+      wx.navigateTo({ url: '../addressList/main' });
     },
   },
   mounted(){
     let that = this;
  
-    that.GoodItem =JSON.parse(this.$root.$mp.query.gooditem);
+    // that.GoodItem =JSON.parse(this.$root.$mp.query.gooditem);
     console.log("显示商品信息",that.GoodItem)
     that.Cart = this.$root.$mp.query.cart;
     that.point = wx.getStorageSync('point')
@@ -405,6 +500,7 @@ export default {
      
      that.Order();
      that.getTime();
+     that.GetShopName();
      that.AllPrice = that.GoodItem.goodsAmount
      console.log("商品信息",that.GoodItem)
 
@@ -478,6 +574,18 @@ img{display: block;height: 100%;width: 100%;}
     img{width: 40rpx;height: 40rpx;margin-right: 15rpx;}
     .Item{padding: 10rpx 0;@include flexc;justify-content: space-between;}
     .Items{@include flexc;}
+}
+
+.couPonWarp{position: fixed;left: 0;top: 0;height: 100vh;width: 100%;z-index: 5;background: rgba(0, 0, 0, 0.295);}
+.couponModel{position: fixed;top: 50%;left: 50%;z-index: 6;margin-top: -320rpx;margin-left: -190rpx;
+    background: #fff;padding: 20rpx;height: 520rpx;width: 380rpx;
+    .title{text-align: center;font-weight: 100;font-size: 32rpx;}
+    .CouItem{position: relative;width: 375rpx;margin: auto;height: 110rpx;}
+    .couInfo{position: absolute;top: 15rpx;width: 100%;font-weight: 100;font-size: 26rpx;color: #fff;}
+    .couInfo{display: flex;align-items: center;justify-content: space-between;}
+    .couInfo .left{width: 70%;margin-left: 5%;}
+    .couInfo .right{width: 20%;padding-left: 3%;}
+    .couInfo .left span{display: block;}
 }
 
 .Divheight{height: 120rpx;}

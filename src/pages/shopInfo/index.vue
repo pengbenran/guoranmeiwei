@@ -53,6 +53,7 @@
      </div>
      <!--footerBnt end-->
 
+
   <div class="footerMode" v-if="footerModel">
     <div class="footerMask" @click="fenclick(false)"></div>
     <div class="footerWarp">
@@ -63,6 +64,7 @@
     </div>
   </div>
   <!--footerMode END-->
+
 
     <div class='canvas' v-if='maskmodel'>
     <div class='modelcard'>

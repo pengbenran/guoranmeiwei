@@ -51,7 +51,13 @@
           </div>
         </div> -->
       <div class="MaskItem" v-if='selectIndex==1'><text>提货电话{{selectIndex}}:</text><input type="text" placeholder="请输入提货电话" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;' v-model="mobile"></div>
-      <div class="MaskItem" v-if='selectIndex==1'><text>自提点:{{shopList.shopname}}</text></div>
+      <div class="MaskItem" v-if='selectIndex==1'><text>自提点:</text>
+        <picker @change="bindPickerChange" :value="shopName" :range="shopArray">
+          <div class="picker">
+             {{shopName}}
+          </div>
+          </picker>
+      </div>
         <div class="MaskItem"><text>备注:</text><input type="text" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;' v-model="msg"></div>
     </div>
     <!--OrderMask end-->
@@ -81,6 +87,10 @@ export default {
     return {
       ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg'},
       shopList:{shopImg:'',shopTitle:'',mask:"你好世界",activityPrice:'',price:'',num:1,goodsId:'',productId:''},
+      shopListArry:[],
+      shopArray:[],
+      shopName:'',
+      shopId:'',
       startdate:'',
       date:'',
       starttime:'',
@@ -110,13 +120,37 @@ export default {
   methods:{
     bindTimeChange: function (e) {
       let that = this;
-      console.log('picker发送选择改变，携带值为', e.mp.detail.value)
-      that.time = e.mp.detail.value
+      var jindata = new Date();
+      let time2 = that.date + ' ' + that.time
+      var startdate=new Date(time2.replace(/-/g,"/"));
+      if(startdate>jindata){
+              let that = this;
+              that.time = e.mp.detail.value
+      }else{
+        Lib.Show("抱歉你选的时间不符","none",1500)
+      }
     },
     bindDateChange:function(e){
-      let that=this;
-      that.date = e.mp.detail.value
+       let that = this;
+      var jindata = new Date();
+      let time2 = that.date + ' ' + that.time
+      var startdate=new Date(time2.replace(/-/g,"/"));
+      if(startdate>jindata){
+              let that = this;
+              that.data = e.mp.detail.value
+      }else{
+        Lib.Show("抱歉你选的时间不符","none",1500)
+      }
     },
+
+       //店铺选择
+    bindPickerChange(e){
+      let that = this;
+      let index = e.mp.detail.value
+      that.shopName = that.shopArray[index]
+      // console.log( that.shopName,"点名")
+    },
+    
     //选择
     selectTo(index){
       let that = this;
@@ -227,7 +261,7 @@ export default {
          var stringTime =that.date+that.time;
          var timestamp2 = Date.parse(new Date(stringTime));
          bean.takeTimes=timestamp2
-         bean.addr = that.shopList.shopName
+         bean.addr = that.shopName
          bean.shipMobile = that.mobile
         } 
         bean.clickd = that.msg  
@@ -393,6 +427,20 @@ export default {
           })
         }
     },
+    
+      //获取所有店铺
+      GetShopName(){
+        let that = this;
+        api.getshopList().then(function(res){
+          that.shopListArry=res.data
+          that.shopArray=res.data.map((item)=>{
+            return item.shopName
+          })
+          that.shopName=that.shopArray[0]
+          that.shopId=that.shopListArry[0].shopId
+        })
+      },
+
     //获取默认地址
     async getdefaultAddr(){
       let that=this
@@ -427,7 +475,7 @@ export default {
   onLoad(options){
    var that=this
    that.getTime()
-
+   that.GetShopName();
 
 
 
