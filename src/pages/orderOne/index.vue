@@ -388,6 +388,7 @@ export default {
           that.wxPay(PayRes)
       }else{
          console.log("查看支付方式",PayRes,that.PayIndex)
+            wx.switchTab({ url: '../myself/main' });
       }
     },
    
@@ -408,7 +409,12 @@ export default {
             setTimeout(function(){
               wx.switchTab({ url: '../index/main' });
             },1000)
-          }
+          },
+           fail: function (res) {
+                      // fail   
+                      console.log(res);
+                       Lib.Show("支付失败","success",2000)
+                 },
         });
    },
    

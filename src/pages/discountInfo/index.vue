@@ -19,7 +19,7 @@
    <div class="shopInfo">
      <div class="shopTile fontHidden">{{Goods.name}}</div>
      <div class="shopTag">
-       <text>快递包邮</text><text>销量{{Goods.buyCount}}</text><text>江西南昌</text>
+       <text>快递包邮</text><text>销量{{Goods.buyCount}}</text>
      </div>
    </div>
    <!--shopInfo end-->

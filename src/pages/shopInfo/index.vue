@@ -15,7 +15,7 @@
          <text class="new">￥{{Goods.price}}</text><text class="old">￥19.90</text>
      </div>
      <div class="PriceTag">
-         <text>快递包邮</text>  <text>库存:{{Goods.enableStore}}</text>  <text>江西南昌</text>
+         <text>快递包邮</text>  <text>库存:{{Goods.enableStore}}</text>
      </div>
     <!--Price end-->
 

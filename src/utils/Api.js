@@ -19,6 +19,7 @@ export default class Api{
       resolve(topIndexRes)
 	})   
   }
+  
   // 获取时令日历
   getseasonalCalendar(){
   return new Promise((resolve, reject) => {
