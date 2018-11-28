@@ -3,8 +3,8 @@ export default class Api{
   constructor() {
      // this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
      // this.baseUrl = "https://www.etuetf.com"
-     //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
-     this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
+     this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
+     //this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
      // this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
 
     // this.baseUrl = "http://192.168.2.131/guoranhuiwei" 
@@ -19,7 +19,7 @@ export default class Api{
       resolve(topIndexRes)
 	})   
   }
-  
+
   // 获取时令日历
   getseasonalCalendar(){
   return new Promise((resolve, reject) => {
@@ -631,4 +631,28 @@ export default class Api{
         }) 
         }
 
+      //搜索页标签数据初始化
+      GetSearchList(memberId){
+        return new Promise((resolve, reject) =>{
+          let GetSearchList = this.fly.get(this.baseUrl +'/api/brand/getSearchList',{memberId:memberId})
+          resolve(GetSearchList)
+        }) 
+        }
+
+         //检索商品
+      SelectIndexGoods(parms){
+        return new Promise((resolve, reject) =>{
+          let SelectIndexGoods = this.fly.get(this.baseUrl +'/api/Goods/selectIndexGoods',{parms:JSON.stringify(parms)})
+          resolve(SelectIndexGoods)
+        }) 
+        }
+
+      //搜索页换一批
+      RandomList(parms){
+        return new Promise((resolve, reject) =>{
+          let RandomList = this.fly.get(this.baseUrl +'/api/brand/randomList')
+          resolve(RandomList)
+        }) 
+        }
+      
 }

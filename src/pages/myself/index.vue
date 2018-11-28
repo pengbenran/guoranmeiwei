@@ -80,7 +80,7 @@ export default {
      {name:'待付款',icon:config.imgUrl+"/myself/daifukuan.png",statuscount:0},
      {name:'待发货',icon:config.imgUrl+"/myself/daifahuo.png",statuscount:0},
      {name:'待收货',icon:config.imgUrl+"/myself/daishouhuo.png",statuscount:0},
-     {name:'售后',icon:config.imgUrl+"/myself/shouhou.png",statuscount:0},
+     {name:'待自提',icon:config.imgUrl+"/myself/shouhou.png",statuscount:0},
      ],
      featureitem:[
      {name:'积分',icon:config.imgUrl+"/myself/point.png",PageUrl:'../sign/main'},

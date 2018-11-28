@@ -1,6 +1,6 @@
 {
   "pages": [ 
-    
+    "pages/orderInfo/main",
     "pages/index/main",
     "pages/helpdiscount/main",
     "pages/myself/main",
@@ -37,6 +37,7 @@
     "pages/distribemoney/main",
     "pages/distribePay/main",
     "pages/search/main"
+
   ],
   "window": {
     "backgroundTextStyle": "light",
