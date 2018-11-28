@@ -479,6 +479,7 @@ export default {
   },
   async mounted(){
     let that = this;
+    console.log(that.$refs.childs)
     console.log(this.$root.$mp.query,"你好世界")
     that.goodsId = this.$root.$mp.query.goodsId;
     // console.log(this.$root.$mp.query,"你好世界",that.goodsId)

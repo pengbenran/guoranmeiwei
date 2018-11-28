@@ -469,6 +469,10 @@ export default {
     that.memberCollageId=that.option.memberCollageId
     that.tip='立即参团'
    }
+   else{
+    that.cutId=that.option.cutId
+    that.tip='立即购买'
+   }
   },
   onShow(){
     if(wx.getStorageSync('addr')!='noaddr'){

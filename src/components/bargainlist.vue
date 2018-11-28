@@ -2,7 +2,7 @@
      <div>
       <div class="ShopList">
          <div class="item" v-for="(item,index) in Shop_item" :index='index' :key='item'>
-            <div class="item-warp" @click="jumpdetail(item.goodsId,item.cutId)">
+            <div class="item-warp" @click="jumpdetail(item.goodsId,item.cutId,item.productId)">
              <div class="left">
                  <img :src="item.thumbnail" />
              </div>
@@ -29,9 +29,9 @@ export default {
       }
   },
   methods: {
-    jumpdetail:function(goodsId,cutId){
+    jumpdetail:function(goodsId,cutId,productId){
         wx.navigateTo({
-         url: '../bargainInfo/main?cutId=' + cutId + '&goodsId=' + goodsId,
+         url: '../bargainInfo/main?cutId=' + cutId + '&goodsId=' + goodsId+'&productId='+productId,
      })
     }
 }

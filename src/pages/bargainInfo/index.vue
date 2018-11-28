@@ -82,18 +82,7 @@
      <!--footerBnt end-->
       
    <!--    <Model :ImgList='ImgList' :modelShow='modelShow' :Area_item='Area_item' :Weight_item='Weight_item'  @hideModel='hideModel' ref="childs">></Model> -->
-    <div class="bcgmodel" v-if="cutModalStatus" @click="close"></div>
-    <div class="cutModel" v-if="cutModalStatus">     
-      <div class="bcg">
-        <img :src="bcg" mode="widthFix">
-      </div>
-      <div class="cutMoney">
-        <span>{{cutResult.cutHistoryDOs[0].cutPersAmount}}</span>元 
-      </div>
-      <div class="cutbtn">
-        <button open-type='share'></button>
-      </div>
-    </div>
+   <cutModel :bcg='bcg' :cutType='cutType' @listenToChild="close" :cutPersAmount='cutResult.cutHistoryDOs[0].cutPersAmount' v-if='cutModalStatus'></cutModel>
   </div>
 </template>
 
@@ -103,6 +92,7 @@
  import Timedown from "@/components/countdown"
  import Tabs from "@/components/tab"
  import Model from "@/components/shopModel"
+ import cutModel from "@/components/cutModel"
  import wxParse from 'mpvue-wxparse'
  import formatTime from "@/utils/index"
  let api= new Api 
@@ -111,7 +101,8 @@ export default {
    Timedown,
    Tabs,
    Model,
-   wxParse
+   wxParse,
+   cutModel
   },
 
   data () {
@@ -141,10 +132,21 @@ export default {
           goodsId:'',
           bcg:config.imgUrl+'/group/cut.png',
           cutModalStatus:false,
-          cutResult:{}
+          cutResult:{},
+          cutType:'C',
+          productId:''
     }
   },
    methods: {
+    // 砍价成功立即购买
+    payorder(){
+      let that=this
+      let cutfinalAmount =Number(that.cutGood.initPrice - that.cutTotal).toFixed(2) 
+      let url=`../order/main?goodsImg=${that.Goods.thumbnail}&goodname=${that.Goods.name}&cutId=${that.cutId}&Type=KJ&price=${that.cutGood.initPrice}&goodsId=${that.Goods.goodsId}&productId=${that.productId}&activityPrice=${cutfinalAmount}`
+      wx.navigateTo({
+        url:url,
+      })
+    },
     //选项卡点击事件
     async fromChild(data){
       let that = this;
@@ -160,6 +162,7 @@ export default {
       let that=this
       that.cutModalStatus=false
       that.getByCut()
+      that.isJoin()
     },
     //立即购买淡出模态框
     showModel(){
@@ -210,6 +213,7 @@ export default {
       let isJoinRes=await api.isJoin(that.memberId,that.cutId)
       if(isJoinRes.data.code==1){
         that.isjoin=false
+        that.iscutOk=false;
       }else{
         var cuttotal = 0;
         for (var i = 0; i < isJoinRes.data.memberCutDate.cutHistoryDOs.length; i++) {
@@ -221,11 +225,11 @@ export default {
           that.isjoin= true; 
         }
         else {
+          that.iscutOk=false;
           that.isjoin= true
         }
-        that.cutTotal=cuttotal;
+        that.cutTotal= Number(cuttotal).toFixed(2);
         that.cutFinalAmount= Number(that.cutGood.initPrice - cuttotal).toFixed(2);
-        that.percent= (cuttotal / (that.cutGood.initPrice - that.cutGood.belowPrice)) * 100;
         that.memberCut= isJoinRes.data.memberCutDate;
         that.cutPersonCount=that.memberCut.cutHistoryDOs.length
 
@@ -256,6 +260,7 @@ export default {
     that.memberId = wx.getStorageSync('memberId');
     that.goodsId=options.goodsId;
     that.cutId=options.cutId;
+    that.productId=options.productId
      //页面渲染完成创建一个动画
     that.getGood()
     that.getByCut()
@@ -267,7 +272,7 @@ export default {
     return {
       title: '分享砍价',
       desc: '少侠，快帮我砍一刀',
-      path: '/pages/helpdiscount/main?memberId=' + that.memberId + '&cutId=' + that.cutId + '&goodsId=' + that.goodsId// 路径，传递参数到指定页面
+      path: '/pages/helpdiscount/main?memberId=' + that.memberId + '&cutId=' + that.cutId + '&goodsname=' + that.Goods.name+'&goodImg='+that.Goods.thumbnail// 路径，传递参数到指定页面
     }
   },
 }
@@ -343,58 +348,5 @@ img{display: block;height: 100%;width: 100%;}
   .btnWarp span{width: 2rpx;height: 35rpx;background-color: #fff;}
   .btnWarp .forhelp{background: none;border:none;color: #fff;}
 }
-.bcgmodel{
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 10;
-    background: #000;
-    opacity: 0.5;
-    overflow: hidden;
-  }
-.cutModel{
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 20;
-  .bcg{ 
-    position: fixed;
-    width: 80%;
-    top:200rpx;
-    left:10%;
-  }
-  .cutMoney{
-    position: absolute;
-    top: 390rpx;
-    // left:15%;
-    width: 100%;
-    text-align: center;
-    font-size: 1.5em;
-    z-index: 30;
-    span{
-      font-size: 2em;
-      font: bold "Microsoft YaHei";
-      text-shadow: 4rpx 4rpx 5rpx #421a00;
-    }
-  }
-  .cutbtn{
-    position: absolute;
-    top: 850rpx;
-    width: 300rpx;
-    height: 100rpx;
-    left: 30%;
-    button{
-      background: none;border:none;width: 100%;height: 100%;
-    }
-  }
 
-}
-
-button::after {
-  border: none;
-}
 </style>

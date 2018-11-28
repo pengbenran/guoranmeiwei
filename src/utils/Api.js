@@ -621,6 +621,20 @@ export default class Api{
         resolve(AccountManagement)
       }) 
       }
+      // 判断是否已经砍价
+      isHelp(params){
+        return new Promise((resolve, reject) =>{
+          let isHelpRes = this.fly.get(this.baseUrl +'/api/cut/isHelp',{params:JSON.stringify(params)})
+          resolve(isHelpRes)
+        }) 
+      }
+      // 好友帮忙砍价
+      helpCut(params){
+       return new Promise((resolve, reject) =>{
+          let helpCutRes = this.fly.get(this.baseUrl +'/api/cut/helpCut',{params:JSON.stringify(params)})
+          resolve(helpCutRes)
+        }) 
+      }
     
 
 }
