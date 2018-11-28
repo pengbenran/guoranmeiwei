@@ -80,7 +80,7 @@ export default {
      {name:'待付款',icon:config.imgUrl+"/myself/daifukuan.png",statuscount:0},
      {name:'待发货',icon:config.imgUrl+"/myself/daifahuo.png",statuscount:0},
      {name:'待收货',icon:config.imgUrl+"/myself/daishouhuo.png",statuscount:0},
-     {name:'售后',icon:config.imgUrl+"/myself/shouhou.png",statuscount:0},
+     {name:'待自提',icon:config.imgUrl+"/myself/shouhou.png",statuscount:0},
      ],
      featureitem:[
      {name:'积分',icon:config.imgUrl+"/myself/point.png",PageUrl:'../sign/main'},
@@ -102,6 +102,8 @@ export default {
      that.memberId=memberId;  //设置memberId
      let userInfoRes= await api.getMemberInfo(memberId)
      that.userInfo=userInfoRes.data.memberDO
+    //  wx.setStorageSync('UserInfo',userInfoRes.data.memberDO,)
+     
      that.orderitem[0].statuscount=userInfoRes.data.statuscount
      that.orderitem[1].statuscount=userInfoRes.data.freightstatuscount
      that.orderitem[2].statuscount=userInfoRes.data.shippedstatuscount

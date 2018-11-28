@@ -6,7 +6,7 @@
          <div class="Item" v-for="(item,index) in VoucherMap" :index='index' :key='item'>
              <div class="title fontHidden1">{{item.voucherName}}(满{{item.conditionAmount}}可用) </div>
              <div class="info">有效时间 <text>{{item.begintime}}</text>-<text>{{item.endtime}}</text></div>
-             <div class="btn"><span>{{item.faceValue}}优惠券</span> <text @click="Linqu(item.voucherId)">{{btnName}}</text> </div>
+             <div class="btn"><span>{{item.faceValue}}元优惠券</span> <text @click="Linqu(item.voucherId)">{{btnName}}</text> </div>
              <div class="tag">ps：此劵不参加拼团、限时、砍价、和特价产品</div>
          </div>
      </div>

@@ -15,7 +15,7 @@
          <text class="new">￥{{Goods.price}}</text><text class="old">￥19.90</text>
      </div>
      <div class="PriceTag">
-         <text>快递包邮</text>  <text>库存:{{Goods.enableStore}}</text>  <text>江西南昌</text>
+         <text>快递包邮</text>  <text>库存:{{Goods.enableStore}}</text>
      </div>
     <!--Price end-->
 
@@ -53,6 +53,7 @@
      </div>
      <!--footerBnt end-->
 
+
   <div class="footerMode" v-if="footerModel">
     <div class="footerMask" @click="fenclick(false)"></div>
     <div class="footerWarp">
@@ -63,6 +64,7 @@
     </div>
   </div>
   <!--footerMode END-->
+
 
     <div class='canvas' v-if='maskmodel'>
     <div class='modelcard'>

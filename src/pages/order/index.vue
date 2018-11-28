@@ -51,10 +51,29 @@
           </div>
         </div> -->
       <div class="MaskItem" v-if='selectIndex==1'><text>提货电话{{selectIndex}}:</text><input type="text" placeholder="请输入提货电话" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;' v-model="mobile"></div>
-      <div class="MaskItem" v-if='selectIndex==1'><text>自提点:{{shopList.shopname}}</text></div>
+      <div class="MaskItem" v-if='selectIndex==1'><text>自提点:</text>
+        <picker @change="bindPickerChange" :value="shopName" :range="shopArray">
+          <div class="picker">
+             {{shopName}}
+          </div>
+          </picker>
+      </div>
         <div class="MaskItem"><text>备注:</text><input type="text" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;' v-model="msg"></div>
     </div>
     <!--OrderMask end-->
+
+    <div class="PayType">
+      <div class="PayItemTitle">支付方式</div>
+      <div class="Item">
+        <div class="Items"><img :src="ImgList.wxImg" /><text>微信支付</text></div>
+        <div class="ItemSelect" @click="selectPay(1)"><icon type="success" size="21" v-show='!PayBool'/><icon type="circle" size="21" v-show='PayBool'/></div>
+      </div>
+      <div class="Item">
+        <div class="Items"><img :src="ImgList.qianbao" /><text>余额支付</text></div>
+        <div class="ItemSelect" @click="selectPay(0)"><icon type="success" size="21" v-show='PayBool'/><icon type="circle" size="21" v-show='!PayBool'/></div>
+      </div>
+    </div>
+    <!--PayType end-->
 
      <div class="footerBnt">
        <div class="selectBtn"></div>
@@ -79,8 +98,15 @@ export default {
    
   data () {
     return {
-      ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg'},
+      ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg',wxImg:config.imgUrl+"/store/wxzf.png",
+              qianbao:config.imgUrl+"/store/qianbao.png",},
       shopList:{shopImg:'',shopTitle:'',mask:"你好世界",activityPrice:'',price:'',num:1,goodsId:'',productId:''},
+      shopListArry:[],
+      shopArray:[],
+      PayBool:false,
+       PayIndex:1,
+      shopName:'',
+      shopId:'',
       startdate:'',
       date:'',
       starttime:'',
@@ -110,13 +136,46 @@ export default {
   methods:{
     bindTimeChange: function (e) {
       let that = this;
-      console.log('picker发送选择改变，携带值为', e.mp.detail.value)
-      that.time = e.mp.detail.value
+      var jindata = new Date();
+      let time2 = that.date + ' ' + that.time
+      var startdate=new Date(time2.replace(/-/g,"/"));
+      if(startdate>jindata){
+              let that = this;
+              that.time = e.mp.detail.value
+      }else{
+        Lib.Show("抱歉你选的时间不符","none",1500)
+      }
     },
     bindDateChange:function(e){
-      let that=this;
-      that.date = e.mp.detail.value
+       let that = this;
+      var jindata = new Date();
+      let time2 = that.date + ' ' + that.time
+      var startdate=new Date(time2.replace(/-/g,"/"));
+      if(startdate>jindata){
+              let that = this;
+              that.data = e.mp.detail.value
+      }else{
+        Lib.Show("抱歉你选的时间不符","none",1500)
+      }
     },
+
+       //店铺选择
+    bindPickerChange(e){
+      let that = this;
+      let index = e.mp.detail.value
+      that.shopName = that.shopArray[index]
+      // console.log( that.shopName,"点名")
+    },
+
+     //支付方式选择
+    selectPay(index){
+        let that = this;
+        that.PayBool = !that.PayBool;
+        that.PayIndex = index;
+        console.log()
+    },
+    
+    
     //选择
     selectTo(index){
       let that = this;
@@ -214,6 +273,7 @@ export default {
         bean.googitem[0] = goodObj
         bean.shipStatus=that.shipStatus
         bean.shopId=that.shopDetail.shopId
+        bean.payType = that.PayIndex
         if(that.shipStatus==0){
          bean.province = that.addr.province
          bean.city = that.addr.city
@@ -227,7 +287,7 @@ export default {
          var stringTime =that.date+that.time;
          var timestamp2 = Date.parse(new Date(stringTime));
          bean.takeTimes=timestamp2
-         bean.addr = that.shopList.shopName
+         bean.addr = that.shopName
          bean.shipMobile = that.mobile
         } 
         bean.clickd = that.msg  
@@ -257,142 +317,169 @@ export default {
         // var googitem = that.data.list; 
         let orderSave=await api.oderSave(bean)
         if(orderSave.data.code==0){
-          wx.hideLoading()
-          that.order=orderSave.data.order
-          var params={}
-          params.orderid = that.order.orderId
-          params.sn = that.order.sn
-          // wxc6a44ea909442b31
-          params.total_fee = that.order.needPayMoney*100
-          wx.login({
-            success: function (res) {
-              if (res.code) {
-                api.prepay(res.code,params).then(function(res){
-                  var pay=res.data
-                  console.log(pay.timeStamp,pay.nonceStr);
-                  wx.requestPayment({
-                    timeStamp: pay.timeStamp,
-                    nonceStr: pay.nonceStr,
-                    package: pay.package,
-                    signType: pay.signType, 
-                    paySign: pay.paySign,
-                    success: function (res) {
-                      wx.showToast({
-                        title: '支付成功',
-                        icon: 'success',
-                        duration: 2000
-                      })
-                      if(that.Type=='K'){
-                        // 支付成功之后开团
-                        var orderparams = {}
-                        orderparams.goodsId = that.shopList.goodsId
-                        orderparams.price = that.shopList.price
-                        orderparams.sn = that.order.sn
-                        orderparams.amounts = that.order.needPayMoney * 100
-                        orderparams.amount = that.order.needPayMoney
-                        orderparams.memberId = that.memberId
-                        orderparams.collagePersons = that.collagePersons
-                        orderparams.productId = that.shopList.productId
-                        orderparams.num = 1
-                        orderparams.orderId = that.order.orderId
-                        api.openCollage(orderparams).then(function(res){
-                          that.kaituanrest=res.data 
-                          return api.collagePayReturn(orderparams)
-                        }).then(function(res){
-                          wx.showToast({
-                            title: '开团成功',
-                            icon: 'success',
-                            duration: 2000
-                          })
-                          console.log(that.kaituanrest);
-                          var parmss = {}
-                          parmss.price = that.kaituanrest.price
-                          parmss.activityPrice = that.kaituanrest.activityPrice
-                          parmss.productId = that.shopList.productId
-                          parmss.goodsName = that.kaituanrest.goodsName
-                          parmss.memberCollageId = that.kaituanrest.memberCollageId
-                          parmss.img = that.kaituanrest.img
-                          parmss.shortPerson = that.kaituanrest.shortPerson
-                          if (that.kaituanrest.shortPerson == 0) {
-                            parmss.iscollage = 1
-                          }
-                          else {
-                            parmss.iscollage = 2
-                          }
-                          wx.redirectTo({
-                            url: '../group/main?shops=' + JSON.stringify(parmss),
-                          })
+          if(that.PayIndex == 1){
+            wx.hideLoading()
+            that.order=orderSave.data.order
+            var params={}
+            params.orderid = that.order.orderId
+            params.sn = that.order.sn
+            // wxc6a44ea909442b31
+            params.total_fee = that.order.needPayMoney*100
+            wx.login({
+              success: function (res) {
+                if (res.code) {
+                  api.prepay(res.code,params).then(function(res){
+                    var pay=res.data
+                    console.log(pay.timeStamp,pay.nonceStr);
+                    wx.requestPayment({
+                      timeStamp: pay.timeStamp,
+                      nonceStr: pay.nonceStr,
+                      package: pay.package,
+                      signType: pay.signType, 
+                      paySign: pay.paySign,
+                      success: function (res) {
+                        wx.showToast({
+                          title: '支付成功',
+                          icon: 'success',
+                          duration: 2000
                         })
-                      }
-                      else if(that.Type=="C"){
-                        // 参团
-                        let cantuanparams = {}
-                        cantuanparams.orderId = that.order.orderId
-                        api.collagePayReturn(cantuanparams).then(function(res){
-                            let cantuanorderparams = {}
-                            cantuanorderparams.goodsId = that.shopList.goodsId
-                            cantuanorderparams.price = that.shopList.price
-                            cantuanorderparams.sn = that.order.sn
-                            cantuanorderparams.amounts = that.order.needPayMoney* 100
-                            cantuanorderparams.amount = that.order.needPayMoney
-                            cantuanorderparams.memberId = that.memberId
-                            cantuanorderparams.memberCollageId = that.memberCollageId
-                            cantuanorderparams.productId = that.shopList.productId
-                            cantuanorderparams.num = 1
-                            cantuanorderparams.orderId = that.order.orderId
-                         return api.joinCollage(cantuanorderparams)
-                        }).then(function(res){
-                          wx.showToast({
-                            title: '参团成功',
-                            icon: 'success',
-                            duration: 2000
-                          })
-                        })
-                      }
-                      else if(that.Type=="Z"){
-                       let orderParams = {}
-                       orderParams.orderId = that.order.orderId
-                       orderParams.code = 200
-                       orderParams.shipStatus = that.shipStatus
-                       orderParams.paymoney = that.order.orderAmount
-                       api.PaypassOrder(orderParams).then(function(paypassOrderRes){
-                    
-                         if(paypassOrderRes.data.code==0){
-                          wx.showToast({
-                            title: '抢购成功',
-                            icon: 'success',
-                            duration: 2000
-                          })
-                          wx.switchTab({
-                            url: '../index/main',
-                          })
-                        }
-                       })
-                      
-                      }
-                    
-                    },
-                    fail: function (res) {
-                      // fail   
-                      console.log(res);
-                      wx.showToast({
-                        title: '支付失败',
-                        icon: 'success',
-                        duration: 2000
-                      })
 
-                    },
-                    complete: function (complete) {
-                      // complete   
-                      console.log(complete)
-                    }
+                      that.CouponType();
+                      },
+                      fail: function (res) {
+                        // fail   
+                        console.log(res);
+                        wx.showToast({
+                          title: '支付失败',
+                          icon: 'success',
+                          duration: 2000
+                        })
+
+                      },
+                      complete: function (complete) {
+                        // complete   
+                        console.log(complete)
+                      }
+                    })
                   })
-                })
+                }
               }
-            }
-          })
+            })
+          }else{
+            console.log("余额支付")
+            that.CouponType();
+             wx.hideLoading()
+          }
+
         }
     },
+
+    //优惠类型
+    CouponType(){
+      let that = this;
+       if(that.Type=='K'){
+        // 支付成功之后开团
+        var orderparams = {}
+        orderparams.goodsId = that.shopList.goodsId
+        orderparams.price = that.shopList.price
+        orderparams.sn = that.order.sn
+        orderparams.amounts = that.order.needPayMoney * 100
+        orderparams.amount = that.order.needPayMoney
+        orderparams.memberId = that.memberId
+        orderparams.collagePersons = that.collagePersons
+        orderparams.productId = that.shopList.productId
+        orderparams.num = 1
+        orderparams.orderId = that.order.orderId
+        api.openCollage(orderparams).then(function(res){
+          that.kaituanrest=res.data 
+          return api.collagePayReturn(orderparams)
+        }).then(function(res){
+          wx.showToast({
+            title: '开团成功',
+            icon: 'success',
+            duration: 2000
+          })
+          console.log(that.kaituanrest);
+          var parmss = {}
+          parmss.price = that.kaituanrest.price
+          parmss.activityPrice = that.kaituanrest.activityPrice
+          parmss.productId = that.shopList.productId
+          parmss.goodsName = that.kaituanrest.goodsName
+          parmss.memberCollageId = that.kaituanrest.memberCollageId
+          parmss.img = that.kaituanrest.img
+          parmss.shortPerson = that.kaituanrest.shortPerson
+          if (that.kaituanrest.shortPerson == 0) {
+            parmss.iscollage = 1
+          }
+          else {
+            parmss.iscollage = 2
+          }
+          wx.redirectTo({
+            url: '../group/main?shops=' + JSON.stringify(parmss),
+          })
+        })
+      }
+      else if(that.Type=="C"){
+        // 参团
+        let cantuanparams = {}
+        cantuanparams.orderId = that.order.orderId
+        api.collagePayReturn(cantuanparams).then(function(res){
+            let cantuanorderparams = {}
+            cantuanorderparams.goodsId = that.shopList.goodsId
+            cantuanorderparams.price = that.shopList.price
+            cantuanorderparams.sn = that.order.sn
+            cantuanorderparams.amounts = that.order.needPayMoney* 100
+            cantuanorderparams.amount = that.order.needPayMoney
+            cantuanorderparams.memberId = that.memberId
+            cantuanorderparams.memberCollageId = that.memberCollageId
+            cantuanorderparams.productId = that.shopList.productId
+            cantuanorderparams.num = 1
+            cantuanorderparams.orderId = that.order.orderId
+          return api.joinCollage(cantuanorderparams)
+        }).then(function(res){
+          wx.showToast({
+            title: '参团成功',
+            icon: 'success',
+            duration: 2000
+          })
+        })
+      }
+      else if(that.Type=="Z"){
+        let orderParams = {}
+        orderParams.orderId = that.order.orderId
+        orderParams.code = 200
+        orderParams.shipStatus = that.shipStatus
+        orderParams.paymoney = that.order.orderAmount
+        api.PaypassOrder(orderParams).then(function(paypassOrderRes){
+    
+          if(paypassOrderRes.data.code==0){
+          wx.showToast({
+            title: '抢购成功',
+            icon: 'success',
+            duration: 2000
+          })
+          wx.switchTab({
+            url: '../index/main',
+          })
+        }
+        })
+      
+      }
+    },
+    
+      //获取所有店铺
+      GetShopName(){
+        let that = this;
+        api.getshopList().then(function(res){
+          that.shopListArry=res.data
+          that.shopArray=res.data.map((item)=>{
+            return item.shopName
+          })
+          that.shopName=that.shopArray[0]
+          that.shopId=that.shopListArry[0].shopId
+        })
+      },
+
     //获取默认地址
     async getdefaultAddr(){
       let that=this
@@ -427,7 +514,7 @@ export default {
   onLoad(options){
    var that=this
    that.getTime()
-
+   that.GetShopName();
 
 
 
@@ -477,7 +564,7 @@ export default {
   onShow(){
     if(wx.getStorageSync('addr')!='noaddr'){
       this.addr=wx.getStorageSync('addr')
-       that.isAddr=true
+       this.isAddr=true
     }
     else{
       this.isAddr=false
@@ -516,6 +603,14 @@ img{display: block;height: 100%;width: 100%;}
 .AddressBtn{text-align: center;width: 90%;margin: auto;line-height: 75rpx;background: rgb(252,154,47);border-radius: 45rpx;color: #fff;font-weight: 100;font-size: 30rpx;
    text{display: inline-block;text-align: center;}
 }
+
+.PayType{padding: 10rpx 20rpx;font-weight: 100;font-weight: 100;font-size: 28rpx;color: #666;
+    .PayItemTitle{font-size: 34rpx;}
+    img{width: 40rpx;height: 40rpx;margin-right: 15rpx;}
+    .Item{padding: 10rpx 0;@include flexc;justify-content: space-between;}
+    .Items{@include flexc;}
+}
+
 
 .OrderMask{font-size: 28rpx;font-weight: 100;color: #666;padding: 10rpx 20rpx;
     .MaskItem{@include flexc;justify-content: space-between;height: 75rpx;line-height: 75rpx;}

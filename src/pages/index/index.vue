@@ -6,7 +6,7 @@
     v-if="showSkeleton"></skeleton>
     <div class="skeleton">
       <!-- <div class="heightDiv"></div> -->
-      <div class="header">
+      <div class="header"  @click="toPage('../search/main')">
         <div class="search skeleton-rect"><i class="fa fa-search " aria-hidden="true"></i>
           <input class="skeleton-rect"  placeholder="王小贱鲜果零食优选"  style-placeholder='color:#ccc;font-weight: 100;'/>
         </div>
@@ -245,8 +245,8 @@
         wx.setStorageSync('uname', memberRes.data.memberDo.uname)
         wx.setStorageSync('face', memberRes.data.memberDo.face)
         wx.setStorageSync('openId',memberRes.data.memberDo.openId)
-        wx.setStorageSync('indexdata', GetMain.data.data.message)
-        wx.setStorageSync('advance', memberRes.data.memberDo.advance)
+        // console.log("查看余额",memberRes)
+        wx.setStorageSync('advances', memberRes.data.memberDo.advance)
         that.memberId=memberRes.data.memberDo.memberId
         }
         else {
@@ -381,7 +381,7 @@ img{display: block;width: 100%;height: 100%}
 }
 
 
-  .topimg{width: 306rpx;height: 90rpx;margin: auto;}
+.topimg{width: 306rpx;height: 90rpx;margin: auto;}
 
 
 .actList{display: flex;justify-content: space-between;flex-wrap: wrap;padding: 0 15rpx;
