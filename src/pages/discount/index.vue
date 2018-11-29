@@ -59,6 +59,7 @@ export default {
     wx.showLoading({
       title: '加载中',
     })
+    that.apiLimit=[]
     that.getLimit(0,5)
   },
    onReachBottom() {

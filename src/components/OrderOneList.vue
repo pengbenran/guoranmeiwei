@@ -1,6 +1,6 @@
 <template>
 <div class="shopWarp">
-       <Shopaddr :shopname="Shop_List.shopname"></Shopaddr>
+       <Shopaddr :shopname="shopname"></Shopaddr>
      <div class="shopList">
        <!-- <div class="selectico"> <icon type="circle" class="ico" size="21" /></div> -->
 
@@ -22,7 +22,7 @@
  import Shopaddr from '@/components/shopaddr'
 
 export default {
-  props: ['Shop_List'],
+  props: ['Shop_List','shopname'],
   components:{
     Shopaddr
   },

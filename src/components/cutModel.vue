@@ -8,7 +8,7 @@
 			<div class="cutMoney">
 				<span>{{cutPersAmount}}</span>元 
 			</div>
-			<div class="cutbtn" v-if="cutType=='C'">>
+			<div class="cutbtn" v-if="cutType=='C'">
 				<button open-type='share'></button>
 			</div>
 			<div class="cutbtn" @click='jumpcut' v-if="cutType=='H'">

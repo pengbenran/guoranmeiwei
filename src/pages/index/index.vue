@@ -18,7 +18,7 @@
       <!--tip end-->
       <div class="brand skeleton-Mrect">
         <swiper class="swiper" indicator-dots='true' autoplay='true'>
-          <swiper-item v-for="(item,index) in banner" :key='item' :index="index" @click="toPage('../shopInfo/main?goodsId='+item.goodsId)"><img :src="item.imageUrl"></swiper-item>
+          <swiper-item v-for="(item,index) in banner" :key='item' :index="index" @click="jumpshopInfo(item.goodsId)"><img :src="item.imageUrl"></swiper-item>
         </swiper>
       </div>
       <!--brand end-->
@@ -89,7 +89,7 @@
   <block v-for="(outitem,outindex) in advertisingIndex" :index="outindex" :key="outitem">
     <div class="free">
       <div class="freeTop"><span>{{outitem.bigTitle}}</span><p>{{outitem.smallTitle}}</p></div>
-      <div class="freeBrand"   @click="toPage('../shopInfo/main?goodsId='+outitem.goodsId)"><img :src="outitem.imageUrl"/></div>
+      <div class="freeBrand"   @click="jumpshopInfo(outitem.goodsId)"><img :src="outitem.imageUrl"/></div>
     </div>
     <div class="freeList">
       <div class="freeListBg"><img :src="imgList.freeImgBg" /></div>
@@ -120,14 +120,7 @@
    <img :src="imgList.footerImg"/>
  </div>
 </div>
-<div class='mode' v-if="isMember">
-  <div class='bcg'></div>
-  <div class='loginmodel'>
-    <div class='title'>需要您的授权</div>
-    <div class='tip'>为了提供更好的服务请在稍后的提示框中点击允许</div>
-    <button class='btn' open-type="getUserInfo" @click="getUserInfo" @getuserinfo="bindGetUserInfo">我知道了</button> 
-  </div> 
-</div>
+<loginModel ref="loginModel"></loginModel> 
 
 </div>
 </template>
@@ -135,7 +128,7 @@
  import Api from "@/utils/Api"
  import config from "@/config"
  import skeleton from '@/components/skeleton'
-
+ import loginModel from "@/components/loginModel";
  let api= new Api 
   export default {
     data() {
@@ -167,15 +160,16 @@
       } 
     },
     components: {
-      skeleton
+      skeleton,
+      loginModel
     },
-    onLoad(){
+    async mounted(){
       let that=this
-      that.userLogin()
       that.getTopIndex()
       that.getseasonalCalendar()
       that.getadvertisingIndex()
       that.getLoca()
+      that.$refs.loginModel.userLogin()
     },
     onShow(){
       wx.setStorageSync('addr','noaddr')
@@ -228,33 +222,8 @@
         return parseInt(r * 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(rad1) * Math.cos(rad2) * Math.pow(Math.sin(b / 2), 2)))) 
       },
       jumpshopInfo(goodsId){
-         wx.navigateTo({ url: '/pages/shopInfo/main?goodsId='+goodsId });
-      },
-      async userLogin(){
-        let that=this
-        wx.showLoading({
-          title: '加载中',
-        })
-       let memberRes=await api.getCode()
-       wx.hideLoading()
-       if (memberRes.data.memberDo != null) {
-        wx.setStorageSync('memberId', memberRes.data.memberDo.memberId)
-        wx.setStorageSync('point', memberRes.data.memberDo.point)
-        wx.setStorageSync('memberIdlvId', memberRes.data.memberDo.lvId)
-        wx.setStorageSync('isAgent', memberRes.data.memberDo.isAgent)
-        wx.setStorageSync('uname', memberRes.data.memberDo.uname)
-        wx.setStorageSync('face', memberRes.data.memberDo.face)
-        wx.setStorageSync('openId',memberRes.data.memberDo.openId)
-        // console.log("查看余额",memberRes)
-        wx.setStorageSync('advances', memberRes.data.memberDo.advance)
-        that.memberId=memberRes.data.memberDo.memberId
-        }
-        else {
-          let memberId="00"
-          that.memberId=memberId
-          wx.setStorageSync('memberId', "00")
-          that.isMember=true
-          wx.hideTabBar({}) 
+        if(goodsId!=undefined){
+          wx.navigateTo({ url: '/pages/shopInfo/main?goodsId='+goodsId });
         }
       },
       toPage(url){
@@ -295,39 +264,6 @@
       toNav(url){
         wx.navigateTo({ url: url });
       },
-      bindGetUserInfo:function(e){
-        var that=this;
-        if (e.mp.detail.rawData){
-          //用户按了允许授权按钮
-          // that.getUserInfo();
-        } else {
-          //用户按了拒绝按钮
-        }
-      },
-      getUserInfo(){   
-        var that = this 
-        if(that.memberId=="00"){
-         wx.login({
-          success: res => {
-            // 发送 res.code 到后台换取 openId, sessionKey, unionId
-            if (res.code) {         
-             wx.getUserInfo({
-              success: function (res_user) {
-                console.log(res_user)
-                api.weCatLogin(res.code,res_user.userInfo.avatarUrl,res_user.userInfo.nickName,res_user.userInfo.gender,res_user.userInfo.country,res_user.userInfo.province,res_user.userInfo.city).then(function(res){
-                  if(res.data.code==0){
-                    that.isMember=false
-                    that.userLogin()
-                    wx.showTabBar({})
-                  }
-                }) 
-              }
-            }) 
-           }
-          }
-        })
-        }
-      }
     }
   }
 </script>
@@ -467,52 +403,6 @@ img{display: block;width: 100%;height: 100%}
 }
 
 .tag{display: inline-block;width: 60rpx;}
-/* 登录模态框 */
-.mode{
-  position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 100;
-}
-.bcg{
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,.5);
-}
-.loginmodel{
-  border-radius:10rpx; 
-  width: 60%;
-  height: 260rpx;
-  background: #fff;
-  position: absolute;
-  top: 500rpx;
-  left: 20%;
-}
-.title{
-  height: 80rpx;
-  line-height: 80rpx;
-  text-align: center;
-}
-.tip{
-  width: 90%;
-  margin: 0 auto;
-  font-size: 0.8em;
-  text-indent: 20px;
-  color: #8a8a8a;
-  height: 100rpx;
-}
-.btn{
-  border: none;
-  outline: 0;
-  text-align: right;
-  background: #fff;
-  color: #3494ff
-}
-button::after {
-  border: none;
-}
 
 </style>
 

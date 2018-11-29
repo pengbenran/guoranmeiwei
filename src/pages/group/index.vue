@@ -77,14 +77,7 @@
 <div class="btn" v-if="collageType==4&&!canJoin" @click="jumpGroupList">
  我要开团
 </div>
-<div class='mode' v-if="isMember">
-  <div class='bcg'></div>
-  <div class='loginmodel'>
-    <div class='title'>需要您的授权</div>
-    <div class='modeltip'>为了提供更好的服务请在稍后的提示框中点击允许</div>
-    <button class='modelbtn' open-type="getUserInfo" @click="getUserInfo" @getuserinfo="bindGetUserInfo">我知道了</button> 
-  </div> 
-</div>
+<loginModel ref="loginModel"></loginModel> 
   </div>
 </template>
 
@@ -94,6 +87,7 @@ import util from "@/utils/index";
 import Shopaddr from '@/components/shopaddr';
 import config from "@/config";
 import Countdowns from "@/components/countdown";
+import loginModel from "@/components/loginModel";
 let api=new Api
 export default {
   data() {
@@ -118,6 +112,7 @@ export default {
   components: {
   Countdowns,
   Shopaddr,
+  loginModel
   },
   methods: {
     inviteFriends:function(){
@@ -130,6 +125,7 @@ export default {
     },
    async jumpOrder(){
       let that=this
+      console.log(that.pingtuandetail);
       let cantuanParams = {}
       cantuanParams.memberId = that.memberId
       cantuanParams.memberCollageId = that.pingtuandetail.memberCollageId
@@ -190,102 +186,44 @@ export default {
           that.cutTime(starttime,endtime)
         }    
       }
-    },
-    bindGetUserInfo:function(e){
-      var that=this;
-      if (e.mp.detail.rawData){
-          //用户按了允许授权按钮
-          // that.getUserInfo();
-        } else {
-          //用户按了拒绝按钮
-        }
-      },
-      getUserInfo(){   
-        var that = this 
-        if(that.memberId=="00"){
-         wx.login({
-          success: res => {
-            // 发送 res.code 到后台换取 openId, sessionKey, unionId
-            if (res.code) {         
-             wx.getUserInfo({
-              success: function (res_user) {
-                console.log(res_user)
-                api.weCatLogin(res.code,res_user.userInfo.avatarUrl,res_user.userInfo.nickName,res_user.userInfo.gender,res_user.userInfo.country,res_user.userInfo.province,res_user.userInfo.city).then(function(res){
-                  if(res.data.code==0){
-                    that.isMember=false
-                    that.userLogin()
-                  }
-                }) 
-              }
-            }) 
-           }
-         }
-       })
-       }
-     },
-    async userLogin(){
-        let that=this
-        wx.showLoading({
-          title: '加载中',
-        })
-       let memberRes=await api.getCode()
-       wx.hideLoading()
-       if (memberRes.data.memberDo != null) {
-        wx.setStorageSync('memberId', memberRes.data.memberDo.memberId)
-        wx.setStorageSync('point', memberRes.data.memberDo.point)
-        wx.setStorageSync('memberIdlvId', memberRes.data.memberDo.lvId)
-        wx.setStorageSync('isAgent', memberRes.data.memberDo.isAgent)
-        wx.setStorageSync('uname', memberRes.data.memberDo.uname)
-        wx.setStorageSync('face', memberRes.data.memberDo.face)
-        wx.setStorageSync('openId',memberRes.data.memberDo.openId)
-        that.memberId=memberRes.data.memberDo.memberId
-        let friendCollageRes=await api.friendCollage(that.pingtuandetail.memberCollageId)
-        console.log(friendCollageRes);
-        if(friendCollageRes.data.code==0){
-          // 说明可以参团并且获取拼团成功数据
-         that.collageSucceed(that.pingtuandetail.productId,that.pingtuandetail.memberCollageId)
-          
-        }
-        else{
-         wx.showToast({
-           title: "团人数已满！",
-           icon: "success",
-           durantion: 2000
-         })
-          that.canJoin=false   
-        }
-
-
-
-        }
-        else {
-          let memberId="00"
-          that.memberId=memberId
-          wx.setStorageSync('memberId', "00")
-          that.isMember=true
-        }
-      },
-  },
-   onLoad(options){
+  }
+},
+   async mounted(options){
     var that=this;
+    var pages = getCurrentPages() //获取加载的页面
+    var currentPage = pages[pages.length-1] //获取当前页面的对象
+    var url = currentPage.route //当前页面url
+    var options = currentPage.options //如果要获取url中所带的参数可以查看options  
     that.shopDetail=wx.getStorageSync('shopDetail')
     that.memberId = wx.getStorageSync('memberId')
+    console.log(options);
     var pingtuandetail = JSON.parse(options.shops)
-    console.log(pingtuandetail)
     that.pingtuandetail=pingtuandetail
     if(that.pingtuandetail.Type=='FC'){
       // 判断是否好友参团
-       that.collageType=4
-       wx.setNavigationBarTitle({
+      that.collageType=4
+      wx.setNavigationBarTitle({
          title: "参团"//页面标题为路由参数
        })
        // 判断时候是平台会员
-       that.userLogin()
-     
+       await that.$refs.loginModel.userLogin()
+       let friendCollageRes=await api.friendCollage(that.pingtuandetail.memberCollageId)
+       if(friendCollageRes.data.code==0){
+              // 说明可以参团并且获取拼团成功数据
+              that.collageSucceed(that.pingtuandetail.productId,that.pingtuandetail.memberCollageId)     
+            }
+            else{
+             wx.showToast({
+               title: "团人数已满！",
+               icon: "success",
+               durantion: 2000
+             })
+             that.canJoin=false   
+           }
 
-    } 
-    else{
-     that.collageSucceed(pingtuandetail.productId,pingtuandetail.memberCollageId)
+         } 
+         else{
+           that.collageSucceed(pingtuandetail.productId,pingtuandetail.memberCollageId)
      // var endtime=1541995932000
      // var starttime = (new Date()).valueOf();
      // that.cutTime(starttime,endtime)
@@ -307,10 +245,7 @@ export default {
        title: "拼团失败"//页面标题为路由参数
      })
     } 
-    }
-
-
-   
+  }  
   },
    onShareAppMessage: function () {
     var that = this

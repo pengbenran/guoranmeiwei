@@ -9,6 +9,12 @@
   </swiper>
 </div> 
    <Grouplist  :group_item="group_item"></Grouplist> 
+   <div class="none" v-if="group_item.length==0">
+    <div class="noneImg">
+       <img :src="none">
+    </div>
+    <div class="tip">暂无数据</div>
+   </div>
   </div>
 </template>
 
@@ -20,7 +26,8 @@ export default {
   data() {
     return {
       group_item:[],
-      Gallery:[]
+      Gallery:[],
+      none:config.imgUrl+'/group/none.png'
     }
   },
   async mounted(){
@@ -57,6 +64,18 @@ img{
   margin: 20rpx auto;
   border-radius: 15rpx;
 }
-
+.none{
+  width: 100%;
+}
+.noneImg{
+  width: 200rpx;
+  height: 200rpx;
+  overflow: hidden;
+  margin: 30rpx auto;
+}
+.tip{
+  text-align: center;
+  color: #ccc
+}
 </style>
 

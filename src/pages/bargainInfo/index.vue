@@ -57,17 +57,18 @@
      <div class="HeightDiv"></div>
      <div class="footerBnt">
        <div class="left">
-         <div class="leftItme"><img :src="ImgList.home" /><text>首页</text></div>
-         <div class="leftItme"><img :src="ImgList.kefu" /><text>客服</text></div>
+         <div class="leftItme"  @click="toIndex('/pages/index/main')"><img :src="ImgList.home" /><text>首页</text></div>
+         <div class="leftItme">
+           <button class='homepage custom' open-type="contact" session-from="weapp"><img :src="ImgList.kefu" @click="kefu"/><text>客服</text> </button></div>
          <div class="leftItme"><img :src="ImgList.shouChang" /><text>收藏</text></div>
        </div>
        <div class="right">
-         <div class="btnWarp" v-if="!isjoin&&!iscutOk" @click="startCut">
+         <div class="btnWarp" v-if="!isjoin&&!iscutOk&&canJoin" @click="startCut">
             <!-- <text>加入购物车</text><span></span><text @click="showModel">立即购买</text> -->
             <text>立即参与</text>
          </div>
-         <div class="btnWarp" v-if="isjoin&&!iscutOk"> 
-            <div class="nowprice">
+         <div class="btnWarp" v-if="isjoin&&!iscutOk&&canJoin"> 
+            <div class="nowprice" @click="payorder">
               <p>现价入手</p>
               <p>￥{{cutFinalAmount}}</p>
             </div> 
@@ -76,7 +77,8 @@
               <button class="forhelp" open-type='share'>找人帮砍</button>
             </div>     
          </div>
-         <div class='btnWarp' v-if="iscutOk" @click="payorder">砍价成功立即购买</div>
+         <div class='btnWarp' v-if="iscutOk&&canJoin&&isjoin" @click="payorder">砍价成功立即购买</div>
+         <div class='btnWarp' v-if="iscutOk&&!canJoin&&isjoin" >成功参与活动</div>
        </div>
      </div>
      <!--footerBnt end-->
@@ -134,7 +136,8 @@ export default {
           cutModalStatus:false,
           cutResult:{},
           cutType:'C',
-          productId:''
+          productId:'',
+          canJoin:true
     }
   },
    methods: {
@@ -142,11 +145,14 @@ export default {
     payorder(){
       let that=this
       let cutfinalAmount =Number(that.cutGood.initPrice - that.cutTotal).toFixed(2) 
-      let url=`../order/main?goodsImg=${that.Goods.thumbnail}&goodname=${that.Goods.name}&cutId=${that.cutId}&Type=KJ&price=${that.cutGood.initPrice}&goodsId=${that.Goods.goodsId}&productId=${that.productId}&activityPrice=${cutfinalAmount}`
+      let url=`../order/main?goodsImg=${that.Goods.thumbnail}&goodname=${that.Goods.name}&cutId=${that.cutId}&Type=KJ&price=${that.cutGood.initPrice}&goodsId=${that.Goods.goodsId}&productId=${that.productId}&activityPrice=${cutfinalAmount}&startCutId=${that.memberCut.startcutId}`
       wx.navigateTo({
         url:url,
       })
     },
+     toIndex(url){
+    wx.switchTab({ url: url });
+   },
     //选项卡点击事件
     async fromChild(data){
       let that = this;
@@ -214,19 +220,27 @@ export default {
       if(isJoinRes.data.code==1){
         that.isjoin=false
         that.iscutOk=false;
+        that.canJoin=true;
       }else{
         var cuttotal = 0;
         for (var i = 0; i < isJoinRes.data.memberCutDate.cutHistoryDOs.length; i++) {
           cuttotal = cuttotal + isJoinRes.data.memberCutDate.cutHistoryDOs[i].cutPersAmount
           isJoinRes.data.memberCutDate.cutHistoryDOs[i].cutTime=formatTime.formatTime(isJoinRes.data.memberCutDate.cutHistoryDOs[i].cutTime)
         }
-        if (isJoinRes.data.memberCutDate.isSuccess == 1) {
+        if (isJoinRes.data.memberCutDate.isSuccess == 1&&isJoinRes.data.memberCutDate.paied==1) {
           that.iscutOk=true;
+          that.isjoin= true;
+          that.canJoin=true; 
+        }
+        else if(isJoinRes.data.memberCutDate.isSuccess == 1&&isJoinRes.data.memberCutDate.paied==2){
+          that.canJoin=false;
           that.isjoin= true; 
+          that.iscutOk=true;
         }
         else {
           that.iscutOk=false;
-          that.isjoin= true
+          that.isjoin= true;
+          that.canJoin=true; 
         }
         that.cutTotal= Number(cuttotal).toFixed(2);
         that.cutFinalAmount= Number(that.cutGood.initPrice - cuttotal).toFixed(2);
@@ -338,6 +352,8 @@ img{display: block;height: 100%;width: 100%;}
 .footerBnt .left,.btnWarp{@include flexc;justify-content: space-around;}
 .leftItme{line-height: 28rpx;}
 .footerBnt{@include flexc;justify-content: space-between;padding: 10rpx 2%;position: fixed;bottom: 0;width:96%;background: #fff;
+  button{background: rgba(255, 255, 255, 0);line-height: 50rpx;}
+  button::after{border:none;}
   .left{width: 45%;}
   .left img{width: 58rpx;height: 58rpx;margin: auto;}
   .left text{color: rgb(117,117,117);font-size: 28rpx;font-weight: 100;}

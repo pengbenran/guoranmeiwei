@@ -9,12 +9,12 @@
    <div class="ZitiTimeWarp"  v-show='selectIndex==1'>
       <div class="ZitiTime">
           <text>预约时间</text>
-          <picker mode="date" :value="data" :start="startdate"  @change="bindDateChange">
+          <picker mode="date" :value="startdate" :start="startdate"  @change="bindDateChange">
             <view class="picker">
               {{date}}
             </view>
           </picker>
-          <picker mode="time" :value="time" :start="starttime" :end="endtime" @change="bindTimeChange">
+          <picker mode="time" :value="starttime" :start="starttime" :end="endtime" @change="bindTimeChange">
             <view class="picker">
               {{time}}
             </view>
@@ -43,24 +43,28 @@
     <!--OrderList end-->
 
     <div class="OrderMask">
-        <!-- <div class="MaskItem"><text>优惠券</text><text class="fensi">粉丝专享 ></text></div> -->
+      <!-- <div class="MaskItem"><text>优惠券</text><text class="fensi">粉丝专享 ></text></div> -->
        <!--  <div class="MaskItem">
           <text>积分</text>
           <div class="jifen">可使用590积分，可抵扣5.90元  
             <icon type="circle" size="16" v-if="iconBool"/><icon type="success" size="16" v-else/>
           </div>
         </div> -->
-      <div class="MaskItem" v-if='selectIndex==1'><text>提货电话{{selectIndex}}:</text><input type="text" placeholder="请输入提货电话" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;' v-model="mobile"></div>
-      <div class="MaskItem" v-if='selectIndex==1'><text>自提点:</text>
-        <picker @change="bindPickerChange" :value="shopName" :range="shopArray">
-          <div class="picker">
+        <div class="MaskItem" v-if='selectIndex==1'><text>提货电话:</text><input type="text" placeholder="请输入提货电话" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;' v-model="mobile"></div>
+        <div class="MaskItem" v-if='selectIndex==1'><text>自提点:</text>
+          <picker @change="bindPickerChange" :value="shopName" :range="shopArray">
+            <div class="picker">
              {{shopName}}
-          </div>
-          </picker>
-      </div>
-        <div class="MaskItem"><text>备注:</text><input type="text" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;' v-model="msg"></div>
-    </div>
-    <!--OrderMask end-->
+           </div>
+         </picker>
+       </div>
+       <div class="MaskItem">
+         <text>配送费:</text>
+         <text>{{perFreight}}元</text>
+       </div>
+       <div class="MaskItem"><text>备注:</text><input type="text" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;' v-model="msg"></div>
+     </div>
+     <!--OrderMask end-->
 
     <div class="PayType">
       <div class="PayItemTitle">支付方式</div>
@@ -77,7 +81,9 @@
 
      <div class="footerBnt">
        <div class="selectBtn"></div>
-       <div class="cartBtn"><div class="price">合计：{{shopList.activityPrice}}元<span>优惠：{{shopList.price*1-shopList.activityPrice*1}}元</span></div><div class="btn" @click="orderPay">{{tip}}</div></div>
+       <div class="cartBtn"><div class="price">合计：{{totlaAmount}}元
+        <!-- <span>优惠：{{shopList.price*1-totlaAmount}}元</span> -->
+      </div><div class="btn" @click="orderPay">{{tip}}</div></div>
      </div>
      <!--footerBnt end-->
   </div>
@@ -85,6 +91,7 @@
 
 <script>
  import Api from "@/utils/Api"
+ import Lib from "@/utils/lib"
  import config from "@/config"
  import Shopaddr from '@/components/shopaddr'
  import OrderList from '@/components/shopList'
@@ -130,33 +137,37 @@ export default {
       kaituanrest:{},
       shipStatus:3,
       mobile:'',
-      shopDetail:{}
+      shopDetail:{},
+      indexdata:{},
+      perFreight:0,
+      totlaAmount:0,
+      startCutId:''
     }
   },
   methods:{
     bindTimeChange: function (e) {
       let that = this;
-      var jindata = new Date();
-      let time2 = that.date + ' ' + that.time
-      var startdate=new Date(time2.replace(/-/g,"/"));
-      if(startdate>jindata){
-              let that = this;
-              that.time = e.mp.detail.value
-      }else{
-        Lib.Show("抱歉你选的时间不符","none",1500)
-      }
+      that.time = e.mp.detail.value
+      // let jindata = Date.parse(new Date());
+      // let stringTime = Date.parse(new Date(that.date + e.mp.detail.value))
+      // console.log(jindata,stringTime)
+      // if(stringTime>jindata){
+      //   that.time = e.mp.detail.value
+      // }else{
+      //   Lib.Show("抱歉你选的时间不符","none",1500)
+      // }
     },
     bindDateChange:function(e){
        let that = this;
-      var jindata = new Date();
-      let time2 = that.date + ' ' + that.time
-      var startdate=new Date(time2.replace(/-/g,"/"));
-      if(startdate>jindata){
-              let that = this;
-              that.data = e.mp.detail.value
-      }else{
-        Lib.Show("抱歉你选的时间不符","none",1500)
-      }
+       that.date = e.mp.detail.value
+      // var jindata = new Date();
+      // let time2 = that.date + ' ' + that.time
+      // var startdate=new Date(time2.replace(/-/g,"/"));
+      // if(startdate>jindata){
+      //     that.date = e.mp.detail.value
+      // }else{
+      //   Lib.Show("抱歉你选的时间不符","none",1500)
+      // }
     },
 
        //店铺选择
@@ -170,25 +181,63 @@ export default {
      //支付方式选择
     selectPay(index){
         let that = this;
+        console.log(index)
+        if(index==0){
+          let advances= wx.getStorageSync('advances');
+          if(advances<that.totlaAmount){
+           wx.showToast({
+            title: "账户余额不足",
+            icon: "none",
+            durantion: 2000
+          }) 
+         }
+         else{
+          that.PayBool = !that.PayBool;
+          that.PayIndex = index;
+         }
+        }
+        else{
         that.PayBool = !that.PayBool;
         that.PayIndex = index;
-        console.log()
+        }
+       
     },
     
     
     //选择
     selectTo(index){
       let that = this;
+      that.totlaAmount=0  
+      that.shipStatus=index==1?3:0  
+      if(index==1){
+        that.perFreight=0
+      }
+      else{
+        if(that.shopList.activityPrice>that.indexdata.freight){
+          that.perFreight=0
+        }
+        else{
+          that.perFreight=that.indexdata.perFreight
+        } 
+      }   
       if(that.Type=="K"||that.Type=="C"){
         wx.showToast({
           title: "拼团暂不支持自提",
           icon: "none",
           durantion: 2000
-        })   
+        }) 
+        that.shipStatus=0
+        if(that.shopList.activityPrice>that.indexdata.freight){
+          that.perFreight=0
+        }
+        else{
+          that.perFreight=that.indexdata.perFreight
+        }  
       }else{
         that.selectIndex = index;
       }
-      that.shipStatus=index==1?3:0   
+      that.totlaAmount=that.perFreight*1+that.shopList.activityPrice*1
+       
     },
     // 获取货品信息
     // async getProduct(){
@@ -207,6 +256,7 @@ export default {
     },
    async orderPay(){
         let that=this
+        console.log(that.shipStatus)
         if(that.shipStatus==0){
          if(that.addr == {}) {
           wx.showToast({
@@ -257,7 +307,7 @@ export default {
         })
         bean.image = that.shopList.shopImg
         bean.memberId = that.memberId
-        bean.orderAmount = that.shopList.activityPrice
+        bean.orderAmount = that.totlaAmount
         bean.weight = 0
         bean.shippingAmount = 0
         bean.goodsAmount = that.shopList.price
@@ -292,24 +342,25 @@ export default {
         } 
         bean.clickd = that.msg  
         if(that.Type=="K"){
+          // 开团
           bean.collagePersons = that.collagePersons
           bean.orderType = '2'
         }
         else if(that.Type=='Z'){
+          // 限时折扣
           bean.limitId = that.shopList.limitId
           bean.orderType = '3'
         }
         else if(that.Type=='C'){
+          // 参团
           bean.memberCollageId = that.memberCollageId
           bean.orderType = '2'
         }
-        
-        
-        
-        
-        
-        
-   
+        else{
+          // 砍价
+          bean.cutId=that.cutId
+          bean.orderType='4'
+        }
         // goodObj.catId = that.data.Goods.catId
         
         
@@ -317,9 +368,9 @@ export default {
         // var googitem = that.data.list; 
         let orderSave=await api.oderSave(bean)
         if(orderSave.data.code==0){
-          if(that.PayIndex == 1){
-            wx.hideLoading()
-            that.order=orderSave.data.order
+           wx.hideLoading()
+           that.order=orderSave.data.order
+          if(that.PayIndex == 1){      
             var params={}
             params.orderid = that.order.orderId
             params.sn = that.order.sn
@@ -366,9 +417,7 @@ export default {
               }
             })
           }else{
-            console.log("余额支付")
             that.CouponType();
-             wx.hideLoading()
           }
 
         }
@@ -377,6 +426,7 @@ export default {
     //优惠类型
     CouponType(){
       let that = this;
+      console.log(that.Type)
        if(that.Type=='K'){
         // 支付成功之后开团
         var orderparams = {}
@@ -402,6 +452,7 @@ export default {
           console.log(that.kaituanrest);
           var parmss = {}
           parmss.price = that.kaituanrest.price
+          parmss.goodsId=that.shopList.goodsId
           parmss.activityPrice = that.kaituanrest.activityPrice
           parmss.productId = that.shopList.productId
           parmss.goodsName = that.kaituanrest.goodsName
@@ -442,6 +493,9 @@ export default {
             icon: 'success',
             duration: 2000
           })
+          wx.redirectTo({
+            url: '../index/main',
+          })
         })
       }
       else if(that.Type=="Z"){
@@ -451,7 +505,6 @@ export default {
         orderParams.shipStatus = that.shipStatus
         orderParams.paymoney = that.order.orderAmount
         api.PaypassOrder(orderParams).then(function(paypassOrderRes){
-    
           if(paypassOrderRes.data.code==0){
           wx.showToast({
             title: '抢购成功',
@@ -463,7 +516,27 @@ export default {
           })
         }
         })
-      
+      }
+      else{
+        let orderParams = {}
+        orderParams.orderId = that.order.orderId
+        orderParams.code = 200
+        orderParams.shipStatus = that.shipStatus
+        orderParams.paymoney = that.order.orderAmount
+        api.PaypassOrder(orderParams).then(function(paypassOrderRes){
+          if(paypassOrderRes.data.code==0){
+            return api.finishCut(that.startCutId)
+        }
+        }).then(function(res){
+          wx.showToast({
+            title: '抢购成功',
+            icon: 'success',
+            duration: 2000
+          })
+          wx.switchTab({
+            url: '../index/main',
+          })
+        })
       }
     },
     
@@ -505,7 +578,7 @@ export default {
      let that=this
      var myDate = new Date();
      that.date=`${myDate.getFullYear()}-${myDate.getMonth()+1}-${myDate.getDate()}`
-     that.time=`${myDate.getHours()}:${myDate.getMinutes()}`
+     that.time=`${myDate.getHours()+1}:${myDate.getMinutes()}`
      that.startdate=`${myDate.getFullYear()}-${myDate.getMonth()+1}-${myDate.getDate()}`
      that.starttime=`${myDate.getHours()+1}:${myDate.getMinutes()}`
   }
@@ -515,16 +588,13 @@ export default {
    var that=this
    that.getTime()
    that.GetShopName();
-
-
-
-
+   that.indexdata=wx.getStorageSync('indexdata')
    that.option=options
+   console.log(that.option)
    that.memberId= wx.getStorageSync('memberId')
    that.shopDetail= wx.getStorageSync('shopDetail')
    let pages = getCurrentPages();
    let prevpage = pages[pages.length-2];
-   that.shopDetail=wx.getStorageSync('shopDetail')
    if(prevpage.route=="pages/addressList/main"){
       that.option=wx.getStorageSync('options')
       that.addr=wx.getStorageSync('addr')
@@ -542,10 +612,19 @@ export default {
    that.shopList.price= that.option.price;
    that.shopList.activityPrice= that.option.activityPrice;
    that.shopList.shopname=that.shopDetail.shopName
+   that.totlaAmount=that.shopList.activityPrice
    if( that.option.Type=="K"){
      that.selectIndex=2
+     that.shipStatus=0
      that.collagePersons=that.option.collagePersons
      that.tip='立即开团'
+      if(that.shopList.activityPrice>that.indexdata.freight){
+        that.perFreight=0
+      }
+      else{
+        that.perFreight=that.indexdata.perFreight
+      }  
+      that.totlaAmount=that.perFreight*1+that.shopList.activityPrice*1
    }
    else if(that.option.Type=='Z'){
     that.limitId=that.option.limitId
@@ -553,12 +632,21 @@ export default {
    }
    else if(that.option.Type=='C'){
     that.selectIndex=2
+    that.shipStatus=0
     that.memberCollageId=that.option.memberCollageId
     that.tip='立即参团'
+     if(that.shopList.activityPrice>that.indexdata.freight){
+        that.perFreight=0
+      }
+      else{
+        that.perFreight=that.indexdata.perFreight
+      }  
+      that.totlaAmount=that.perFreight*1+that.shopList.activityPrice*1
    }
    else{
     that.cutId=that.option.cutId
     that.tip='立即购买'
+    that.startCutId=that.option.startCutId
    }
   },
   onShow(){

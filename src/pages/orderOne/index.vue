@@ -42,7 +42,7 @@
 
     <!-- <Shopaddr :shopname="shopname"></Shopaddr> -->
      
-    <OrderList v-for="(item,index) in GoodItem.googitem" :index='index' :key='item' :Shop_List='item'></OrderList>
+    <OrderList v-for="(item,index) in GoodItem.googitem" :index='index' :key='item' :Shop_List='item' :shopname='shopDetail.shopName'></OrderList>
     <!--OrderList end-->
 
     <div class="OrderMask">
@@ -497,7 +497,7 @@ export default {
   },
   mounted(){
     let that = this;
- 
+    that.shopDetail= wx.getStorageSync('shopDetail')
     // that.GoodItem =JSON.parse(this.$root.$mp.query.gooditem);
     console.log("显示商品信息",that.GoodItem)
     that.Cart = this.$root.$mp.query.cart;

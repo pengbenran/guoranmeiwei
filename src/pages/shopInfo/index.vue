@@ -15,7 +15,7 @@
          <text class="new">￥{{Goods.price}}</text><text class="old">￥19.90</text>
      </div>
      <div class="PriceTag">
-         <text>快递包邮</text>  <text>库存:{{Goods.enableStore}}</text>
+         <text>全场满{{indexdata.freight}}元免配送费</text>  <text>库存:{{Goods.enableStore}}</text>
      </div>
     <!--Price end-->
 
@@ -142,7 +142,8 @@ export default {
           memberId:'',
           goodsId:'',
           catId:'',
-          productId:''
+          productId:'',
+          indexdata:{}
     }
   },
   
@@ -481,6 +482,7 @@ export default {
   },
   async mounted(){
     let that = this;
+    that.indexdata=wx.getStorageSync('indexdata')
     console.log(that.$refs.childs)
     console.log(this.$root.$mp.query,"你好世界")
     that.goodsId = this.$root.$mp.query.goodsId;

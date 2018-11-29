@@ -1,7 +1,7 @@
 <template>
   <div class="ShopList">
    <div class="item" v-for="(item,index) in Shop_item" :index='index' :key='item'>
-    <div class="item-warp" @click="jumpdetail(item.goodsId,item.limitId,item.endTime,item.finalAmount,item.isOver,item.productId)">
+    <div class="item-warp" @click="jumpdetail(item.goodsId,item.limitId,item.endTime,item.finalAmount,item.isOver,item.productId,item.goodsPrice)">
      <div class="left">
        <img :src="item.thumbnail" />
      </div>
@@ -28,7 +28,7 @@ export default {
     }
     },
     methods: {
-      jumpdetail:function(goodsId,limitId,endTime,finalAmount,isover,productId){
+      jumpdetail:function(goodsId,limitId,endTime,finalAmount,isover,productId,goodsPrice){
         if(isover){
           wx.showToast({
             icon:'none',
@@ -36,7 +36,7 @@ export default {
           })
         }
         else{
-        let url=`../discountInfo/main?goodsId=${goodsId}&limitId=${limitId}&endTime=${endTime}&finalAmount=${finalAmount}&productId=${productId}`
+        let url=`../discountInfo/main?goodsId=${goodsId}&limitId=${limitId}&endTime=${endTime}&finalAmount=${finalAmount}&productId=${productId}&goodsPrice=${goodsPrice}`
         wx.navigateTo({
            url: url,
         }) 

@@ -1,7 +1,6 @@
 <template>
   <div class="rankind">
-       <div class="HeaderImg"><img :src="ListImg.headerImg"/></div>
-
+      <div class="HeaderImg"><img :src="ListImg.headerImg"  mode="widthFix"/></div>
    <div class="headerTitle"><img :src="ListImg.headerTitle" mode='aspectFit'/></div>
        <!--header end-->
    <div class="scrollWarp">
@@ -95,7 +94,12 @@ img{
   height: 100%;
   overflow:hidden;
 }
-.HeaderImg{height: 110rpx;margin: 15rpx 0;}
+.HeaderImg{margin: 15rpx 0;
+  img{
+    width: 100%;
+    overflow:hidden;
+  }
+}
 .HeaderTitle{position: absolute;top: 55rpx;left: 50%;margin-left: -202rpx;width: 404rpx;height: 166rpx;}
 
 .scrollWarp{position: relative;}

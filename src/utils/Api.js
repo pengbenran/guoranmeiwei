@@ -3,8 +3,8 @@ export default class Api{
   constructor() {
      // this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
      // this.baseUrl = "https://www.etuetf.com"
-     this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
-     //this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
+     // this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
+     this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
      // this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
 
     // this.baseUrl = "http://192.168.2.131/guoranhuiwei" 
@@ -667,5 +667,14 @@ export default class Api{
           resolve(RandomList)
         }) 
         }
+      // 砍价成功后购买商品修改砍价状态
+      finishCut(startCutId){
+        return new Promise((resolve, reject) =>{
+          let finishCutRes = this.fly.post(this.baseUrl +'/api/cut/finishCut',{startCutId:startCutId},{headers:{
+            'Content-Type': 'application/x-www-form-urlencoded'
+            }})
+          resolve(finishCutRes)
+        }) 
+      }
       
 }

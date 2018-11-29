@@ -8,7 +8,7 @@
     <!--header end-->
     <div class="priceWarp">
       <div class="left">
-         <div class="tag">精选水果</div><div class="price">￥<text class="newPrice">{{finalAmount}}</text><text class="oldPrice">￥{{Goods.price}}</text></div>
+         <div class="tag">精选水果</div><div class="price">￥<text class="newPrice">{{finalAmount}}</text><text class="oldPrice">￥{{goodsPrice}}</text></div>
       </div>
       <div class="right">
         <Timedown :countdown="countdown"></Timedown>
@@ -48,8 +48,8 @@
      <div class="HeightDiv"></div>
      <div class="footerBnt">
        <div class="left">
-         <div class="leftItme"><img :src="ImgList.home" /><text>首页</text></div>
-         <div class="leftItme"><img :src="ImgList.kefu" /><text>客服</text></div>
+         <div class="leftItme"  @click="toIndex('/pages/index/main')"><img :src="ImgList.home" /><text>首页</text></div>
+         <div class="leftItme">  <button class='homepage custom' open-type="contact" session-from="weapp"><img :src="ImgList.kefu" @click="kefu"/><text>客服</text> </button></div>
          <div class="leftItme"  @click="collection">
           <img :src="ImgList.noshouChang" v-if="posts" />
           <img :src="ImgList.shouChang" v-if="!posts"/>
@@ -97,18 +97,22 @@ export default {
           memberId:'',
           posts:false,
           finalAmount:'',
-          limitId:''
+          limitId:'',
+          goodsPrice:''
 
     }
   },
    methods: {
     jumporder(){
       let that=this
-      let url=`../order/main?pic=1&goodsId=${that.Goods.goodsId }&activityPrice=${that.finalAmount}&limitId=${that.limitId}&Type=Z&goodname=${that.Goods.name}&price=${that.Goods.price}&goodsImg=${that.Goods.thumbnail}`
+      let url=`../order/main?pic=1&goodsId=${that.Goods.goodsId }&activityPrice=${that.finalAmount}&limitId=${that.limitId}&Type=Z&goodname=${that.Goods.name}&price=${that.goodsPrice}&goodsImg=${that.Goods.thumbnail}`
       wx.navigateTo({
         url:url,
       })
     },
+     toIndex(url){
+    wx.switchTab({ url: url });
+   },
     //立即购买淡出模态框
     showModel(){
      let that = this;
@@ -188,6 +192,7 @@ export default {
      that.finalAmount=options.finalAmount
      that.memberId= wx.getStorageSync('memberId')
      that.getGood(options.goodsId,that.memberId)
+     that.goodsPrice=options.goodsPrice
      that.limitId=options.limitId
      var endtime=options.endTime
      var starttime = (new Date()).valueOf();
@@ -253,6 +258,8 @@ img{display: block;height: 100%;width: 100%;}
 .footerBnt .left,.btnWarp{@include flexc;justify-content: space-around;}
 .leftItme{line-height: 28rpx;}
 .footerBnt{@include flexc;justify-content: space-between;padding: 10rpx 2%;position: fixed;bottom: 0;width:96%;background: #fff;
+  button{background: rgba(255, 255, 255, 0);line-height: 50rpx;}
+  button::after{border:none;}
   .left{width: 45%;}
   .left img{width: 58rpx;height: 58rpx;margin: auto;}
   .left text{color: rgb(117,117,117);font-size: 28rpx;font-weight: 100;}

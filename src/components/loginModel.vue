@@ -17,7 +17,6 @@ export default {
   data () {
     return {
        isMember:false,
-
     }
     },
     mounted(){
@@ -62,6 +61,7 @@ export default {
         wx.setStorageSync('uname', memberRes.data.memberDo.uname)
         wx.setStorageSync('face', memberRes.data.memberDo.face)
         wx.setStorageSync('openId',memberRes.data.memberDo.openId)
+        wx.setStorageSync('advances',memberRes.data.memberDo.advance)
         // that.memberId=memberRes.data.memberDo.memberId
         // if(that.loginType=='C'){
         //      let friendCollageRes=await api.friendCollage(that.pingtuandetail.memberCollageId)
@@ -98,6 +98,7 @@ export default {
           that.memberId=memberId
           wx.setStorageSync('memberId', "00")
           that.isMember=true
+          console.log(that.isMember);
         }
       },
     }

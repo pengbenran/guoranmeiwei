@@ -50,8 +50,8 @@
      <div class="HeightDiv"></div>
      <div class="footerBnt">
        <div class="left">
-         <div class="leftItme"><img :src="imgList.home" /><text>首页</text></div>
-         <div class="leftItme"><img :src="imgList.kefu" /><text>客服</text></div>
+         <div class="leftItme"  @click="toIndex('/pages/index/main')"><img :src="imgList.home" /><text>首页</text></div>
+         <div class="leftItme">  <button class='homepage custom' open-type="contact" session-from="weapp"><img :src="imgList.kefu" @click="kefu"/><text>客服</text> </button></div>
          <div class="leftItme" @click="collection">
           <img :src="imgList.noshouChang" v-if="posts" />
           <img :src="imgList.shouChang" v-if="!posts"/><text>收藏</text></div>
@@ -114,6 +114,9 @@ export default {
      //父组件控制子组件
      that.$refs.childs.emitEvent();
     },
+     toIndex(url){
+    wx.switchTab({ url: url });
+   },
     async getProduct(goodsId,memberId){
       let that=this
       let productRes=await api.getProduct(goodsId,memberId)
@@ -337,6 +340,8 @@ img{display: block;height: 100%;width: 100%;}
 .footerBnt .left,.btnWarp{@include flexc;justify-content: space-around;}
 .leftItme{line-height: 28rpx;}
 .footerBnt{@include flexc;justify-content: space-between;padding: 10rpx 2%;position: fixed;bottom: 0;width:96%;background: #fff;
+  button{background: rgba(255, 255, 255, 0);line-height: 50rpx;}
+  button::after{border:none;}
   .left{width: 45%;}
   .left img{width: 58rpx;height: 58rpx;margin: auto;}
   .left text{color: rgb(117,117,117);font-size: 28rpx;font-weight: 100;}
