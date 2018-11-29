@@ -41,7 +41,7 @@
         <span class="all">全部订单</span>
       </div>
       <div class="orderitem">
-        <div class="orderlist" v-for="(item,index) in orderitem" :key="item" :index="index" @click="jumpOrder(index)">
+        <div class="orderlist" v-for="(item,index) in orderitem" :key="item" :index="index" @click="jumpOrder(index,item.InfoTypeId)">
           <div class="ordericon">
             <img :src="item.icon">
           </div>
@@ -77,20 +77,18 @@ export default {
      panel:config.imgUrl+"/myself/panel.png",
      pianbao:config.imgUrl+"/myself/qianbao.png",
      orderitem:[
-     {name:'待付款',icon:config.imgUrl+"/myself/daifukuan.png",statuscount:0},
-     {name:'待发货',icon:config.imgUrl+"/myself/daifahuo.png",statuscount:0},
-     {name:'待收货',icon:config.imgUrl+"/myself/daishouhuo.png",statuscount:0},
-     {name:'待自提',icon:config.imgUrl+"/myself/shouhou.png",statuscount:0},
+     {name:'待付款',icon:config.imgUrl+"/myself/daifukuan.png",statuscount:0,InfoTypeId:1},
+     {name:'待发货',icon:config.imgUrl+"/myself/daifahuo.png",statuscount:0,InfoTypeId:2},
+     {name:'待收货',icon:config.imgUrl+"/myself/daishouhuo.png",statuscount:0,InfoTypeId:3},
+     {name:'待自提',icon:config.imgUrl+"/myself/daiziti.png",statuscount:0,InfoTypeId:4},
      ],
      featureitem:[
      {name:'积分',icon:config.imgUrl+"/myself/point.png",PageUrl:'../sign/main'},
      {name:'微分销',icon:config.imgUrl+"/myself/fenxiao.png",PageUrl:'../distribestart/main'},
      {name:'地址管理',icon:config.imgUrl+"/myself/address.png",PageUrl:'../addressList/main'},
-     {name:'优惠券',icon:config.imgUrl+"/myself/address.png",PageUrl:'../coupon/main'},
+     {name:'优惠券',icon:config.imgUrl+"/myself/youhuijuan.png",PageUrl:'../coupon/main'},
      {name:'拼团',icon:config.imgUrl+"/myself/group.png",PageUrl:'../groupitem/main'},
-     {name:'砍价',icon:config.imgUrl+"/myself/cut.png",PageUrl:'../sign/main'},
-     {name:'联系客服',icon:config.imgUrl+"/myself/connect.png",PageUrl:'../sign/main'},
-     {name:'门店',icon:config.imgUrl+"/myself/connect.png",PageUrl:'../storePay/main'}
+     {name:'联系客服',icon:config.imgUrl+"/myself/connect.png",PageUrl:'../kefu/main'}
      ],
      vouchercount:0
     }
@@ -123,16 +121,25 @@ export default {
       }else{
         wx.navigateTo({ url: '../distribe/main' });
       }
-    }else{
+    }else if(url == '../kefu/main'){
+       //触发打电话
+     let that = this;
+     let indexData = wx.getStorageSync('indexdata');
+
+      wx.makePhoneCall({
+        phoneNumber: indexData.mobile,
+      })
+    }
+    else{
       wx.navigateTo({ url: url });
     
     }
 
    },
-   jumpOrder(index){
+   jumpOrder(index,InfoTypeId){
     let id=index+1
     wx.navigateTo({
-      url:'../orderList/main?currentTarget='+id
+      url:'../orderList/main?currentTarget='+id+'&InfoTypeId='+InfoTypeId
     })
    },
 

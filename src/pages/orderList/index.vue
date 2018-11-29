@@ -15,7 +15,7 @@
              </div>
           </div>
            <div class="shopWarp" v-for="(shopItme,ind) in orderItem.item" :index='ind' :key="shopItme">
-            <div class="addr"><div class="topImg"><img :src="topImg"/></div><text>{{shopItme.shopName}}</text><small>[切换]</small> </div>
+            <div class="addr"><div class="topImg"><img :src="topImg"/></div><text>{{shopItme.shopName}}</text> </div>
             <div class="List">
               <div class="left"><img :src="shopItme.image"/></div>
               <div class="right">
@@ -33,9 +33,16 @@
               <text class="btn1" @click="CancelOrder('取消订单',orderItem.orderId,index)">取消订单</text>
               <text class="btn2" @click="Payoff('确认付款',orderItem.orderId,index,orderItem.status,orderItem.needPayMoney,orderItem.sn)">{{orderItem.sn}}确认付款</text>
             </div>
-            <div class="Btn" v-show='btnSelect==2'><text class="btn1">查看订单</text><text class="btn2">申请退款</text></div>
-            <div class="Btn" v-show='btnSelect==3'><text class="btn1"></text><text class="btn2">确认收货</text></div>
-            <div class="Btn" v-show='btnSelect==4'><text class="btn1">删除订单</text><text class="btn2">确认收货</text><text class="btn2">申请退款</text></div>
+            <div class="Btn" v-show='btnSelect==2'>
+              <text @click="SelectOrder(index,orderItem.orderId)" class="btn2">查看订单</text>
+            </div>
+            <div class="Btn" v-show='btnSelect==3'>
+              <text class="btn1" @click="SelectOrder(orderItem.orderId)">查看订单</text>
+              <text class="btn2" @click="queShop(index,orderItem.orderId)">确认收货</text>
+            </div>
+            <div class="Btn" v-show='btnSelect==4'>
+              <text class="btn1" @click="SelectOrder(orderItem.orderId)">查看订单</text>
+              <text class="btn2" @click="DelShop(index,orderItem.orderId)">删除订单</text></div>
           </div>
         </div>
       </div>
@@ -67,10 +74,11 @@ export default {
           width:"20%",
           shopname:'小程序鲜果零食店',
           orderList:[],
+          InfoTypeIndex:0,
           total_fee:'',
           orderId:'',
           btnSelect:0,
-          memberId:188,
+          memberId:'',
           orderArry:[]
     }
   },
@@ -166,8 +174,52 @@ export default {
       });
     },
 
+    //确认收货
+    async queShop(index,orderId){
+      let that = this;
+      let res = await Lib.ShopModel("提示","是否确认收货")
+      if(res.confirm){
+          let parms = {}
+          let order = {}
+          order.shipStatus = 2
+          order.orderId=orderId
+          parms.order = order
+          let QueRes = await api.OrderCancel(parms)
+          console.log("确认收货",QueRes)
+          if(QueRes.data.code == 0){
+            Lib.Show("成功","success",1500)
+            that.orderList[that.btnSelect].splice(index,1)
+          }
+      }
+    },
+
+    //删除订单
+   async DelShop(index,orderId){
+      let that = this;
+      var parms = {}
+      var order = {}
+      let res = await Lib.ShopModel("提示","是否确认删除")
+      if(res.confirm){
+        order.orderId = orderId
+        order.status = 7
+        parms.order = order
+        let QueRes = await api.OrderCancel(parms)
+          if(QueRes.data.code == 0){
+            Lib.Show("成功","success",1500)
+            that.orderList[that.btnSelect].splice(index,1)
+          }
+      }
+    },
+
+    //查看订单
+    SelectOrder(orderId){
+      let that = this;
+      wx.redirectTo({ url: '../orderInfo/main?orderId='+orderId+'&InfoTypeId='+that.btnSelect });
+    },
+
      onselect(e){
        let that = this;
+       that.btnSelect = e
        that.find_item=that.find_item.map((item)=>{
          item.selected=false;
          return item
@@ -211,6 +263,7 @@ export default {
           order.payStatus = payStatus
           order.shipStatus = shipStatus
           order.memberId = that.memberId
+          
           parms.order = order
           let res = await api.OrderSelectList(parms)
           that.orderList =  res.data.orderList.map(v=>{ 
@@ -265,10 +318,13 @@ export default {
   },
   onLoad(options){
     let that = this;
+    that.memberId = wx.getStorageSync('memberId');
+    that.btnSelect = options.currentTarget
     that.find_item=that.find_item.map((item)=>{
          item.selected=false;
          return item
         })
+        // console.log("5465465",options,options.currentTarget)
        that.find_item[options.currentTarget].selected=true
     if(options.currentTarget==0){
       that.OnAllGoodList()

@@ -91,7 +91,7 @@ export default {
     wx.login({
       success: res => {
         if(res.code){
-             api.ConfirmPay(res.code,payParms).then(function(Pres){
+             api.ConfirmPay(payParms,res.code).then(function(Pres){
                let pay = Pres.data
                wx.requestPayment({
                 timeStamp: pay.timeStamp,

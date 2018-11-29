@@ -3,8 +3,8 @@ export default class Api{
   constructor() {
      // this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
      // this.baseUrl = "https://www.etuetf.com"
-     this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
-     //this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
+     //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
+     this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
      // this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
 
     // this.baseUrl = "http://192.168.2.131/guoranhuiwei" 
@@ -212,14 +212,14 @@ export default class Api{
   //获取订单全部列表
   AllGoodList(parms){
     return new Promise((resolve,reject) => {
-       let GoodList = this.fly.get(this.baseUrl +'/api/order/apiSelectOrderList',{parms:JSON.stringify(parms)})
+       let GoodList = this.fly.get(this.baseUrl +'/api/order/apiSelectOrderList',{params:JSON.stringify(parms)})
        resolve(GoodList)
     })
   }
   //根据状态查询订单
   OrderSelectList(parms){
     return new Promise((resolve,reject) => {
-      let OrderList = this.fly.get(this.baseUrl +'/api/order/orderList',{parms:JSON.stringify(parms)})
+      let OrderList = this.fly.get(this.baseUrl +'/api/order/orderList',{params:JSON.stringify(parms)})
       resolve(OrderList)
     })
   }
@@ -227,7 +227,7 @@ export default class Api{
   //取消订单
   OrderCancel(parms){
     return new Promise((resolve,reject) => {
-      let Orderres = this.fly.put(this.baseUrl +'/api/order/synthesize',{parms:JSON.stringify(parms)},{headers:{
+      let Orderres = this.fly.put(this.baseUrl +'/api/order/synthesize',{params:JSON.stringify(parms)},{headers:{
         'Content-Type': 'application/x-www-form-urlencoded'
        }})
       resolve(Orderres)
@@ -237,7 +237,7 @@ export default class Api{
   //确认付款
   ConfirmPay(parms,code){
     return new Promise((resolve,reject) =>{
-      let Pay = this.fly.get(this.baseUrl +'/api/pay/prepay',{code: code,parms:JSON.stringify(parms)})
+      let Pay = this.fly.get(this.baseUrl +'/api/pay/prepay',{parms:JSON.stringify(parms),code: code})
       resolve(Pay)
     })
   }
@@ -380,12 +380,12 @@ export default class Api{
     // }
 
     //获取商品信息
-    // GetProduct(goodparms){
-    //   return new Promise((resolve, reject) =>{
-    //     let GetProduct = this.fly.get(this.baseUrl +'/api/Goods/getProduct',{parms:JSON.stringify(goodparms) })
-    //     resolve(GetProduct)
-    //   })
-    // }
+    GetProduct(goodparms){
+      return new Promise((resolve, reject) =>{
+        let GetProduct = this.fly.get(this.baseUrl +'/api/Goods/getProduct',{parms:JSON.stringify(goodparms) })
+        resolve(GetProduct)
+      })
+    }
     
     //提交购物车
     toCartSave(cartparms){
@@ -667,5 +667,34 @@ export default class Api{
           resolve(RandomList)
         }) 
         }
+
+        //线下核销
+        BelowConsume(params){
+          return new Promise((resolve, reject) =>{
+            let BelowConsume = this.fly.post(this.baseUrl +'/api/member/belowConsume',{params:JSON.stringify(params)},{headers:{
+              'Content-Type': 'application/x-www-form-urlencoded'
+              }})
+            resolve(BelowConsume)
+          }) 
+        }
       
+         //商品分润
+         ShareProfit(fenrunParm){
+          return new Promise((resolve, reject) =>{
+            let ShareProfit = this.fly.post(this.baseUrl +'/api/distribe/shareProfit',{params:JSON.stringify(fenrunParm)},{headers:{
+              'Content-Type': 'application/x-www-form-urlencoded'
+              }})
+            resolve(ShareProfit)
+          }) 
+        }
+
+        //订单详情
+        OrderIntRo(params){
+          return new Promise((resolve, reject) =>{
+            console.log("你好世界")
+            let OrderIntRo = this.fly.get(this.baseUrl +'/api/order/orderIntRo',{params:JSON.stringify(params)})
+            resolve(OrderIntRo)
+          }) 
+        }
+
 }

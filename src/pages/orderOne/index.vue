@@ -70,13 +70,13 @@
 
     <div class="PayType">
       <div class="PayItemTitle">支付方式</div>
-      <div class="Item">
+      <div class="Item"  @click="selectPay(1)">
         <div class="Items"><img :src="ImgList.wxImg" /><text>微信支付</text></div>
-        <div class="ItemSelect" @click="selectPay(1)"><icon type="success" size="21" v-show='!PayBool'/><icon type="circle" size="21" v-show='PayBool'/></div>
+        <div class="ItemSelect"><icon type="success" size="21" v-show='!PayBool'/><icon type="circle" size="21" v-show='PayBool'/></div>
       </div>
-      <div class="Item">
+      <div class="Item" @click="selectPay(0)">
         <div class="Items"><img :src="ImgList.qianbao" /><text>余额支付</text></div>
-        <div class="ItemSelect" @click="selectPay(0)"><icon type="success" size="21" v-show='PayBool'/><icon type="circle" size="21" v-show='!PayBool'/></div>
+        <div class="ItemSelect"><icon type="success" size="21" v-show='PayBool'/><icon type="circle" size="21" v-show='!PayBool'/></div>
       </div>
     </div>
     <!--PayType end-->
@@ -159,7 +159,7 @@ export default {
       gainedpoint:'',
       ordername:'',
       point_price:0,
-      addr:[],
+      addr:'',
       point:'',
       mobile:'',
     }
@@ -205,7 +205,6 @@ export default {
        let addParms = {}
        addParms.memberId = wx.getStorageSync('memberId');
        let res = await api.SelectAddre(addParms)
-       console.log("获取地址",res)
        if(res.data.code){
           that.AddressBtn = true
        }else{
@@ -213,9 +212,7 @@ export default {
           that.AddressBtn = false
        }
      }else{
-       
         that.addr=wx.getStorageSync('addr')
-        console.log("获取地址1",that.addr)
         that.AddressBtn = false
      }
     },
@@ -241,24 +238,40 @@ export default {
      
      //提交按钮
      toast(){
+ 
           let that = this;
+                console.log(that.selectIndex,"支付ID")
           let advance = wx.getStorageSync('advances');
           if(that.selectIndex == 1){
+            console.log("asd0")
             if(that.mobile == ''){
               Lib.Show("电话为空","none",1500)
             }else{
-              if(advance >= that.GoodItem.goodsAmount){
-                that.OrderUp();
-              }else{
-                Lib.Show("余额不足","none",2000)
-              }
+                 if(that.PayIndex == 1){
+                  that.OrderUp();
+                }else{
+                  if(advance >= that.GoodItem.goodsAmount){
+                    that.OrderUp();
+                  }else{
+                    Lib.Show("余额不足","none",2000)
+                  }
+                } 
             }
           }else{
-              if(that.addr == undefined){
+               console.log("asd1",that.addr,that.AddressBtn)
+              if(that.addr == ''&&that.AddressBtn){
                 wx.showToast({ title: '请添加地址',})
               }else{
-                that.OrderUp();
-              } 
+                if(that.PayIndex == 1){
+                  that.OrderUp();
+                }else{
+                  if(advance >= that.GoodItem.goodsAmount){
+                    that.OrderUp();
+                  }else{
+                    Lib.Show("余额不足","none",2000)
+                  }
+                } 
+            }
           }
         },
 
@@ -302,10 +315,11 @@ export default {
                   goodObj.image = that.GoodItem.googitem[0].image
                   goodObj.goodsAmount = that.GoodItem.googitem[0].price * that.GoodItem.googitem[0].num
                   goodObj.productId = that.GoodItem.googitem[0].productId
-
+                   console.log("查看信息asd",that.GoodItem)
                     bean.googitem[0] = goodObj
                     bean.point = that.point
                     bean.gainedpoint = that.GoodItem.googitem[0].point
+                    console.log("查看积分",that.GoodItem.googitem[0].point)
                     bean.province = that.addr.province
                     bean.city = that.addr.city
                     bean.addr = that.addr.addr
@@ -385,7 +399,7 @@ export default {
       console.log("查看asdasd",that.PayIndex)
 
       if(that.PayIndex == 1){
-          that.wxPay(PayRes)
+          that.wxPay(PayRes,orderId,payordertime)
       }else{
          console.log("查看支付方式",PayRes,that.PayIndex)
             wx.switchTab({ url: '../myself/main' });
@@ -394,7 +408,7 @@ export default {
    
 
    //微信支付方法封装
-   wxPay(PayRes){
+   wxPay(PayRes,orderId,payordertime){
      let that = this;
       wx.requestPayment({
           timeStamp: PayRes.data.timeStamp, //时间戳从1970年1月1日00:00:00至今的秒数,即当前的时间,
@@ -405,10 +419,42 @@ export default {
           success: res => {
             util.sendMsg(PayRes.data.package, orderId,payordertime,
                           that.ordername, that.order.orderAmount)
-            Lib.Show("支付成功","success",2000)
-            setTimeout(function(){
-              wx.switchTab({ url: '../index/main' });
-            },1000)
+
+            let orderParams = {}
+            // orderparms.order = order
+            orderParams.orderId = orderId
+            orderParams.code = 200
+            orderParams.gainedpoint = that.point
+            orderParams.paymoney = that.GoodItem.goodsAmount
+            // parms.parms = JSON.stringify(orderparms)
+            api.PaypassOrder(orderParams).then(function(res){
+                console.log("保存后台订单",res)
+                if(res.data.code == 0){
+                  console.log("进来了吗",res.data.code,wx.getStorageSync('isAgent'))
+                    //分润
+                     if (wx.getStorageSync('isAgent') != '') {
+                      let fenrunParm = {}
+                      // let params = {}
+                      fenrunParm.memberId = that.memberId
+                      fenrunParm.distribeId = wx.getStorageSync('isAgent')
+                      fenrunParm.monetary = that.GoodItem.goodsAmount
+                      fenrunParm.shareMoney = that.GoodItem[0].fenrunAmount
+                      // params.params = JSON.stringify(fenrunParm)
+                      api.ShareProfit(fenrunParm).then(function(res){
+                         console.log("商品分润")
+                      })
+                    }
+                       console.log("进来了吗111",res.data.code)
+                 //支付完成后
+                 console.log("44564")
+                  Lib.Show("支付成功","success",2000)
+                  setTimeout(function(){
+                    wx.switchTab({ url: '../index/main' });
+                  },1000)
+                }
+              
+        
+            })              
           },
            fail: function (res) {
                       // fail   
@@ -495,7 +541,7 @@ export default {
       wx.navigateTo({ url: '../addressList/main' });
     },
   },
-  mounted(){
+  onShow(){
     let that = this;
  
     // that.GoodItem =JSON.parse(this.$root.$mp.query.gooditem);
@@ -525,8 +571,11 @@ export default {
     });
 
     if(prevpage.route=="pages/addressList/main"){
+       console.log("进入了没有123")
+
         that.GoodItem = wx.getStorageSync('GoodItem')
         that.addr = wx.getStorageSync('addr')
+        that.AddressBtn = false
       }  
       else{
         that.GoodItem = JSON.parse(this.$root.$mp.query.gooditem)
@@ -578,7 +627,7 @@ img{display: block;height: 100%;width: 100%;}
 .PayType{padding: 10rpx 20rpx;font-weight: 100;font-weight: 100;font-size: 28rpx;color: #666;
     .PayItemTitle{font-size: 34rpx;}
     img{width: 40rpx;height: 40rpx;margin-right: 15rpx;}
-    .Item{padding: 10rpx 0;@include flexc;justify-content: space-between;}
+    .Item{padding: 16rpx 0;@include flexc;justify-content: space-between;}
     .Items{@include flexc;}
 }
 

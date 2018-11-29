@@ -1,6 +1,5 @@
 {
   "pages": [ 
-    "pages/orderInfo/main",
     "pages/index/main",
     "pages/helpdiscount/main",
     "pages/myself/main",
@@ -36,7 +35,8 @@
     "pages/distribefrom/main",
     "pages/distribemoney/main",
     "pages/distribePay/main",
-    "pages/search/main"
+    "pages/search/main",
+    "pages/orderInfo/main"
 
   ],
   "window": {

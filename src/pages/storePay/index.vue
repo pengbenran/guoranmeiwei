@@ -2,12 +2,23 @@
   <div class="storePay">
     <div class="boxWarp">
         <div class="Box1">
-            <div class="boxItem boxItem1"><span class="Price"><text>*</text> 消费总额(元)</span><input  type='text' placeholder="请咨询服务员后输入" /></div>
-            <div class="boxItem"><span>参与优惠金额(元)</span><input  type='text' placeholder="请咨询服务员后输入" /></div>
+            <div class="boxItem boxItem1"><span class="Price"><text>*</text> 消费总额(元)</span>
+              <input  type='text' placeholder="请咨询服务员后输入" v-model="allPrice" /></div>
+            <!-- <div class="boxItem"><span>参与优惠金额(元)</span><input  type='text' placeholder="请咨询服务员后输入" /></div> -->
         </div>
     </div>
     <!--boxWarp end-->
-    <div class="boxWarp">
+    
+    <div class="selectShop">
+      <text>门店选择</text>
+      <picker @change="bindPickerChange" :value="shopName" :range="shopArray">
+        <div class="picker">
+         <span>{{shopName}}</span>
+        </div>
+      </picker>
+    </div>
+
+    <!-- <div class="boxWarp">
         <div class="Box1">
           <div class="ItemTitle">叠加优惠</div>
             <div class="boxItem color1">
@@ -18,7 +29,7 @@
             </div>
             <div class="boxItem color1"><span><img :src="youhui"/> 参与优惠金额(元)</span></div>
         </div>
-    </div>
+    </div> -->
     <!--boxWarp end-->
     <div class="boxWarp">
       <div class="Box1">
@@ -28,7 +39,7 @@
              <icon type="success" color='rgb(249,98,105)' size="18" v-show='PayBool'/>
              <icon type="circle" size="18"  v-show='!PayBool'/>
           </div>
-          <div class="boxItem color1 img1" @click="SelectPay(2)">
+          <div class="boxItem color1 img1" @click="SelectPay(0)">
             <span><img :src="qianbao"/> 余额支付</span>
             <icon type="success" color='rgb(249,98,105)' size="18" v-show='!PayBool'/>
              <icon type="circle" size="18"  v-show='PayBool'/>
@@ -38,11 +49,11 @@
  <!--boxWarp end-->
     <div class="PriceWarp">
       <div v-show="!YouBool"><div class="PriceInfo youhui"><text>优惠</text><text>-2.5元</text></div></div>
-      <div class="PriceInfo"><text>实际支付(元)</text><text>16.6元</text></div> 
+      <div class="PriceInfo"><text>实际支付(元)</text><text>{{allPrice == ''? 0 : allPrice}}元</text></div> 
     </div>
     <!--PriceWarp end-->
     <div class="Btn">
-      <text>已和服务员确认，立即购买</text>
+      <text @click="Paysub">已和服务员确认，立即购买</text>
     </div>
     <!--Btn end-->
   </div>
@@ -50,10 +61,11 @@
 
 <script>
  import Api from "@/utils/Api"
+ import Lib from "@/utils/lib"
  import config from "@/config"
  import globalLoca from  '@/utils/qqmap-wx-jssdk'
 
-
+let api = new Api
 export default {
   components: {
 
@@ -66,10 +78,89 @@ export default {
       wxImg:config.imgUrl+"/store/wxzf.png",
       qianbao:config.imgUrl+"/store/qianbao.png",
       YouBool:true,
-      PayBool:true
+      PayBool:true,
+      shopArray: [],
+      PayTypeIndex:1,
+      allPrice:'',
+      shopName:'',
+      shopId:''
     }
   },
   methods:{
+     bindPickerChange: function(e) {
+      this.shopName=this.shopArray[e.mp.detail.value] 
+      this.shopId=this.shopListArry[e.mp.detail.value].shopId
+    },
+    
+    //确认支付
+     Paysub(){
+
+      let that = this;
+      if(that.allPrice == ''){
+           Lib.Show('请输入金额','none',1000)
+      }else{
+               Lib.Loading("请稍等")
+              if(that.PayTypeIndex == 0){
+                that.yuPay();
+              }else{
+                that.wxPay();
+              }
+      }
+ 
+
+    },
+    
+    //余额支付
+     async yuPay(){
+        let that = this;
+        let params ={}
+
+        params.consume = that.allPrice
+        params.methodPayment = that.PayTypeIndex
+        params.shopId = that.shopId
+        params.memberId = wx.getStorageSync('memberId');
+        let res = await api.BelowConsume(params)
+        console.log("付款存入数据库",res)
+        if(res.data.code == 0){
+           wx.hideLoading();
+           Lib.Show('支付成功','success',2000)
+           wx.switchTab({ url: '../myself/main' });
+        }
+    },
+
+    //微信支付
+    wxPay(){
+      let that = this;
+      let payParms = {}
+      var sn = Date.parse(new Date())
+      payParms.orderid = Date.parse(new Date())
+      payParms.total_fee = that.allPrice*100
+      payParms.sn = sn
+
+       wx.login({
+        success: res => {
+          if(res.code){
+              api.ConfirmPay(payParms,res.code).then(function(Pres){
+                let pay = Pres.data
+                wx.requestPayment({
+                  timeStamp: pay.timeStamp,
+                  nonceStr: pay.nonceStr,
+                  package: pay.package,
+                  signType: pay.signType,
+                  paySign: pay.paySign,
+                  success: res => {
+                    that.yuPay()
+                  }
+                });
+              })
+          }
+        }, fail: function (res) {
+             wx.hideLoading();
+            Lib.Show('支付失败','loading',2000)
+            },
+      });
+    },
+
     //使用积分优惠
     youhuiClick(){
       let that = this;
@@ -79,20 +170,26 @@ export default {
     SelectPay(index){
       let that = this;
       that.PayBool = !that.PayBool;
+      that.PayTypeIndex = index
       if(index == 1){
         console.log("选择微信支付")
       }
-      else if(index == 2){
+      else if(index == 0){
         console.log("选择余额支付")
       }
     }
   },
-  mounted(){
-   
-  },
   
-  created () {
-   
+  async onLoad(){
+    let that = this;
+        api.getshopList().then(function(res){
+        that.shopListArry=res.data
+        that.shopArray=res.data.map((item)=>{
+          return item.shopName
+        })
+        that.shopName=that.shopArray[0]
+        that.shopId=that.shopListArry[0].shopId
+      })
   }
 }
 </script>
@@ -130,6 +227,8 @@ img{display: block;height: 100%;width: 100%;}
    text{color: rgb(249,98,105);font-weight: 100;}
    .img1 img{width: 45rpx;height: 45rpx;}
 } 
+
+.selectShop{@include flexc;justify-content: space-between;padding: 20rpx;margin:20rpx;background:#fff;font-weight: 100;font-size: 32rpx;}
 
 .PriceWarp,.Btn{padding: 18rpx 30rpx;font-weight: 100;font-size: 34rpx;color: #666;}
 .PriceWarp{
