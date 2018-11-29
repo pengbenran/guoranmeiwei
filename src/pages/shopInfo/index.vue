@@ -158,7 +158,8 @@ export default {
 
      that.Gallery = res.data.Gallery;
      that.Goods = res.data.Goods;
-
+    
+    console.log("你好商品信息",that.Goods)
      if (res.data.count == 0) {
         that.posts= false
       } else {   
@@ -475,8 +476,10 @@ export default {
    kefu(){
      //触发打电话
      let that = this;
+     let indexData = wx.getStorageSync('indexdata');
+
       wx.makePhoneCall({
-        phoneNumber: '158XXXXXXXX',
+        phoneNumber: indexData.mobile,
       })
    }
   },
@@ -489,6 +492,7 @@ export default {
     // console.log(this.$root.$mp.query,"你好世界",that.goodsId)
     that.catId =  this.$root.$mp.query.catId;
     that.memberId = wx.getStorageSync('memberId');
+
     
     //获取商品信息
     that.SelectShopInfo();

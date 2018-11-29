@@ -1,30 +1,41 @@
 <template>
 <div class="OrderInfo">
     <div class="header">
-        <div class="left"><text>待收货</text></div>
-        <div class="right"><img :src="ImgList.headerImg01" mode='aspectFit'/></div>
+        <div class="left">
+          <text v-if="selectIndex == 1">待收货</text>
+          <text v-if="selectIndex == 2">待发货</text>
+          <text v-if="selectIndex == 3">待收货</text>
+          <text v-if="selectIndex == 4">待自提</text>
+        </div>
+        <div class="right">
+          <img v-if="selectIndex == 1" :src="ImgList.headerImg01" mode='aspectFit'/>
+          <img v-if="selectIndex == 2" :src="ImgList.headerImg02" mode='aspectFit'/>
+          <img v-if="selectIndex == 3" :src="ImgList.headerImg03" mode='aspectFit'/>
+          <img v-if="selectIndex == 4" :src="ImgList.headerImg04" mode='aspectFit'/>
+        </div>
     </div>
     <!--header end-->
 
     <div class="AddInfo">
        <div class="left"><img :src="ImgList.ressImg" mode='aspectFit'/></div>
        <div class="right">
-           <div class="name"><text>刘世轩</text><text>15623140205</text></div>
-           <div class="addressInfo">江西省你好世界好世界好世界好世界好世界好世界好世界好世界好世界</div>
+           <div class="name"><text>{{orderDO.shipName}}</text><text>{{orderDO.shipMobile}}</text></div>
+           <div class="addressInfo">{{orderDO.shipAddr}}</div>
        </div>
     </div>
     <!--AddInfo end-->
 
     <div class="OrderList">
         <!-- <div ></div> -->
-          <div class="OrderItem">
+          <div class="OrderItem" v-for="(item,index) in orderDO.item" :index = 'index' :key='item'>
              <Shopaddr :shopname="shopname"></Shopaddr>
              <div class="orderWarp">
-                  <div class="left"><img :src="ImgList.shopImg" /></div>
+                  <div class="left"><img :src="item.image" /></div>
                   <div class="right">
-                    <div class="orderName fontHidden">你好世界你好世界你好世界你好世界你好世界你好世界你好世界你好世界你好世界你好世界</div>
-                    <div class="tagNum"><text class="tag">美观/2kg</text><text>x1</text></div>
-                    <div class="price"><text>￥166.00</text></div>
+                    <div class="orderName fontHidden">{{item.name}}</div>
+                    <div class="tagNum">
+                      <text class="tag"></text><text>x {{item.num}}</text></div>
+                    <div class="price"><text>￥{{item.price}}</text></div>
                   </div>
              </div>
         </div>
@@ -33,14 +44,14 @@
 
     <div class="MaskWarp">
         <div class="MaskItem"><text class=''>运费</text><text>￥0.00</text></div>
-        <div class="MaskItem"><text class=''>积分折扣</text><text>￥52.00</text></div>
-        <div class="MaskItem"><text class=''>优惠券</text><text>￥52.00</text></div>
-        <div class="MaskItem"><text class=''>实付款</text><text class="pri">￥16.00</text></div>
+        <div class="MaskItem"><text class=''>积分折扣</text><text>￥{{orderDO.gainedpoint}}</text></div>
+        <!-- <div class="MaskItem"><text class=''>优惠券</text><text>￥52.00</text></div> -->
+        <div class="MaskItem"><text class=''>实付款</text><text class="pri">￥{{orderDO.goodsAmount}}</text></div>
     </div>
     <!--MaskWarp end-->
 
     <div class="footBtn">
-       <text class="que">确认收货</text>
+       <!-- <text class="que">确认收货</text> -->
     </div>
 
 </div>
@@ -59,15 +70,33 @@ export default {
 
   data () {
     return {
-       ImgList:{headerImg01:config.imgUrl+'/order/header01.png',ressImg:config.imgUrl+'/order/dz.png',shopImg:config.imgUrl+'/cart/shopimg01.jpg'},
-       shopname:'八一店'
+       ImgList:{headerImg01:config.imgUrl+'/order/header01.png',headerImg02:config.imgUrl+'/order/header02.png',
+                headerImg03:config.imgUrl+'/order/header03.png',headerImg04:config.imgUrl+'/order/header04.png',
+                ressImg:config.imgUrl+'/order/dz.png',shopImg:config.imgUrl+'/cart/shopimg01.jpg'},
+       shopname:'八一店',
+       indexdata:'',
+       orderDO:[],
+       selectIndex:1
     }
   },
-  methods:{
+  methods:{ 
+   async onLoads(option){
+      let that = this;
+      that.indexdata = wx.getStorageSync('indexdata')
+      let params = {}
+      params.orderId=option.orderId
+      let res = await api.OrderIntRo(params);
+      that.orderDO = res.data.orderDO
+
+    }
   
   },
-  async onShow() {
  
+    onLoad(option){
+     console.log(option)
+     let that = this;
+     that.selectIndex = option.InfoTypeId
+     that.onLoads(option);
   }
 }
 </script>
@@ -109,6 +138,7 @@ img{
 .MaskItem{@include flexc;justify-content: space-between;padding: 6rpx 0;
    .pri{font-size: 36rpx;color: rgb(251,194,2)}
 }
+
 
 .footBtn{text-align: right;padding: 30rpx 15rpx;
   .que{display: inline-block;padding: 5rpx 25rpx;border-radius: 25rpx;font-size: 28rpx;border:1px solid rgb(251,194,2);color: rgb(251,194,2);}
