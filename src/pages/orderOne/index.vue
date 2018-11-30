@@ -139,7 +139,9 @@ export default {
       shipStatus:1,
       time: '12:01',
       shopListArry:[],
+      shopDetail:{},
       shopArray:[],
+      jifens:'',
       shopName:'',
       shopId:'',
       date:'',
@@ -238,9 +240,7 @@ export default {
      
      //提交按钮
      toast(){
- 
           let that = this;
-                console.log(that.selectIndex,"支付ID")
           let advance = wx.getStorageSync('advances');
           if(that.selectIndex == 1){
             console.log("asd0")
@@ -298,7 +298,7 @@ export default {
                 bean.orderAmount = that.GoodItem.goodsAmount
                 bean.consumepoint = 0
               }
-
+   console.log("查看积分",that.GoodItem.googitem[0].point,that.addr,that.Cart)
               //提交方式不同
               if(that.Cart == 0){
                   bean.memberId = wx.getStorageSync('memberId');
@@ -315,11 +315,11 @@ export default {
                   goodObj.image = that.GoodItem.googitem[0].image
                   goodObj.goodsAmount = that.GoodItem.googitem[0].price * that.GoodItem.googitem[0].num
                   goodObj.productId = that.GoodItem.googitem[0].productId
-                   console.log("查看信息asd",that.GoodItem)
                     bean.googitem[0] = goodObj
-                    bean.point = that.point
+                    bean.point = that.selectIco ? Number(that.point_price*that.indexdata.pointCash).toFixed(0):0
+                    bean.shopId=that.shopDetail.shopId
                     bean.gainedpoint = that.GoodItem.googitem[0].point
-                    console.log("查看积分",that.GoodItem.googitem[0].point)
+                   console.log("4654564nike",that.GoodItem.googitem[0].point)
                     bean.province = that.addr.province
                     bean.city = that.addr.city
                     bean.addr = that.addr.addr
@@ -403,7 +403,7 @@ export default {
       }else{
          console.log("查看支付方式",PayRes,that.PayIndex)
             wx.switchTab({ url: '../myself/main' });
-      }
+      } 
     },
    
 
@@ -424,7 +424,7 @@ export default {
             // orderparms.order = order
             orderParams.orderId = orderId
             orderParams.code = 200
-            orderParams.gainedpoint = that.point
+            orderParams.gainedpoint = that.selectIco ? Number(that.point_price*that.indexdata.pointCash).toFixed(0):0
             orderParams.paymoney = that.GoodItem.goodsAmount
             // parms.parms = JSON.stringify(orderparms)
             api.PaypassOrder(orderParams).then(function(res){
@@ -444,7 +444,6 @@ export default {
                          console.log("商品分润")
                       })
                     }
-                       console.log("进来了吗111",res.data.code)
                  //支付完成后
                  console.log("44564")
                   Lib.Show("支付成功","success",2000)
@@ -479,15 +478,24 @@ export default {
     //使用积分
     jifen(select){
         let that = this;
+   
         if(!select){
           that.selectIco = true
+          console.log(select,"积分三大")
           if(that.GoodItem.goodsAmount - that.point_price <= 0){
+            // that.jifens = that.GoodItem.goodsAmount * 100
+            // console.log("645465",select,that.jifens)
+            that.point_price = that.GoodItem.goodsAmount
+            // that.point_price = 0
+            that.zhenPoint_price = 0
             that.GoodItem.goodsAmount = 0.01
           }else{
-            that.GoodItem.goodsAmount =  that.GoodItem.goodsAmount - that.point_price
+              that.jifens =  that.GoodItem.goodsAmount * 100
+              that.GoodItem.goodsAmount =  that.GoodItem.goodsAmount - that.point_price
           }
         }else if(select){
           that.selectIco = false
+          console.log("真实价格",that.AllPrice)
           that.GoodItem.goodsAmount = that.AllPrice
         }
       },
@@ -537,6 +545,7 @@ export default {
     },
     //跳转
     toAddress(){
+      wx.setStorageSync('cartId',this.Cart)
       wx.setStorageSync('GoodItem',this.GoodItem)
       wx.navigateTo({ url: '../addressList/main' });
     },
@@ -545,15 +554,16 @@ export default {
     let that = this;
     that.shopDetail= wx.getStorageSync('shopDetail')
     // that.GoodItem =JSON.parse(this.$root.$mp.query.gooditem);
-    console.log("显示商品信息",that.GoodItem)
-    that.Cart = this.$root.$mp.query.cart;
+    // console.log("显示商品信息",that.GoodItem)
+    
     that.point = wx.getStorageSync('point')
     that.indexdata = wx.getStorageSync('indexdata')
      
      that.Order();
      that.getTime();
      that.GetShopName();
-     that.AllPrice = that.GoodItem.goodsAmount
+
+    //  console.log("真实价格",that.GoodItem.goodsAmount)
      console.log("商品信息",that.GoodItem)
 
     //判断跳转链接
@@ -571,14 +581,15 @@ export default {
     });
 
     if(prevpage.route=="pages/addressList/main"){
-       console.log("进入了没有123")
-
+        that.Cart = wx.getStorageSync('cartId')
         that.GoodItem = wx.getStorageSync('GoodItem')
         that.addr = wx.getStorageSync('addr')
         that.AddressBtn = false
       }  
       else{
+        that.Cart = this.$root.$mp.query.cart;
         that.GoodItem = JSON.parse(this.$root.$mp.query.gooditem)
+        that.AllPrice = that.GoodItem.goodsAmount
            //判断获取地址
         that.SelectAdder();
       }
