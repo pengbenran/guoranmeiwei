@@ -277,49 +277,61 @@ export default {
 
     //订单提交参数赋值
     OrderUp(){
-      let that = this;
-            let bean = {}
-            let goodObj = {}
-            let orderParms = {}
-              wx.showLoading({
-                title: '请稍等',
-              })
-              // 判断是否使用积分抵扣
-              if (that.selectIco == true) {
-                if (that.GoodItem.goodsAmount - that.point_price <= 0) {
-                  bean.orderAmount = 0.01
-                  bean.consumepoint = parseInt((that.GoodItem.goodsAmount - 0.01) * that.indexdata.pointCash)
-                } else {
-                  bean.orderAmount = that.GoodItem.goodsAmount - that.point_price
-                  bean.consumepoint = that.point
-                }
-              }
-              else {
-                bean.orderAmount = that.GoodItem.goodsAmount
-                bean.consumepoint = 0
-              }
-   console.log("查看积分",that.GoodItem.googitem[0].point,that.addr,that.Cart)
-              //提交方式不同
-              if(that.Cart == 0){
-                  bean.memberId = wx.getStorageSync('memberId');
-                  bean.image = that.GoodItem.googitem[0].image
-                  bean.weight = that.GoodItem.googitem[0].weight * that.GoodItem.googitem[0].num
-                  bean.shippingAmount = 0
-                  bean.googitem = []
-                  goodObj.price = that.GoodItem.googitem[0].price
-                  goodObj.name = that.GoodItem.googitem[0].name
-                  goodObj.num = that.GoodItem.googitem[0].num * 1
-                  goodObj.cart = that.GoodItem.googitem[0].cart
-                  goodObj.goodsId = that.GoodItem.googitem[0].goodsId
-                  goodObj.catId = that.GoodItem.googitem[0].catId
-                  goodObj.image = that.GoodItem.googitem[0].image
-                  goodObj.goodsAmount = that.GoodItem.googitem[0].price * that.GoodItem.googitem[0].num
-                  goodObj.productId = that.GoodItem.googitem[0].productId
-                    bean.googitem[0] = goodObj
-                    bean.point = that.selectIco ? Number(that.point_price*that.indexdata.pointCash).toFixed(0):0
-                    bean.shopId=that.shopDetail.shopId
-                    bean.gainedpoint = that.GoodItem.googitem[0].point
-                   console.log("4654564nike",that.GoodItem.googitem[0].point)
+       let that = this;
+        let bean = {}
+        let goodObj = {}
+        let orderParms = {}
+          wx.showLoading({
+            title: '请稍等',
+          })
+          // 判断是否使用积分抵扣
+          if (that.selectIco == true) {
+            if (that.GoodItem.goodsAmount - that.point_price <= 0) {
+              bean.orderAmount = 0.01
+              bean.consumepoint = parseInt((that.GoodItem.goodsAmount - 0.01) * that.indexdata.pointCash)
+            } else {
+              bean.orderAmount = that.GoodItem.goodsAmount - that.point_price
+              bean.consumepoint = that.point
+            }
+          }
+          else {
+            bean.orderAmount = that.GoodItem.goodsAmount
+            bean.consumepoint = 0
+          }
+console.log("查看积分",that.GoodItem.googitem[0].point,that.addr,that.Cart)
+          //提交方式不同
+          if(that.Cart == 0){
+              bean.memberId = wx.getStorageSync('memberId');
+              bean.image = that.GoodItem.googitem[0].image
+              bean.weight = that.GoodItem.googitem[0].weight * that.GoodItem.googitem[0].num
+              bean.shippingAmount = 0
+              bean.googitem = []
+              goodObj.price = that.GoodItem.googitem[0].price
+              goodObj.name = that.GoodItem.googitem[0].name
+              goodObj.num = that.GoodItem.googitem[0].num * 1
+              goodObj.cart = that.GoodItem.googitem[0].cart
+              goodObj.goodsId = that.GoodItem.googitem[0].goodsId
+              goodObj.catId = that.GoodItem.googitem[0].catId
+              goodObj.image = that.GoodItem.googitem[0].image
+              goodObj.goodsAmount = that.GoodItem.googitem[0].price * that.GoodItem.googitem[0].num
+              goodObj.productId = that.GoodItem.googitem[0].productId
+                bean.googitem[0] = goodObj
+                bean.point = that.selectIco ? Number(that.point_price*that.indexdata.pointCash).toFixed(0):0
+                bean.shopId=that.shopDetail.shopId
+                bean.gainedpoint = that.GoodItem.googitem[0].point
+               console.log("4654564nike",that.GoodItem.googitem[0].point)
+                bean.province = that.addr.province
+                bean.city = that.addr.city
+                bean.addr = that.addr.addr
+                bean.region = that.addr.region
+                bean.shipMobile = that.addr.mobile
+                bean.shipName = that.addr.name
+                bean.addrId = that.addr.addrId
+                bean.clickd = that.InputMask
+                bean.payType = that.PayIndex
+                bean.orderType = 1
+                bean.shipStatus = that.shipStatus
+                if(that.shipStatus == 0){
                     bean.province = that.addr.province
                     bean.city = that.addr.city
                     bean.addr = that.addr.addr
@@ -327,41 +339,29 @@ export default {
                     bean.shipMobile = that.addr.mobile
                     bean.shipName = that.addr.name
                     bean.addrId = that.addr.addrId
-                    bean.clickd = that.InputMask
-                    bean.payType = that.PayIndex
-                    bean.orderType = 1
-                    bean.shipStatus = that.shipStatus
-                    if(that.shipStatus == 0){
-                        bean.province = that.addr.province
-                        bean.city = that.addr.city
-                        bean.addr = that.addr.addr
-                        bean.region = that.addr.region
-                        bean.shipMobile = that.addr.mobile
-                        bean.shipName = that.addr.name
-                        bean.addrId = that.addr.addrId
-                    }else{
-                      var stringTime =that.date+that.time;
-                      var timestamp2 = Date.parse(new Date(stringTime));
-                      bean.takeTimes=timestamp2
-                      bean.addr = that.shopName
-                      bean.shipMobile = that.mobile
-                    }
-                    bean.goodsAmount = that.GoodItem.googitem[0].price * that.GoodItem.googitem[0].num
-                    // bean = JSON.stringify(bean)
-                    // orderParms.order=bean
-                    that.saveOrder(bean)
-              }else{
-                //购物车提交订单
-                  bean.weight = that.weight
-                  bean.gainedpoint = that.gainedpoint
-                  bean.memberId = wx.getStorageSync('memberId');
-                  bean.goodsAmount = that.GoodItem.goodsAmount
-                  bean.shippingAmount = 0
-                  bean.googitem = that.GoodItem.googitem
-                  // bean = JSON.stringify(bean)
-                  // orderParms.order = bean
-                  that.saveOrder(bean)
-              }
+                }else{
+                  var stringTime =that.date+that.time;
+                  var timestamp2 = Date.parse(new Date(stringTime));
+                  bean.takeTimes=timestamp2
+                  bean.addr = that.shopName
+                  bean.shipMobile = that.mobile
+                }
+                bean.goodsAmount = that.GoodItem.googitem[0].price * that.GoodItem.googitem[0].num
+                // bean = JSON.stringify(bean)
+                // orderParms.order=bean
+                that.saveOrder(bean)
+          }else{
+            //购物车提交订单
+              bean.weight = that.weight
+              bean.gainedpoint = that.gainedpoint
+              bean.memberId = wx.getStorageSync('memberId');
+              bean.goodsAmount = that.GoodItem.goodsAmount
+              bean.shippingAmount = 0
+              bean.googitem = that.GoodItem.googitem
+              // bean = JSON.stringify(bean)
+              // orderParms.order = bean
+              that.saveOrder(bean)
+          }
     },
     
     //提交订单并支付
@@ -390,79 +390,80 @@ export default {
       that.ordername = ordername
       let payorderamount = res.data.order.orderAmount
       let payordertime = util.formatTime(new Date(res.data.order.createTime))
-      parms.orderid = orderId
-      parms.sn = that.order.sn
-      parms.total_fee = payorderamount * 100
-
-      //请求支付
-      let PayRes = await api.ConfirmPay(parms,that.code)
-      console.log("查看asdasd",that.PayIndex)
-
       if(that.PayIndex == 1){
           that.wxPay(PayRes,orderId,payordertime)
       }else{
-         console.log("查看支付方式",PayRes,that.PayIndex)
-            wx.switchTab({ url: '../myself/main' });
-      } 
+         that.payReturen()  
+      }
     },
    
 
    //微信支付方法封装
    wxPay(PayRes,orderId,payordertime){
      let that = this;
-      wx.requestPayment({
+      parms.orderid = orderId
+      parms.sn = that.order.sn
+      parms.total_fee = payorderamount * 100
+      //请求支付
+      api.ConfirmPay(parms,that.code).then(function(PayRes){
+        wx.requestPayment({
           timeStamp: PayRes.data.timeStamp, //时间戳从1970年1月1日00:00:00至今的秒数,即当前的时间,
           nonceStr: PayRes.data.nonceStr, //随机字符串，长度为32个字符以下,
           package: PayRes.data.package, //统一下单接口返回的 prepay_id 参数值，提交格式如：prepay_id=*,
           signType: PayRes.data.signType, //签名算法，暂支持 MD5,
           paySign: PayRes.data.paySign, //签名,具体签名方案参见小程序支付接口文档,
           success: res => {
-            util.sendMsg(PayRes.data.package, orderId,payordertime,
-                          that.ordername, that.order.orderAmount)
-
-            let orderParams = {}
-            // orderparms.order = order
-            orderParams.orderId = orderId
-            orderParams.code = 200
-            orderParams.gainedpoint = that.selectIco ? Number(that.point_price*that.indexdata.pointCash).toFixed(0):0
-            orderParams.paymoney = that.GoodItem.goodsAmount
-            // parms.parms = JSON.stringify(orderparms)
-            api.PaypassOrder(orderParams).then(function(res){
-                console.log("保存后台订单",res)
-                if(res.data.code == 0){
-                  console.log("进来了吗",res.data.code,wx.getStorageSync('isAgent'))
-                    //分润
-                     if (wx.getStorageSync('isAgent') != '') {
-                      let fenrunParm = {}
-                      // let params = {}
-                      fenrunParm.memberId = that.memberId
-                      fenrunParm.distribeId = wx.getStorageSync('isAgent')
-                      fenrunParm.monetary = that.GoodItem.goodsAmount
-                      fenrunParm.shareMoney = that.GoodItem[0].fenrunAmount
-                      // params.params = JSON.stringify(fenrunParm)
-                      api.ShareProfit(fenrunParm).then(function(res){
-                         console.log("商品分润")
-                      })
-                    }
-                 //支付完成后
-                 console.log("44564")
-                  Lib.Show("支付成功","success",2000)
-                  setTimeout(function(){
-                    wx.switchTab({ url: '../index/main' });
-                  },1000)
-                }
-              
-        
-            })              
+            util.sendMsg(PayRes.data.package, orderId,payordertime,that.ordername, that.order.orderAmount) 
+            that.payReturen()                             
           },
-           fail: function (res) {
+          fail: function (res) {
                       // fail   
                       console.log(res);
-                       Lib.Show("支付失败","success",2000)
-                 },
-        });
+                      Lib.Show("支付失败","success",2000)
+                    },
+                  });
+      })
+
    },
-   
+   payReturen(){
+    let that=this
+    let orderParams = {}
+    // orderparms.order = order
+    orderParams.orderId = that.order.orderId
+    orderParams.code = 200
+    orderParams.gainedpoint = that.point
+    orderParams.paymoney = that.GoodItem.goodsAmount
+    // parms.parms = JSON.stringify(orderparms)
+    api.PaypassOrder(orderParams).then(function(res){
+      console.log("保存后台订单",res)
+      if(res.data.code == 0){
+        console.log("进来了吗",res.data.code,wx.getStorageSync('isAgent'))
+            //分润
+            if (wx.getStorageSync('isAgent') != '') {
+              let fenrunParm = {}
+              // let params = {}
+              fenrunParm.memberId = that.memberId
+              fenrunParm.distribeId = wx.getStorageSync('isAgent')
+              fenrunParm.monetary = that.GoodItem.goodsAmount
+              fenrunParm.shareMoney = that.GoodItem.shareMoney
+              console.log(fenrunParm)
+              // params.params = JSON.stringify(fenrunParm)
+              api.ShareProfit(fenrunParm).then(function(res){
+               console.log("商品分润")
+             })
+            }
+            console.log("进来了吗111",res.data.code)
+         //支付完成后
+         console.log("44564")
+         Lib.Show("支付成功","success",2000)
+         setTimeout(function(){
+          wx.switchTab({ url: '../index/main' });
+        },1000)
+       }
+
+
+     }) 
+   },
    //获取优惠券
    VoucherUsed(){
      let that = this;
@@ -470,7 +471,7 @@ export default {
      var parmss = JSON.parse(option.parms)
      var orderAmount = parmss.orderAmount
      parms.goodsIds = parmss.goodsIds
-     parms.memberId = memberId
+     parms.memberId = that.memberId
      parms = JSON.stringify(parms)
      let res = api.VoucherUsed()
    },
@@ -548,24 +549,23 @@ export default {
       wx.setStorageSync('cartId',this.Cart)
       wx.setStorageSync('GoodItem',this.GoodItem)
       wx.navigateTo({ url: '../addressList/main' });
-    },
+    }
   },
   onShow(){
     let that = this;
     that.shopDetail= wx.getStorageSync('shopDetail')
+    that.Cart = this.$root.$mp.query.cart;
     // that.GoodItem =JSON.parse(this.$root.$mp.query.gooditem);
     // console.log("显示商品信息",that.GoodItem)
-    
     that.point = wx.getStorageSync('point')
     that.indexdata = wx.getStorageSync('indexdata')
      
      that.Order();
      that.getTime();
      that.GetShopName();
-
+     that.AllPrice = that.GoodItem.goodsAmount
     //  console.log("真实价格",that.GoodItem.goodsAmount)
      console.log("商品信息",that.GoodItem)
-
     //判断跳转链接
     let pages = getCurrentPages();
     let prevpage = pages[pages.length - 2];
@@ -593,8 +593,7 @@ export default {
            //判断获取地址
         that.SelectAdder();
       }
-  }
-    
+  }  
 }
 </script>
 

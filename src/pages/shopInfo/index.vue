@@ -85,11 +85,8 @@
   <div class="ShopCart"  @click="toIndex('/pages/cart/main')"><i class="fa fa-shopping-cart" aria-hidden="true"></i></div>
 
   <Model :GoodsInfo='Goods' 
-         :modelShow='modelShow' 
-         @toCart='toCart' 
-         @toNext='toNext'
-         @Num='Num'
-         @selectSpac='selectSpac'
+         :modelShow='modelShow'
+         :memberId='memberId' 
          @hideModel='hideModel' ref="childs"></Model>
 
   </div>
@@ -115,18 +112,10 @@ export default {
    
   data () {
     return {
-          Area_item:[{AreaName:'湖北'},{AreaName:'江西'}],
-          Weight_item:[{WeightName:'1kg'},{WeightName:'2kg'}],
           modelShow:false,
-          brand:config.imgUrl+'/group/header01.jpg',
-          topImg:config.imgUrl+'/cart/home.jpg',
           ShopTopImg:config.imgUrl+'/shop/shopImg.jpg',
-           ImgList:{home:config.imgUrl+'/group/home.png', kefu:config.imgUrl+'/group/kefu.png',
-                   noshouChang:config.imgUrl+'/group/shoucan.png',shouChang:config.imgUrl+'/group/shoucang.png',
-                   touxiang:config.imgUrl+'/group/touxiang.jpg', btnInfoImg:config.imgUrl+'/group/TionInfo.jpg', 
-                   qiang:config.imgUrl+'/discount/qiang.png',wenhao:config.imgUrl+'/discount/wenhao .png',
-                   fenIco:config.imgUrl+'/shop/fenico.png',wxfen:config.imgUrl+'/shop/wxfen.png',haibao:config.imgUrl+'/shop/haibao.png',
- 
+          ImgList:{home:config.imgUrl+'/group/home.png', kefu:config.imgUrl+'/group/kefu.png',
+                   noshouChang:config.imgUrl+'/group/shoucan.png',shouChang:config.imgUrl+'/group/shoucang.png',fenIco:config.imgUrl+'/shop/fenico.png',wxfen:config.imgUrl+'/shop/wxfen.png',haibao:config.imgUrl+'/shop/haibao.png',
           },
           posts:false,
           maskmodel:false,
@@ -136,14 +125,13 @@ export default {
           Guige:[],
           painting:{},
           shareImage:'',
-          space:'',
           pic:1,
           count:0,
           memberId:'',
           goodsId:'',
           catId:'',
           productId:'',
-          indexdata:{}
+          indexdata:{},
     }
   },
   
@@ -153,34 +141,21 @@ export default {
      let that = this;
      let goodparms = {}
      goodparms.goodsId = that.goodsId
-    //  console.log("商品信息",that.goodsId,that.memberId)
      let res = await api.getGoods(that.goodsId,that.memberId)
-
+     res.data.products=res.data.products.map((item)=>{
+      item.selected=false
+      return item
+     })
+     res.data.products[0].selected=true
+     res.data.Goods.specs=res.data.products[0].name
+     res.data.Goods.products=res.data.products
      that.Gallery = res.data.Gallery;
      that.Goods = res.data.Goods;
-    
-    console.log("你好商品信息",that.Goods)
      if (res.data.count == 0) {
         that.posts= false
       } else {   
         that.posts= true
       }
-      
-    //判断是否开启规格
-    if(res.data.Goods.haveSpec!=0){
-      let Guige= JSON.parse(res.data.Goods.adjuncts)
-      that.Guige = Guige.map(v =>{
-        v.value = v.value.map(s =>{
-            s.selected = false
-            return s
-        })
-        return v
-      })
-    }else{
-      let res = await api.GetProduct(goodparms)
-      that.productId = res.data.product.productId
-      that.Guige = []
-    }
    },
     async collection(){
       let that=this
@@ -210,97 +185,6 @@ export default {
         }
       }
     },
-    
-
-    //加入购物车
-    async toCart(count){
-      let that = this;
-      that.count = count
-      // console.log("购物车触发事件",count)
-      if(wx.getStorageSync('memberId') == "00"){
-       Lib.Show("你还没有登录","success",1000)
-       setTimeout(function(){
-         wx.navigateTo({ url: '/pages/myself/main' });
-       },1000)
-      }else{
-        if(that.Goods.enableStore == 0){
-          Lib.Show("暂无库存","success",1000)
-        }else{
-          let cartparms = {};
-          cartparms.productId = that.productId
-          cartparms.original = that.Goods.thumbnail
-          cartparms.memberId = that.memberId
-          cartparms.goodsId = that.Goods.goodsId,
-          cartparms.itemtype = that.Goods.typeId,
-          cartparms.image = that.Goods.thumbnail
-          cartparms.num = that.pic,
-          cartparms.point = that.Goods.point
-          cartparms.weight = that.Goods.weight,
-          cartparms.name = that.Goods.name,
-          cartparms.price = that.Goods.price
-          cartparms.cart = 1//判断购物车订单
-          console.log("查看购物车信息",cartparms)
-
-           if (that.Goods.haveSpec == 0) {
-             cartparms.specvalue = null;
-             let res = await api.toCartSave(cartparms)
-             Lib.Show("添加成功","success",2000)
-             that.hideModel()
-           }else{
-             cartparms.specvalue = that.space;
-             if (that.count == that.Guige.length) {
-               let res = await api.toCartSave(cartparms)
-               Lib.Show("添加成功","success",1000)
-               that.hideModel()
-             }else{
-               Lib.Show("请选择规格","success",1000)
-             }
-           }
-        }
-      }
-    },
-    
-    //立即购买
-    toNext(){
-      let that = this;
-      if(wx.getStorageSync('memberId') == '00'){
-         let res = Lib.ShopModel("提示","你还未登录,是否登录")
-      }else{
-        if(that.pic > that.Goods.enableStore){
-          Lib.Show("库存不够","success",2000)
-        }else{
-          //定义接收对象
-          var googitem = [];
-          var Goods = {};
-          let GoodsLIst = []
-          let GoodsInfo = that.Goods;
-          let GoodsItem = ''
-          
-          //商品信息赋值
-          GoodsInfo.specvalue = that.space
-          GoodsInfo.cart = '0'
-          GoodsInfo.image = that.Goods.thumbnail
-          GoodsInfo.num = that.pic
-          GoodsInfo.productId = that.productId
-          delete GoodsInfo.intro
-          
-          //封装数据传值
-          GoodsLIst[0] = GoodsInfo
-                    // console.log("你好世界12313212",GoodsInfo,GoodsLIst[0])
-          Goods.googitem = GoodsLIst
-          Goods.gainedpoint = that.pic * that.Goods.point
-          Goods.weight = that.pic * that.Goods.weight
-          Goods.goodsAmount = that.pic * that.Goods.price
-          Goods.shippingAmount = 2
-          GoodsItem = JSON.stringify(Goods)
-
-           if(GoodsLIst == undefined){return}
-            wx.navigateTo({ url: '/pages/orderOne/main?gooditem='+GoodsItem+'&cart=0' });
-
-        }
-      } 
-    },
-
     //点击生成海报
    async eventDraw(){
      let that = this;
@@ -429,32 +313,19 @@ export default {
           this.maskmodel = false
       }
     },
-
-    //商品数量
-    Num(num){
-     let that = this;
-     that.pic = num;
-     console.log("查看数量",num)
-    },
-    
-    //子组件规格
-    selectSpac(space){
-     this.space = space
-    },
-
+ 
     //立即购买淡出模态框
     showModel(index){
      let that = this;
      that.modelShow=true;
      //父组件控制子组件
-     that.$refs.childs.emitEvent(index,that.Guige,that.goodsId,that.productId);
+     that.$refs.childs.emitEvent(index);
     },
 
     hideModel(){
        //是否传值
      let that = this;
      that.modelShow=false;
-     console.log("点击了吗",that.modelShow)
     },
 
    //点击分享按钮
@@ -486,16 +357,14 @@ export default {
   async mounted(){
     let that = this;
     that.indexdata=wx.getStorageSync('indexdata')
-    console.log(that.$refs.childs)
-    console.log(this.$root.$mp.query,"你好世界")
     that.goodsId = this.$root.$mp.query.goodsId;
-    // console.log(this.$root.$mp.query,"你好世界",that.goodsId)
     that.catId =  this.$root.$mp.query.catId;
     that.memberId = wx.getStorageSync('memberId');
-
-    
     //获取商品信息
     that.SelectShopInfo();
+  },
+  onShow(){
+    this.modelShow=false;
   },
     onShareAppMessage: function (res) {
     if (res.from === 'button') {
