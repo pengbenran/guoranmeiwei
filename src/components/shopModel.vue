@@ -9,20 +9,17 @@
            <div class="topLeft"><img :src="GoodsInfo.thumbnail"/></div>
            <div class="topRight">
              <div class="title fontHidden">{{GoodsInfo.name}}</div>
-             <div class="tagInfo">已选 <text>{{space}}</text></div>
+             <div class="tagInfo">已选 <text>{{GoodsInfo.specs}}</text></div>
              <div class="Price"><text>￥{{GoodsInfo.price}}</text><text>库存：{{GoodsInfo.enableStore}}</text></div>
            </div>
          </div>
-         <div class="Area" v-for="(item,Pindex) in Guige" :index='Pindex' :key='item'>
-           <div class="AreaTile"><span class="icoHeight"></span> {{item.specName}}</div>
-           <text v-for="(items,indexs) in item.value" :index='indexs' 
-                                                   :key='items' @click="AreaselectClick(Pindex,indexs)" 
-                                                   :class="items.selected?'active':''">{{items.specvalue}}</text>
+         <div class="Area">
+           <div v-for="(item,Pindex) in GoodsInfo.products" :index='Pindex' :key='item' @click="AreaselectClick(Pindex)" :class="item.selected?'active':''">{{item.name}}</div>
          </div>
           <div class="ModelNum"><text>数量：</text>
              <div class="priceright">
                 <i class="fa fa-minus" aria-hidden="true" @click="Minu()"></i>
-                  <span>{{Num}}</span>
+                  <span>{{pic}}</span>
                 <i class="fa fa-plus" aria-hidden="true" @click="Plus()"></i>
              </div>
           </div>
@@ -38,77 +35,57 @@
  import Lib from "@/utils/lib"
 let api = new Api
 export default {
-  props: ['GoodsInfo','modelShow'],
+  props: ['GoodsInfo','modelShow','memberId'],
   data() {
       return {
               Animation:'',
               AreaselectIndex:0,
               WeightselectIndex:0,
               btnIndex:0,
-              Num:1,
+              pic:1,
               count:0,
               goodsId:0,
               productId:0,
               TagInfo:'',
               space:'',
-              Guige:[]
+              Guige:[],
+              enableStore:'',
+              price:''
       }
   },
   methods: {
      //选中事件
-    async AreaselectClick(Pindex,indexs){
+    async AreaselectClick(Pindex){
          let that = this;
-         let TagInfo =''
-         that.Guige = that.Guige.map((v,index) =>{
-           if(index == Pindex){
-            v.value.map(s =>{
-              s.selected = false
-              return s
-            })
-           }
-           return v
+         that.GoodsInfo.products = that.GoodsInfo.products.map((v) =>{      
+          v.selected = false
+          return v 
          })
-         that.TagInfo = that.TagInfo + that.Guige[Pindex].value[indexs].specvalue;
-         that.Guige[Pindex].value[indexs].selected = true
-         let count = 0;
-         that.Guige.map((v,index) =>{
-            v.value.map(s =>{
-              if(s.selected == true){
-                 count++
-              }
-            })
-         })
-         that.count = count
-
-        
-        console.log("选中参数",count,that.Guige.length,that.Guige)
-         if(count == that.Guige.length){
-             let specValueId = ''
-             let space =''
-             that.Guige.map(v => {
-                v.value.map(s => {
-                  if(s.selected == true){
-                    specValueId = specValueId + s.specValueId
-                    space = space + s.specvalue
-                  }
-                })
-             })
-             that.space = space
-             let goodparms = {}
-             goodparms.goodsId = that.goodsId
-             goodparms.specs = specValueId.slice(0,-1);
-             let res = await api.GetProduct(goodparms)
-             console.log("查看子组件商品信息",res)
-             if(res.data.code == 0){
-               that.productId = res.data.product.productId
-               that.GoodsInfo.price = res.data.product.price
-               that.GoodsInfo.cost = res.data.product.cost
-               that.GoodsInfo.enableStore = res.data.product.enableStore
-             }else{
-               that.GoodsInfo.enableStore = 0
-             }
-              that.$emit('selectSpac',that.space)
-         }
+         // that.TagInfo = that.TagInfo + that.Guige[Pindex].value[indexs].specvalue;
+         that.GoodsInfo.products[Pindex].selected = true  
+         that.GoodsInfo.price=that.GoodsInfo.products[Pindex].price;
+         that.GoodsInfo.enableStore=that.GoodsInfo.products[Pindex].enableStore;
+         that.GoodsInfo.specs=that.GoodsInfo.products[Pindex].name
+             // let specValueId = ''
+             // let space =''
+             // that.Guige.map(v => {
+             //      if(v.selected == true){
+             //        space = space + s.specvalue
+             //      }
+             //    })
+             // that.space = space
+             // let goodparms = {}
+             // goodparms.goodsId = that.goodsId
+             // goodparms.specs = specValueId.slice(0,-1);
+             // let res = await api.GetProduct(goodparms)
+             // if(res.data.code == 0){
+             //   that.productId = res.data.product.productId
+             //   that.GoodsInfo.price = res.data.product.price
+             //   that.GoodsInfo.cost = res.data.product.cost
+             //   that.GoodsInfo.enableStore = res.data.product.enableStore
+             // }else{
+             //   that.GoodsInfo.enableStore = 0
+             // }     
      },
    
      //点击隐藏
@@ -119,13 +96,9 @@ export default {
      },
 
     //父组件触发的方法
-     emitEvent(index,Guige,goodsId,productId){
+     emitEvent(index){
      let that = this;
-     that.space = ''
      that.btnIndex = index;
-     that.goodsId = goodsId
-     that.productId = productId
-     that.Guige = Guige
       let animation = wx.createAnimation({
         duration: 200, timingFunction: 'linear', delay: 100,  transformOrigin: 'left top 0',
           success: function(res) {
@@ -143,30 +116,85 @@ export default {
     },
 
     //点击加入购物车
-    toCart(){
-      this.$emit('toCart',this.count)
+    async toCart(){
+         let that = this;
+         let productsSelect=that.GoodsInfo.products.find((item)=>{
+          if(item.selected){
+            return item
+          }
+        })
+        if(productsSelect.enableStore == 0){
+          Lib.Show("暂无库存","success",1000)
+        }else{
+          let cartparms = {};
+          cartparms.productId =productsSelect.productId
+          cartparms.original = that.GoodsInfo.thumbnail
+          cartparms.memberId = that.memberId
+          cartparms.goodsId = that.GoodsInfo.goodsId
+          cartparms.itemtype = that.GoodsInfo.typeId
+          cartparms.image = that.GoodsInfo.thumbnail
+          cartparms.num = that.pic
+          cartparms.point = that.GoodsInfo.point
+          cartparms.weight = productsSelect.fenrunAmount*that.pic
+          cartparms.name = that.GoodsInfo.name
+          cartparms.price = productsSelect.price
+          cartparms.cart = 1//判断购物车订单
+          cartparms.specvalue = that.GoodsInfo.specs
+          let res = await api.toCartSave(cartparms)
+          Lib.Show("添加成功","success",2000)
+        }
     },
     
     //立即购买
-    toNext(){
-      this.$emit('toNext')
+    async toNext(){
+        let that = this;
+        let productsSelect=that.GoodsInfo.products.find((item)=>{
+          if(item.selected){
+            return item
+          }
+        })
+        if(that.pic > productsSelect.enableStore){
+          Lib.Show("库存不够","success",2000)
+        }else{
+          //定义接收对象
+          var googitem = [];
+          var Goods = {};
+          let GoodsLIst = []
+          let GoodsInfo = that.GoodsInfo;
+          let GoodsItem = ''
+          //商品信息赋值
+          GoodsInfo.specvalue = that.GoodsInfo.specs
+          GoodsInfo.cart = 0
+          GoodsInfo.image = that.GoodsInfo.thumbnail
+          GoodsInfo.num = that.pic
+          GoodsInfo.productId = productsSelect.productId
+          GoodsInfo.price=productsSelect.price
+          delete GoodsInfo.intro
+          //封装数据传值
+          GoodsLIst[0] = GoodsInfo
+                    // console.log("你好世界12313212",GoodsInfo,GoodsLIst[0])
+          Goods.googitem = GoodsLIst
+          Goods.gainedpoint = that.pic * that.GoodsInfo.point
+          Goods.goodsAmount = that.pic * productsSelect.price
+          Goods.shareMoney= productsSelect.fenrunAmount*that.pic
+          Goods.shippingAmount = 2
+          GoodsItem = JSON.stringify(Goods)
+            wx.navigateTo({ url: '/pages/orderOne/main?gooditem='+GoodsItem+'&cart=0' });
+        }
     },
-
     Plus(){
-      this.Num +=1
-      this.$emit('Num',this.Num)
+      this.pic +=1
     },
     Minu(){
-      if(this.Num>0){
-         this.Num -=1
-        this.$emit('Num',this.Num)
+      if(this.pic>0){
+         this.pic -=1
       }
     }
 
   },
   
   mounted(){
-    console.log(this.GoodsInfo,"商品信息")
+    console.log(this.Guige,"商品信息")
   }
 
 }
@@ -196,10 +224,8 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
       .topRight .Price{margin-top: 10rpx;@include flexc;justify-content: space-between;font-size: 24rpx;color: rgb(255,107,79);}
       .topRight .Price text{font-size: 32rpx;}
 
-      .Area{padding: 10rpx 15rpx;
-          .AreaTile{@include flexc;font-weight: 100;padding:20rpx 15rpx;color: #666;font-size: 34rpx;}
-          text{margin: 10rpx 15rpx;padding: 20rpx 35rpx;color: #666;background: rgb(244,244,244);font-size: 30rpx;font-weight: 100;border-radius: 15rpx;}
-          .icoHeight{display: inline-block;height: 40rpx;margin-right: 20rpx;width: 5rpx;background: rgb(255,107,79);}
+      .Area{padding: 10rpx 15rpx;display: flex;flex-wrap:wrap;
+          div{margin: 10rpx 15rpx;padding: 20rpx 35rpx;color: #666;background: rgb(244,244,244);font-size: 30rpx;font-weight: 100;border-radius: 15rpx;}
           .active{color: rgb(253,146,63);border:1px solid rgb(253,146,63);background: #fff;}
       }
       .colse{position: absolute;right: 20rpx;top: -60rpx;color: #fff;font-size: 45rpx;font-weight: 100;}

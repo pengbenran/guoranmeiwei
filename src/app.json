@@ -36,8 +36,7 @@
     "pages/distribefrom/main",
     "pages/distribemoney/main",
     "pages/distribePay/main",
-    "pages/search/main",
-    "pages/orderInfo/main"
+    "pages/search/main"
 
   ],
   "window": {

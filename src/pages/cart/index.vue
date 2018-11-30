@@ -128,10 +128,10 @@ export default {
              googitem.push(v)
              gainedpoint += v.point 
              total  += v.num * v.price;   
-             weight += v.num * v.weight;    
+             weight += v.weight;    
            }
             Goods.googitem = googitem
-            Goods.weight = weight
+            Goods.shareMoney = weight
             Goods.gainedpoint = gainedpoint
             Goods.goodsAmount = goodsAmount
             Goods.shippingAmount = 0

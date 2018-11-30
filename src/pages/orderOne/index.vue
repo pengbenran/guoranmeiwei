@@ -401,8 +401,7 @@ export default {
       if(that.PayIndex == 1){
           that.wxPay(PayRes,orderId,payordertime)
       }else{
-         console.log("查看支付方式",PayRes,that.PayIndex)
-            wx.switchTab({ url: '../myself/main' });
+         that.payReturen()  
       }
     },
    
@@ -418,43 +417,8 @@ export default {
           paySign: PayRes.data.paySign, //签名,具体签名方案参见小程序支付接口文档,
           success: res => {
             util.sendMsg(PayRes.data.package, orderId,payordertime,
-                          that.ordername, that.order.orderAmount)
-
-            let orderParams = {}
-            // orderparms.order = order
-            orderParams.orderId = orderId
-            orderParams.code = 200
-            orderParams.gainedpoint = that.point
-            orderParams.paymoney = that.GoodItem.goodsAmount
-            // parms.parms = JSON.stringify(orderparms)
-            api.PaypassOrder(orderParams).then(function(res){
-                console.log("保存后台订单",res)
-                if(res.data.code == 0){
-                  console.log("进来了吗",res.data.code,wx.getStorageSync('isAgent'))
-                    //分润
-                     if (wx.getStorageSync('isAgent') != '') {
-                      let fenrunParm = {}
-                      // let params = {}
-                      fenrunParm.memberId = that.memberId
-                      fenrunParm.distribeId = wx.getStorageSync('isAgent')
-                      fenrunParm.monetary = that.GoodItem.goodsAmount
-                      fenrunParm.shareMoney = that.GoodItem[0].fenrunAmount
-                      // params.params = JSON.stringify(fenrunParm)
-                      api.ShareProfit(fenrunParm).then(function(res){
-                         console.log("商品分润")
-                      })
-                    }
-                       console.log("进来了吗111",res.data.code)
-                 //支付完成后
-                 console.log("44564")
-                  Lib.Show("支付成功","success",2000)
-                  setTimeout(function(){
-                    wx.switchTab({ url: '../index/main' });
-                  },1000)
-                }
-              
-        
-            })              
+                          that.ordername, that.order.orderAmount) 
+            that.payReturen()            
           },
            fail: function (res) {
                       // fail   
@@ -463,7 +427,44 @@ export default {
                  },
         });
    },
-   
+   payReturen(){
+    let orderParams = {}
+    // orderparms.order = order
+    orderParams.orderId = orderId
+    orderParams.code = 200
+    orderParams.gainedpoint = that.point
+    orderParams.paymoney = that.GoodItem.goodsAmount
+    // parms.parms = JSON.stringify(orderparms)
+    api.PaypassOrder(orderParams).then(function(res){
+      console.log("保存后台订单",res)
+      if(res.data.code == 0){
+        console.log("进来了吗",res.data.code,wx.getStorageSync('isAgent'))
+            //分润
+            if (wx.getStorageSync('isAgent') != '') {
+              let fenrunParm = {}
+              // let params = {}
+              fenrunParm.memberId = that.memberId
+              fenrunParm.distribeId = wx.getStorageSync('isAgent')
+              fenrunParm.monetary = that.GoodItem.goodsAmount
+              fenrunParm.shareMoney = that.GoodItem.shareMoney
+              console.log(fenrunParm)
+              // params.params = JSON.stringify(fenrunParm)
+              api.ShareProfit(fenrunParm).then(function(res){
+               console.log("商品分润")
+             })
+            }
+            console.log("进来了吗111",res.data.code)
+         //支付完成后
+         console.log("44564")
+         Lib.Show("支付成功","success",2000)
+         setTimeout(function(){
+          wx.switchTab({ url: '../index/main' });
+        },1000)
+       }
+
+
+     }) 
+   },
    //获取优惠券
    VoucherUsed(){
      let that = this;
@@ -471,7 +472,7 @@ export default {
      var parmss = JSON.parse(option.parms)
      var orderAmount = parmss.orderAmount
      parms.goodsIds = parmss.goodsIds
-     parms.memberId = memberId
+     parms.memberId = that.memberId
      parms = JSON.stringify(parms)
      let res = api.VoucherUsed()
    },
@@ -544,8 +545,6 @@ export default {
   onShow(){
     let that = this;
     that.shopDetail= wx.getStorageSync('shopDetail')
-    // that.GoodItem =JSON.parse(this.$root.$mp.query.gooditem);
-    console.log("显示商品信息",that.GoodItem)
     that.Cart = this.$root.$mp.query.cart;
     that.point = wx.getStorageSync('point')
     that.indexdata = wx.getStorageSync('indexdata')
@@ -554,8 +553,6 @@ export default {
      that.getTime();
      that.GetShopName();
      that.AllPrice = that.GoodItem.goodsAmount
-     console.log("商品信息",that.GoodItem)
-
     //判断跳转链接
     let pages = getCurrentPages();
     let prevpage = pages[pages.length - 2];
