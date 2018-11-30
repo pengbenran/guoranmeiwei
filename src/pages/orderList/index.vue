@@ -31,10 +31,10 @@
           <div class="warpBtn" v-show="btnSelect!=0">
             <div class="Btn" v-show='btnSelect==1'>
               <text class="btn1" @click="CancelOrder('取消订单',orderItem.orderId,index)">取消订单</text>
-              <text class="btn2" @click="Payoff('确认付款',orderItem.orderId,index,orderItem.status,orderItem.needPayMoney,orderItem.sn)">{{orderItem.sn}}确认付款</text>
+              <text class="btn2" @click="Payoff('确认付款',orderItem.orderId,index,orderItem.status,orderItem.needPayMoney,orderItem.sn)">确认付款</text>
             </div>
             <div class="Btn" v-show='btnSelect==2'>
-              <text @click="SelectOrder(index,orderItem.orderId)" class="btn2">查看订单</text>
+              <text @click="SelectOrder(orderItem.orderId)" class="btn2">查看订单</text>
             </div>
             <div class="Btn" v-show='btnSelect==3'>
               <text class="btn1" @click="SelectOrder(orderItem.orderId)">查看订单</text>
@@ -167,7 +167,7 @@ export default {
               var nonceStr = pay.nonceStr;
               console.log("nonceStr:" + nonceStr)
               var param = { "timeStamp": timeStamp, "package": packages, "paySign": paySign, "signType": "MD5", "nonceStr": nonceStr };
-              that.Pay(param)
+              that.Pay(param,index)
             })
           }
         },
@@ -213,6 +213,7 @@ export default {
 
     //查看订单
     SelectOrder(orderId){
+      console.log("检查",orderId)
       let that = this;
       wx.redirectTo({ url: '../orderInfo/main?orderId='+orderId+'&InfoTypeId='+that.btnSelect });
     },
@@ -275,11 +276,14 @@ export default {
       },
 
      //支付
-     Pay(param){
+     Pay(param,index){
        let that = this;
         var parms = {}
         var order = {}
         var code = 200
+        
+        console.log("你好世界sad",that.orderList[index],that.orderId,that.orderList[index].orderId) 
+
         var orderId = that.orderId
         order.orderId = orderId
         parms.order = order
@@ -292,13 +296,40 @@ export default {
                 signType: param.signType,
                 paySign: param.paySign,
                 success: res =>{
-                console.log("支付")
-                // 回退前 delta(默认为1) 页面  ,4为首页 
-                Lib.Show("支付成功","success",1000)
-                api.PaypassOrder(parms).then(function(res){
-                  console.log("支付流程走完")
-                })
-                wx.switchTab({ url: '../myself/main' });
+                    let orderParams = {}
+                    orderParams.orderId = that.orderList[index].orderId
+                    orderParams.code = 200
+                    orderParams.gainedpoint = that.orderList[index].gainedpoint
+                    orderParams.paymoney = that.orderList[index].orderAmount
+           
+                  api.PaypassOrder(orderParams).then(function(res){
+                      console.log("保存后台订单",res)
+                      if(res.data.code == 0){
+                          //分润
+                          if (wx.getStorageSync('isAgent') != '') {
+                            let fenrunParm = {}
+                            // let params = {}
+                            fenrunParm.memberId = that.memberId
+                            fenrunParm.distribeId = wx.getStorageSync('isAgent')
+                            fenrunParm.monetary = that.orderList[index].orderAmount
+                            fenrunParm.shareMoney = that.GoodItem[0].fenrunAmount
+                            // params.params = JSON.stringify(fenrunParm)
+                            api.ShareProfit(fenrunParm).then(function(res){
+                              console.log("商品分润")
+                            })
+                          }
+
+                          //支付完成后
+                          that.orderList = [] //清空存储数据下次进入重新加载
+                          console.log("已经到这了",that.orderList)
+                          Lib.Show("支付成功","success",1000)
+                          
+                          setTimeout(function(){
+                             wx.switchTab({ url: '../myself/main' });
+                          },1000)
+                      
+                      }
+                  })   
            }
         })
      },

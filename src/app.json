@@ -1,7 +1,6 @@
 {
   "pages": [ 
     "pages/index/main",
-    "pages/orderInfo/main",
     "pages/helpdiscount/main",
     "pages/myself/main",
     "pages/groupitem/main",
@@ -36,8 +35,9 @@
     "pages/distribefrom/main",
     "pages/distribemoney/main",
     "pages/distribePay/main",
-    "pages/search/main"
-
+    "pages/search/main",
+    "pages/orderInfo/main",
+    "pages/Selflifting/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
