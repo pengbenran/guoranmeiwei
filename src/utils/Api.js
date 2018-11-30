@@ -701,10 +701,18 @@ export default class Api{
         //订单详情
         OrderIntRo(params){
           return new Promise((resolve, reject) =>{
-            console.log("你好世界")
             let OrderIntRo = this.fly.get(this.baseUrl +'/api/order/orderIntRo',{params:JSON.stringify(params)})
             resolve(OrderIntRo)
           }) 
         }
+
+          //订单详情
+          SlfLifting(memberId){
+            return new Promise((resolve, reject) =>{
+              let SlfLifting = this.fly.get(this.baseUrl +'/api/order/slfLifting',{memberId:memberId})
+              resolve(SlfLifting)
+            }) 
+          }
+  
 
 }

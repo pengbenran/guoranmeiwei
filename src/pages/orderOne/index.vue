@@ -136,7 +136,7 @@ export default {
       PayBool:false,
       shopNameIndex:0,
       PayIndex:1,
-      shipStatus:1,
+      shipStatus:3,
       time: '12:01',
       shopListArry:[],
       shopDetail:{},
