@@ -21,7 +21,7 @@
           </picker>
       </div>
     </div>
-  <!-- ZitiTime end -->
+  <!-- ZitiTime end --> 
 
     <div class="AddressWarp" v-show='selectIndex==2'>
       <div class="AddressBtn" v-if="AddressBtn" @click="toAddress">
@@ -32,10 +32,10 @@
               <div class="itemLeft">收货人</div>
               <div class="itemRight"><text>{{addr.name}}</text><text>{{addr.mobile}}</text></div>
           </div>
-            <div class="Address-item">
-              <div class="itemLeft">收货地址</div>
-              <div class="itemRight">{{addr.addr}}</div>
-          </div>
+          <div class="Address-item">
+            <div class="itemLeft">收货地址</div>
+            <div class="itemRight">{{addr.addr}}</div>
+        </div>
       </div>
      </div>
       <!--Address end-->
@@ -65,8 +65,6 @@
         <div class="MaskItem"><text>备注:</text><input type="text" v-model="InputMask" placeholder="填写你想和商家想说的" placeholder-style='font-size:26rpx;font-weight: 100;color:#8e8e8e;'></div>
     </div>
     <!--OrderMask end-->
-
-    
 
     <div class="PayType">
       <div class="PayItemTitle">支付方式</div>
@@ -331,13 +329,13 @@ console.log("查看积分",that.GoodItem.googitem[0].point,that.addr,that.Cart)
                 bean.payType = that.PayIndex
                 bean.orderType = 1
                 bean.shipStatus = that.shipStatus
+                bean.shipName   = wx.getStorageSync('uname');
                 if(that.shipStatus == 0){
                     bean.province = that.addr.province
                     bean.city = that.addr.city
                     bean.addr = that.addr.addr
                     bean.region = that.addr.region
                     bean.shipMobile = that.addr.mobile
-                    bean.shipName = that.addr.name
                     bean.addrId = that.addr.addrId
                 }else{
                   var stringTime =that.date+ ' ' + that.time;
@@ -461,8 +459,6 @@ console.log("查看积分",that.GoodItem.googitem[0].point,that.addr,that.Cart)
           wx.switchTab({ url: '../index/main' });
         },1000)
        }
-
-
      }) 
    },
    //获取优惠券
