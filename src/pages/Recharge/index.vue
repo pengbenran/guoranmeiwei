@@ -11,7 +11,6 @@
     </div>
     <!--List end-->
     <div class="shopName">
-      
       <picker @change="bindPickerChange" :value="shopName" :range="shopArray">
         <div class="picker">
           <span>充值门店:</span><span>{{shopName}}</span>
@@ -99,6 +98,9 @@ export default {
                             title: '充值成功',
                             icon: 'success',
                             duration: 2000
+                          })
+                          wx.switchTab({
+                            url: '../myself/main',
                           })
                         }
                       })

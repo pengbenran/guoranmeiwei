@@ -16,9 +16,9 @@
                 <!-- <span>￥{{Shop_List.p2}}</span> -->
               </div>
              <div class="priceright">
-                <i class="fa fa-minus" aria-hidden="true" @click="Minu(index,Shop_List.cartId)"></i>
-                  <span>{{Shop_List.num}}</span>
-                <i class="fa fa-plus" aria-hidden="true" @click="Plus(index,Shop_List.cartId)"></i>
+                <span class="icon"><img src="/static/images/add.png"  @click="Minu(index,Shop_List.cartId)"></span>
+                <span class="num">{{Shop_List.num}}</span>
+                <span class="icon"  @click="Plus(index,Shop_List.cartId)"><img src="/static/images/dec.png"></span>          
              </div>
           </div>
        </div>
@@ -127,7 +127,11 @@ export default {
 @mixin flexc{
 display: flex;align-items: center;
 }
-
+img{
+  width: 100%;
+  height: 100%;
+  display: block;
+}
 /*文本换行省略*/
 @mixin fontM{
 white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
@@ -155,8 +159,8 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
      span{font-size: 26rpx;font-weight: 100;color: #8e8e8e;text-decoration:line-through}
    }
    .priceright{background:#e7e7e7;@include flexc;height: 48rpx;
-     i{color: #fff;display: inline-block;width: 48rpx;height: 30rpx;line-height: 30rpx;text-align: center;font-weight: 100;font-size: 28rpx;}
-     span{background: #fff;height: 40rpx;line-height: 40rpx;color: rgb(248,193,92);display: inline-block;padding:0 15rpx;font-size: 28rpx;}
+     .icon{color: #fff;display: inline-block;width: 48rpx;height: 48rpx;overflow: hidden;padding:10rpx;box-sizing: border-box;}
+     .num{background: #fff;height: 40rpx;line-height: 40rpx;color: rgb(248,193,92);display: inline-block;padding:0 15rpx;font-size: 28rpx;}
    }
 }
 </style>

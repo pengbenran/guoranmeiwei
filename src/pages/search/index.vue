@@ -21,9 +21,11 @@
            <div class="title"> 你好世界你好世界你好世界你好世界你好世界你好世界你好世界</div>
            <div class="Price"><text>￥169.00</text><text>销量：235</text></div>
        </div> -->
-      <div class="item" v-for='(item,index) in ShopList' :index='index' :key="item">
+      <div class="item" v-for='(item,index) in ShopList' :index='index' :key="item" @click="jumpGooddetail(item.goodsId)">
            <div class="ItemImg"><img :src="item.thumbnail" mode='aspectFit'/></div>
-           <div class="title fontHidden"> {{item.name}}</div>
+           <div class="title">
+            <div class="fontHidden">{{item.name}}</div>
+           </div>
            <div class="Price"><text class="Pri">￥{{item.price}}</text><text class="info">销量：{{item.buyCount}}</text></div>
        </div>
 
@@ -57,7 +59,9 @@ export default {
      let res = await api.GetSearchList()
      that.random = res.data.random
    },
-
+    jumpGooddetail(goodsId){
+       wx.navigateTo({ url: '/pages/shopInfo/main?goodsId='+goodsId });
+    },
    //点击搜索
    async BtnSearch(){
      let that = this;
@@ -123,8 +127,8 @@ img{
 
 
 
-.Lsit{display: flex;align-items: center;justify-content: space-between;font-weight: 100;
-  .item{width: 49%;background: #fff;}
+.Lsit{display: flex;align-items: center;justify-content: space-between;font-weight: 100;flex-wrap:wrap;
+  .item{width: 49%;background: #fff;margin-bottom: 10rpx;}
   .ItemImg{height: 280rpx;padding: 25rpx;}
   .item .title{font-size: 30rpx;color: #666; height: 80rpx;padding: 10rpx;}
 }

@@ -1,10 +1,13 @@
 <template>
   <div class="bargain">
-   <div class="header">
+     <div class="banner" v-if="Gallery.length==1">
+      <img :src="Gallery[0].imageUrl"  mode="widthFix">
+    </div>
+    <div class="header" v-if="Gallery.length!=1">
      <swiper class="swiper" indicator-dots='true' autoplay='true'>
-      <swiper-item v-for="(item,index) in Gallery" :key="item" :index="index"><img :src="item.imageUrl"></swiper-item>
+      <swiper-item v-for="(item,index) in Gallery" :key="item" :index="index"><img :src="item.imageUrl" mode="widthFix"></swiper-item>
     </swiper>
-  </div>  
+  </div> 
   <scroll-view scroll-y bindscrolltolower="loadMore">
     <Discountlist :Shop_item='apiLimit' :hasmore='hasMore'></Discountlist>
   </scroll-view> 

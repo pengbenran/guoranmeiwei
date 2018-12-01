@@ -53,8 +53,14 @@ export default {
     async Signin(){
       let that=this
       if (that.signStatus == 1){
+       wx.showLoading({
+          title: '请稍等',
+        })
       let signinRes=await api.Signin(that.memberId,1)
-      if(signStatus.data.code==1){
+       wx.hideLoading()
+       console.log(signinRes.data)
+      if(signinRes.data.code==0){
+        that.getPoint()
         wx.showToast({
           title: '签到成功',
           icon: 'none',
@@ -69,18 +75,22 @@ export default {
           duration: 1000
         })
       }
+    },
+    async getPoint(){
+      let that=this
+      let pointRes=await api.getPoint(that.memberId)
+      that.point=pointRes.data.mp;    
+      that.signStatus=pointRes.data.signStatus;
+      that.pointSign=pointRes.data.pointSign.map((item)=>{
+        item.signTime=formatTime.formatTime(item.signTime)
+        return item
+      })
     }
   },
-  async onLoad(){
+  onLoad(){
     let that=this
     that.memberId = wx.getStorageSync('memberId')
-    let pointRes=await api.getPoint(that.memberId)
-    that.point=pointRes.data.mp;
-    that.signStatus=pointRes.data.signStatus;
-    that.pointSign=pointRes.data.pointSign.map((item)=>{
-      item.signTime=formatTime.formatTime(item.signTime)
-      return item
-    })
+    that.getPoint()
   }
 }
 </script>

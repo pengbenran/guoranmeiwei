@@ -100,7 +100,9 @@ export default {
      let memberId= wx.getStorageSync('memberId');
      that.memberId=memberId;  //设置memberId
      let userInfoRes= await api.getMemberInfo(memberId)
+
      that.userInfo=userInfoRes.data.memberDO
+     wx.setStorageSync('advances',that.userInfo.advance)
     //  wx.setStorageSync('UserInfo',userInfoRes.data.memberDO,)
      
      that.orderitem[0].statuscount=userInfoRes.data.statuscount

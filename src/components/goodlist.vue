@@ -11,12 +11,12 @@
           </div>
           <div class="intro">
             <!-- {{item.intro}} -->
-            {{item.moneyOffName}}
+           <span>销量:{{item.buyCount}}</span> 
           </div>
         </div>
         <div class="goodbottom"> 
           <div class="goodprice"> 
-            {{item.price}}
+            ￥{{item.price}}
           </div>
           <div class="icon">
             <img :src="addImg">
@@ -69,6 +69,9 @@ img{
     height: 250rpx;
     padding-left: 20rpx;
     .goodtop{
+     display: flex;
+     flex-direction:column;
+     justify-content: space-between;
       height: 180rpx;
      .goodname{
        display: -webkit-box;
@@ -80,6 +83,8 @@ img{
         -webkit-line-clamp: 2;
       }
       .intro{
+        height: 80rpx;
+        line-height: 80rpx;
         font-size: 0.8em;
         color:#999;
       }

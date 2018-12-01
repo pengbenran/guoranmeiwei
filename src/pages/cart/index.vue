@@ -1,6 +1,6 @@
 <template>
   <div class="Cart">
-    <Shopaddr :shopname="shopname"></Shopaddr>
+    <Shopaddr :shopname="shopDetail.shopName"></Shopaddr>
       <div class="ShopHeader"><text>购物车</text><text @click="Edits">{{EditsName}}</text></div>
      <CartList :ShopList='ShopLists' @onSelect='SeleAllPrice' ref="childs"></CartList>
      <!--shopList end-->
@@ -33,14 +33,14 @@ export default {
 
   data () {
     return {
-     ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg'},
-     shopname:"王小姐水果店(抚生路点)",
+     ImgList:{topImg:config.imgUrl+'/cart/home.jpg'},
      memberId:'',
      ShopLists:[],
      SelectBool:false,
      AllPrice:0,
      BtnDelete:false,
-     EditsName:'编辑'
+     EditsName:'编辑',
+     shopDetail:{}
     }
   },
   //事件
@@ -163,6 +163,7 @@ export default {
    let that = this;
    that.memberId = wx.getStorageSync('memberId');
    that.onLoads();
+   this.shopDetail=wx.getStorageSync('shopDetail')
   },
 }
 </script>

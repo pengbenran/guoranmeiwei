@@ -7,8 +7,8 @@
     <div class="skeleton">
       <!-- <div class="heightDiv"></div> -->
       <div class="header"  @click="toPage('../search/main')">
-        <div class="search skeleton-rect"><i class="fa fa-search " aria-hidden="true"></i>
-          <input class="skeleton-rect"  placeholder="王小贱鲜果零食优选"  style-placeholder='color:#ccc;font-weight: 100;'/>
+        <div class="search">
+          <span><img src="/static/images/search.png"></span>王小贱鲜果零食优选
         </div>
       </div>
       <!--header end-->
@@ -281,11 +281,11 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
 
 img{display: block;width: 100%;height: 100%}
 .heightDiv{height: 48rpx;}
- .header{padding: 10rpx 0 28rpx;border-bottom: 10rpx solid rgb(243,243,243);
-   .search{@include flexc;width: 95%;height: 65rpx;margin: auto;background: #f5f5f5;border-radius: 35rpx;font-weight: 100;font-size: 30rpx;}
-   .search i{font-weight: 100;color: #ccc;width: 18%;text-align: center;}
-   .search input{width: 82%;
- }
+.header{padding: 10rpx 0 28rpx;border-bottom: 10rpx solid rgb(243,243,243);
+  .search{
+    img{width: 40rpx;height: 40rpx;vertical-align:middle;
+   display:inline-block;}
+    width: 100%;height: 65rpx;background: #f5f5f5;border-radius: 35rpx;font-weight: 100;font-size: 30rpx;text-align: center;line-height: 65rpx;}
 }
 
  .tips{
@@ -402,7 +402,7 @@ img{display: block;width: 100%;height: 100%}
     white-space: nowrap;
 }
 
-.tag{display: inline-block;width: 60rpx;}
+.tag{display: inline-block;width: 70rpx;}
 
 </style>
 

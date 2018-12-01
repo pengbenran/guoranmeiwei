@@ -52,7 +52,7 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
 }
 img{display: block;height: 100%;width: 100%;}
 .header{
-.swiper{height: 380rpx;}
+
 }
 
 

@@ -6,7 +6,9 @@
        <img :src="item.thumbnail" />
      </div>
      <div class="right">
-       <div class="title fontHidden">{{item.goodsName}}</div>
+       <div class="title">
+          <div class="fontHidden">{{item.goodsName}}</div>  
+        </div>
        <div class="mask">{{item.limitName}}</div>
        <div class="price">
          <div class="priceLeft ">￥<text class="newPrice">{{item.finalAmount}}</text><text class="oldPrice">{{item.goodsPrice}}</text></div>
@@ -58,12 +60,15 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
 }
 .item-warp,.price{@include flexc}
 
-.item{padding: 10rpx 16rpx;border-bottom: 3px solid rgb(247,247,247);
-    .left{width: 35%}
+.item{padding: 10rpx 16rpx;border-bottom: 3px solid rgb(247,247,247); box-sizing: border-box;
     .left img{width: 230rpx;height: 230rpx;margin: auto}
-    .right{width: 65%;padding-right: 20rpx;}
+    .right{padding-right: 20rpx;height: 100%;padding-left: 20rpx;box-sizing: border-box;}
     .mask{font-size: 26rpx;color: rgb(255,128,104);font-weight: 100;}
-    .title{height: 102rpx;font-weight: 100;font-size: 30rpx;color: #8e8e8e;}
+    .title{height: 130rpx;font-weight: 100;font-size: 30rpx;color: #8e8e8e;display: block;width: 450rpx;
+       div{
+        line-height: 1.5;
+       }
+      }
     .price{@include flexc;justify-content: space-between;}
     .priceLeft{font-size: 30rpx;font-weight: 100;color: rgb(252,78,79);}
     .priceLeft .newPrice{font-size: 36rpx;margin-right: 10rpx;}
