@@ -5,6 +5,7 @@
      <CartList :ShopList='ShopLists' @onSelect='SeleAllPrice' ref="childs" v-if="length != 0"></CartList>
      <div class="Kong"  v-if="length == 0">
        <img :src="ImgList.KongImg" mode='aspectFit'/>
+            <div class="Konginfo">购物车空空如也~~~</div>
      </div>
      <!--shopList end-->
      <div class="DivHeigt"></div>
@@ -202,6 +203,8 @@ img{display: block;height: 100%;width: 100%;}
     .price{height: 95rpx;line-height: 95rpx;margin-right: 15rpx;}
     .btn{background-image: -webkit-linear-gradient(0deg, rgb(255,191,3), rgb(252,148,53));height: 95rpx;line-height: 95rpx; width: 180rpx;text-align: center;color: #fff;}
 }
-.Kong{height: 450rpx;}
+.Kong{height: 450rpx;
+   .Konginfo{text-align: center;font-weight: 100;color: rgb(234,89,95);}
+}
 
 </style>

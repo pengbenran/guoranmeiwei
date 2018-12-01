@@ -48,6 +48,7 @@
       </div>
       <div class="kong" v-if="length == 0">
         <img :src="kong" mode='aspectFit'/>
+        <div class="Konginfo">订单空空如也~~~</div>
       </div>
       <!--shopList end-->
       
@@ -439,7 +440,9 @@ img{display: block;height: 100%;width: 100%;}
    .topImg{height: 35rpx;width: 35rpx;margin-left: 10rpx;margin-right: 10rpx;}
    small{display: inline-block;margin-left: 6rpx;color: rgb(236,189,87);}
 }
-.kong{height: 350rpx;}
+.kong{height: 350rpx;
+  .Konginfo{text-align: center;font-weight: 100;color: rgb(234,89,95);}
+}
 
 
 </style>

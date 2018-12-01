@@ -324,21 +324,23 @@ export default {
         bean.shipStatus=that.shipStatus
         bean.shopId=that.shopDetail.shopId
         bean.payType = that.PayIndex
+        bean.shipName   = wx.getStorageSync('uname');
+
         if(that.shipStatus==0){
          bean.province = that.addr.province
          bean.city = that.addr.city
          bean.addr = that.addr.addr
          bean.region = that.addr.region
          bean.shipMobile = that.addr.mobile
-         bean.shipName = that.addr.name
          bean.addrId = that.addr.addrId
         }
         else{
-         var stringTime =that.date+that.time;
-         var timestamp2 = Date.parse(new Date(stringTime));
-         bean.takeTimes=timestamp2
-         bean.addr = that.shopName
-         bean.shipMobile = that.mobile
+          var stringTime =that.date+ ' ' + that.time;
+          var timestamp2 = Date.parse(new Date(stringTime));
+          bean.takeTimes=timestamp2
+          bean.takeAddr = that.shopName
+          bean.addr = that.shopName
+          bean.shipMobile = that.mobile
         } 
         bean.clickd = that.msg  
         if(that.Type=="K"){
