@@ -1,6 +1,6 @@
 <template>
   <div class="shopList">
-    <div class="fenIco" @click="fenclick(true)"><img :src="ImgList.fenIco"/></div>
+    <div class="fenIco" @click="fenclick(true)"><img :src="ImgList.fenIco" mode='aspectFit'/></div>
     <div class="header">
         <swiper class="swiper" indicator-dots='true' autoplay='true'>
           <swiper-item v-for="(item,index) in Gallery" :index='index' :key='item'><img :src="item.original"></swiper-item>
@@ -46,9 +46,14 @@
           <text>收藏</text></div>
        </div>
        <div class="right">
-         <div class="btnWarp">
-            <text @click="showModel(2)">加入购物车</text><span></span><text @click="showModel(1)">立即购买</text>
-         </div>
+          <form @submit="FromModal" report-submit="true"> 
+            <div class="btnWarp">
+
+            <button  @click="showModel(2)" form-type="submit">加入购物车</button ><span></span>
+            <button  @click="showModel(1)"  form-type="submit">立即购买</button >
+
+            </div>
+          </form>
        </div>
      </div>
      <!--footerBnt end-->
@@ -82,7 +87,7 @@
     </div>
   <!--modelcard end-->
 
-  <div class="ShopCart"  @click="toIndex('/pages/cart/main')"><i class="fa fa-shopping-cart" aria-hidden="true"></i></div>
+  <div class="ShopCart"  @click="toIndex('/pages/cart/main')"><img src="/static/images/cart.png" /></div>
 
   <Model :GoodsInfo='Goods' 
          :modelShow='modelShow'
@@ -115,7 +120,7 @@ export default {
           modelShow:false,
           ShopTopImg:config.imgUrl+'/shop/shopImg.jpg',
           ImgList:{home:config.imgUrl+'/group/home.png', kefu:config.imgUrl+'/group/kefu.png',
-                   noshouChang:config.imgUrl+'/group/shoucan.png',shouChang:config.imgUrl+'/group/shoucang.png',fenIco:config.imgUrl+'/shop/fenico.png',wxfen:config.imgUrl+'/shop/wxfen.png',haibao:config.imgUrl+'/shop/haibao.png',
+                   noshouChang:config.imgUrl+'/group/shoucan.png',shouChang:config.imgUrl+'/group/shoucang.png',fenIco:config.imgUrl+'/myself/fenxiang.png',wxfen:config.imgUrl+'/shop/wxfen.png',haibao:config.imgUrl+'/shop/haibao.png',
           },
           posts:false,
           maskmodel:false,
@@ -313,6 +318,15 @@ export default {
           this.maskmodel = false
       }
     },
+
+    //存储fromId
+    async FromModal(e){
+      // console.log("46454656666",e)
+      let that = this;
+      let memberId = wx.getStorageSync('memberId');
+      let fromid = e.mp.detail.formId
+      let res = await api.SaveFormid(memberId,fromid)
+    },
  
     //立即购买淡出模态框
     showModel(index){
@@ -425,12 +439,13 @@ img{display: block;height: 100%;width: 100%;}
   .left text{color: rgb(117,117,117);font-size: 28rpx;font-weight: 100;}
   .right{width: 55%;}
   .btnWarp{background-image: -webkit-linear-gradient(0deg,rgb(252,148,53), rgb(255,191,3));border-radius: 45rpx;height: 75rpx;line-height: 75rpx;}
-  .btnWarp text{font-size: 32rpx;color: #fff;font-weight: 100;padding: 0 15rpx;}
+  .btnWarp button{font-size: 32rpx;color: #fff;font-weight: 100;padding: 0 15rpx;background: rgba(255, 255, 255, 0)}
+  .btnWarp button::after{border: none;}
   .btnWarp span{width: 2rpx;height: 35rpx;background-color: #fff;}
 }
 
-.fenIco{position: absolute;right: 15rpx;top: 15rpx;z-index: 2;border-radius: 50%;
-  img{height: 55rpx;width: 55rpx;}
+.fenIco{position: absolute;right: -38rpx;top: 15rpx;z-index: 2;border-radius: 50%;
+  img{height: 80rpx;width: 195rpx;}
 }
 
 .footerMode{position:fixed;top: 0;left: 0;height: 100vh;width: 100%;
@@ -457,8 +472,8 @@ img{display: block;height: 100%;width: 100%;}
   .modelbtn{width: 230rpx;color: #ff7903}
 }
 
-.ShopCart{position: fixed;right: 0;bottom: 180rpx;text-align: center;width: 60rpx;height: 60rpx;line-height: 60rpx;background:rgba(0, 0, 0, 0.103);border-radius: 50%;
-   i{color: #fff;}
+.ShopCart{position: fixed;right: 0;bottom: 180rpx;text-align: center;width: 40rpx;height: 40rpx;padding: 15rpx;line-height: 40rpx;background:rgba(0, 0, 0, 0.103);border-radius: 50%;
+
 }
 
 

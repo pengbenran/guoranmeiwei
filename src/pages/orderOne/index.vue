@@ -319,7 +319,7 @@ console.log("查看积分",that.GoodItem.googitem[0].point,that.addr,that.Cart)
                 bean.point = that.selectIco ? Number(that.point_price*that.indexdata.pointCash).toFixed(0):0
                 bean.shopId=that.shopDetail.shopId
                 bean.gainedpoint = that.GoodItem.googitem[0].point
-               console.log("4654564nike",that.GoodItem.googitem[0].point)
+   
                 bean.province = that.addr.province
                 bean.city = that.addr.city
                 bean.addr = that.addr.addr
@@ -340,8 +340,10 @@ console.log("查看积分",that.GoodItem.googitem[0].point,that.addr,that.Cart)
                     bean.shipName = that.addr.name
                     bean.addrId = that.addr.addrId
                 }else{
-                  var stringTime =that.date+that.time;
+                  var stringTime =that.date+ ' ' + that.time;
                   var timestamp2 = Date.parse(new Date(stringTime));
+
+                  console.log("输出时间",timestamp2,stringTime)
                   bean.takeTimes=timestamp2
                   bean.addr = that.shopName
                   bean.shipMobile = that.mobile
@@ -372,9 +374,7 @@ console.log("查看积分",that.GoodItem.googitem[0].point,that.addr,that.Cart)
       if(res.data.code == 0){
         Lib.Show("订单提交成功","success",2000)
       }
-      let parms = {}
       that.order = res.data.order
-       
        //暂无判断优惠券红包
        let orderId = res.data.order.orderId
        let ordername =''
@@ -391,7 +391,7 @@ console.log("查看积分",that.GoodItem.googitem[0].point,that.addr,that.Cart)
       let payorderamount = res.data.order.orderAmount
       let payordertime = util.formatTime(new Date(res.data.order.createTime))
       if(that.PayIndex == 1){
-          that.wxPay(PayRes,orderId,payordertime)
+          that.wxPay(orderId,payordertime,payorderamount)
       }else{
          that.payReturen()  
       }
@@ -399,8 +399,9 @@ console.log("查看积分",that.GoodItem.googitem[0].point,that.addr,that.Cart)
    
 
    //微信支付方法封装
-   wxPay(PayRes,orderId,payordertime){
+   wxPay(orderId,payordertime,payorderamount){
      let that = this;
+     let parms ={}
       parms.orderid = orderId
       parms.sn = that.order.sn
       parms.total_fee = payorderamount * 100
@@ -452,7 +453,7 @@ console.log("查看积分",that.GoodItem.googitem[0].point,that.addr,that.Cart)
                console.log("商品分润")
              })
             }
-            console.log("进来了吗111",res.data.code)
+
          //支付完成后
          console.log("44564")
          Lib.Show("支付成功","success",2000)
@@ -482,7 +483,7 @@ console.log("查看积分",that.GoodItem.googitem[0].point,that.addr,that.Cart)
    
         if(!select){
           that.selectIco = true
-          console.log(select,"积分三大")
+
           if(that.GoodItem.goodsAmount - that.point_price <= 0){
             // that.jifens = that.GoodItem.goodsAmount * 100
             // console.log("645465",select,that.jifens)
@@ -519,6 +520,10 @@ console.log("查看积分",that.GoodItem.googitem[0].point,that.addr,that.Cart)
          let that = this;
          that.PayBool = !that.PayBool;
          that.PayIndex = index;
+         if(index == 0){
+           //当选择余额支付的时候判断余额
+
+         }
       },
      
       //优惠券跳转
@@ -529,12 +534,12 @@ console.log("查看积分",that.GoodItem.googitem[0].point,that.addr,that.Cart)
 
     // 获取时间
     getTime(){
-      let that=this
-      var myDate = new Date();
-      that.date=`${myDate.getFullYear()}-${myDate.getMonth()+1}-${myDate.getDate()}`
-      that.time=`${myDate.getHours()}:${myDate.getMinutes()}`
-      that.startdate=`${myDate.getFullYear()}-${myDate.getMonth()+1}-${myDate.getDate()}`
-      that.starttime=`${myDate.getHours()+1}:${myDate.getMinutes()}`
+     let that=this
+     var myDate = new Date();
+     that.date=`${myDate.getFullYear()}-${myDate.getMonth()+1}-${myDate.getDate()}`
+     that.time=`${myDate.getHours()+1}:${myDate.getMinutes()}`
+     that.startdate=`${myDate.getFullYear()}-${myDate.getMonth()+1}-${myDate.getDate()}`
+     that.starttime=`${myDate.getHours()+1}:${myDate.getMinutes()}`
     },
 
     //选择
@@ -560,15 +565,16 @@ console.log("查看积分",that.GoodItem.googitem[0].point,that.addr,that.Cart)
     that.point = wx.getStorageSync('point')
     that.indexdata = wx.getStorageSync('indexdata')
      
-     that.Order();
+
      that.getTime();
      that.GetShopName();
-     that.AllPrice = that.GoodItem.goodsAmount
-    //  console.log("真实价格",that.GoodItem.goodsAmount)
-     console.log("商品信息",that.GoodItem)
+
     //判断跳转链接
     let pages = getCurrentPages();
     let prevpage = pages[pages.length - 2];
+
+    //初始化积分
+    that.selectIco = false;
     that.point_price = Number(that.point/that.indexdata.pointCash).toFixed(2)
     
     //微信登录获取Code
@@ -592,6 +598,7 @@ console.log("查看积分",that.GoodItem.googitem[0].point,that.addr,that.Cart)
         that.AllPrice = that.GoodItem.goodsAmount
            //判断获取地址
         that.SelectAdder();
+        that.Order();
       }
   }  
 }

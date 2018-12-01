@@ -80,10 +80,10 @@ export default {
      {name:'待付款',icon:config.imgUrl+"/myself/daifukuan.png",statuscount:0,InfoTypeId:1},
      {name:'待发货',icon:config.imgUrl+"/myself/daifahuo.png",statuscount:0,InfoTypeId:2},
      {name:'待收货',icon:config.imgUrl+"/myself/daishouhuo.png",statuscount:0,InfoTypeId:3},
-     {name:'待自提',icon:config.imgUrl+"/myself/daiziti.png",statuscount:0,InfoTypeId:4},
+     {name:'已完成',icon:config.imgUrl+"/myself/wancheng.png",statuscount:0,InfoTypeId:4},
      ],
      featureitem:[
-     {name:'自提',icon:config.imgUrl+"/myself/connect.png",PageUrl:'../Selflifting/main'},
+     {name:'自提',icon:config.imgUrl+"/myself/ziti.png",PageUrl:'../Selflifting/main'},
      {name:'积分',icon:config.imgUrl+"/myself/point.png",PageUrl:'../sign/main'},
      {name:'微分销',icon:config.imgUrl+"/myself/fenxiao.png",PageUrl:'../distribestart/main'},
      {name:'地址管理',icon:config.imgUrl+"/myself/address.png",PageUrl:'../addressList/main'},

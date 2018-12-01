@@ -1,5 +1,9 @@
 <template>
   <div class="self">
+    <div class="TagWarp">
+      <div class="tagItem" :class="selectBool?'active':''" @click="ClickZiti">待自提</div>
+      <div class="tagItem" :class="!selectBool?'active':''"  @click="ClickZiti">已自提</div>
+    </div>
       <!--tab end-->
       <div class="shopList">
         <div class="Item" v-for="(orderItem,index) in orderList" :index='index' :key='orderItem'>
@@ -25,8 +29,6 @@
           <div class="shopWarpInfo"><text>共{{orderItem.shopNum}}件商品</text><text class="zongji">合计：￥{{orderItem.orderAmount}}</text></div>
           <div class="warpBtn" >
             <div class="Btn">
-              <text class="btn1" >取消订单</text>
-              <text class="btn2">确认付款</text>
             </div>
 
           </div>
@@ -56,12 +58,20 @@ export default {
                 ico2:config.imgUrl+'/index/ico2.png',ico3:config.imgUrl+'/index/ico3.png'
       },
       memberId:'',
-      orderList:[]
-
+      orderList:[],
+      selectBool:true
     }
   },
   methods:{
-
+    //点击自提
+    ClickZiti(){
+      let that = this;
+      if(that.selectBool){
+        that.selectBool = false
+      }else{
+         that.selectBool = true
+      }
+    }
     
     
   },
@@ -83,6 +93,12 @@ img{
   height: 100%;
   overflow:hidden;
 }
+
+.TagWarp{@include flexc;justify-content: space-between;border-bottom: 1px solid #f5f5f5;padding: 15rpx 0;
+   .tagItem{width: 50%;text-align: center;font-size: 30rpx;font-weight: 100;}
+   .active{color: rgb(252,156,56);}
+}
+
 
 .tab{border-bottom: 2px solid rgb(244,244,244);}
 .ItemHeader{@include flexc;justify-content: space-between;padding:8rpx 20rpx;font-size: 32rpx;font-weight: 100;

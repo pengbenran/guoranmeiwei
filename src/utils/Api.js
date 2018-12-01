@@ -286,8 +286,7 @@ export default class Api{
     //购物车所有订单数量加减
     CartOrderNum(parms){
       return new Promise((resolve,reject) =>{
-        console.log("你好史学家")
-        let CartOrderNum = this.fly.put(this.baseUrl + '/api/shoppingCart/modification',{parms:JSON.stringify(parms)},{headers:{
+        let CartOrderNum = this.fly.put(this.baseUrl + '/api/shoppingCart/modification',{params:JSON.stringify(parms)},{headers:{
           'Content-Type': 'application/x-www-form-urlencoded'
          }})
         resolve(CartOrderNum)
@@ -297,7 +296,7 @@ export default class Api{
     //购物车商品删除
     CartOrderDele(parms){
       return new Promise((resolve, reject) => {
-        let CartOrderDele=this.fly.post(this.baseUrl +'/api/shoppingCart/deleteAll',{parms:JSON.stringify(parms)},{headers: {
+        let CartOrderDele=this.fly.post(this.baseUrl +'/api/shoppingCart/deleteAll',{params:JSON.stringify(parms)},{headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }})
         resolve(CartOrderDele)
@@ -713,6 +712,16 @@ export default class Api{
               resolve(SlfLifting)
             }) 
           }
-  
+
+          //存储fromId
+          SaveFormid(memberId,formid){
+            return new Promise((resolve, reject) =>{
+              let SaveFormid = this.fly.post(this.baseUrl +'/api/push/saveFormid',{memberId:memberId,formid:formid},{headers:{
+                'Content-Type': 'application/x-www-form-urlencoded'
+                }})
+              resolve(SaveFormid)
+            }) 
+          }
+      
 
 }
