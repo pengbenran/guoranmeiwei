@@ -62,13 +62,8 @@ export default {
     },
     jumpGooddetail(goodsId){
       let that = this;
-      console.log(goodsId,"查看数据")
-      console.log("再次查看数据",that.find_item)
       if(goodsId!=undefined){
-        console.log(1)
-      }
-      else{
-        console.log(2)
+        wx.navigateTo({ url: '/pages/shopInfo/main?goodsId='+goodsId });
       }
     }
      // async getMore(){

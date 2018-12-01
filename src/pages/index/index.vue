@@ -292,7 +292,8 @@ img{display: block;width: 100%;height: 100%}
   @include flexc;justify-content: space-between;font-size: 27rpx;font-weight: 100;color: rgb(170, 170, 170);height: 78rpx;padding: 0 15rpx;border-bottom: 6rpx solid rgb(243,243,243);
    .logo{height: 90%;display: inline-block;display: flex;align-items: center;}
    .logo img{width: 80rpx;height: 80rpx;}
-   span{display: inline-block;width: 380rpx;overflow: hidden;}
+   span{display: inline-block;width: 420rpx;overflow: hidden;text-overflow:ellipsis;
+white-space: nowrap;}
    small{display: inline-block;margin-left: 6rpx;color: rgb(236,189,87);float: right;}
  }
 

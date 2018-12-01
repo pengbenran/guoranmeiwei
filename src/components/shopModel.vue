@@ -8,8 +8,12 @@
          <div class="ModelTop">
            <div class="topLeft"><img :src="GoodsInfo.thumbnail"/></div>
            <div class="topRight">
-             <div class="title fontHidden">{{GoodsInfo.name}}</div>
-             <div class="tagInfo">已选 <text>{{GoodsInfo.specs}}</text></div>
+             <div class="title">
+                <div class="fontHidden">
+                  {{GoodsInfo.name}}
+                </div>
+             </div>
+             <div class="tagInfo"><text>已选</text><text class="spec">{{GoodsInfo.specs}}</text></div>
              <div class="Price"><text>￥{{GoodsInfo.price}}</text><text>库存：{{GoodsInfo.enableStore}}</text></div>
            </div>
          </div>
@@ -18,9 +22,9 @@
          </div>
           <div class="ModelNum"><text>数量：</text>
              <div class="priceright">
-                <i class="fa fa-minus" aria-hidden="true" @click="Minu()"></i>
-                  <span>{{pic}}</span>
-                <i class="fa fa-plus" aria-hidden="true" @click="Plus()"></i>
+                <span class="icon" @click="Minu()" ><img src="/static/images/dec.png"></span> 
+                <span class="num">{{pic}}</span>  
+                <span class="icon"><img src="/static/images/add.png" @click="Plus()" ></span> 
              </div>
           </div>
           <div class="ModelBtn"><span v-if='btnIndex == 1' @click="toNext">立即购买</span>
@@ -208,7 +212,7 @@ export default {
 @mixin flexc{
 display: flex;align-items: center;
 }
-
+img{width: 100%;height: 100%;display: block;}
 /*文本换行省略*/
 @mixin fontM{
 white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
@@ -220,10 +224,10 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
       .ModelTop{@include flexc;font-weight:100;padding: 15rpx 15rpx;border-bottom: 2px solid rgb(247,247,247); }
       .ModelTop .topLeft{width: 35%}
       .ModelTop .topLeft img{width: 250rpx;height: 250rpx;}
-      .ModelTop .topRight{width: 65%;}
-      .topRight .title{font-size: 32rpx;color: #666;}
-      .topRight .tagInfo{margin-top: 15rpx;font-size: 26rpx;color: #8e8e8e;}
-      .topRight .tagInfo text{color:rgb(255,107,79);}
+      .ModelTop .topRight{width: 65%;margin-top: 20rpx; padding:10rpx;box-sizing: border-box;}
+      .topRight .title{font-size: 32rpx;color: #666;height: 120rpx;}
+      .topRight .tagInfo text{font-size: 26rpx;color: #8e8e8e;display: inline-block; vertical-align:middle;}
+      .topRight .tagInfo .spec{color:rgb(255,107,79);width:80%; display: inline-block;overflow: hidden; text-overflow:ellipsis;white-space: nowrap;padding-left: 10rpx;box-sizing: border-box;}
       .topRight .Price{margin-top: 10rpx;@include flexc;justify-content: space-between;font-size: 24rpx;color: rgb(255,107,79);}
       .topRight .Price text{font-size: 32rpx;}
 
@@ -231,7 +235,7 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
           div{margin: 10rpx 15rpx;padding: 20rpx 35rpx;color: #666;background: rgb(244,244,244);font-size: 30rpx;font-weight: 100;border-radius: 15rpx;}
           .active{color: rgb(253,146,63);border:1px solid rgb(253,146,63);background: #fff;}
       }
-      .colse{position: absolute;right: 20rpx;top: -60rpx;color: #fff;font-size: 45rpx;font-weight: 100;
+      .colse{position: absolute;right: 10rpx;top: 0;color: #fff;font-size: 45rpx;font-weight: 100;
        img{width: 45rpx;height: 45rpx;}
       }
     }
@@ -241,7 +245,7 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
      }
      .ModelNum{@include flexc;justify-content: space-between;padding: 20rpx;font-weight: 100;font-size: 32rpx;}
     .priceright{background:#e7e7e7;@include flexc;height: 48rpx;
-     i{color: #fff;display: inline-block;width: 48rpx;height: 30rpx;line-height: 30rpx;text-align: center;font-weight: 100;font-size: 28rpx;}
-     span{background: #fff;display: inline-block;width: 30rpx;text-align: center;height: 40rpx;line-height: 40rpx;color: rgb(248,193,92);padding:0 15rpx;font-size: 28rpx;}
+      .icon{color: #fff;display: inline-block;width: 48rpx;height: 48rpx;overflow: hidden;padding:10rpx;box-sizing: border-box;}
+     .num{background: #fff;height: 40rpx;line-height: 40rpx;color: rgb(248,193,92);display: inline-block;padding:0 15rpx;font-size: 28rpx;}
    }
 </style>

@@ -1,29 +1,31 @@
 <template>
    <div class="CartWarp">
-     <div  v-for="(Shop_List,index) in ShopList" :index='index' :key='Shop_List'>
-     <div class="CartHeader"><img :src="topImg"/><text>{{Shop_List.shopname}}</text></div>
-     <div class="shopList">
+     <div class="CartHeader"><img :src="topImg"/><text>{{shopname}}</text></div>
+     <div class="shopList"  v-for="(Shop_List,index) in ShopList" :index='index' :key='Shop_List'>
        <div class="selectico" @click="selectCheck(index)">
          <icon type="success" class="ico" size="21" v-show='Shop_List.selected'/><icon type="circle" class="ico" size="21" v-show='!Shop_List.selected'/>
        </div>
        <div class="itemLeft"><img :src="Shop_List.image"/></div>
        <div class="itemRight">
           <div class="status">状态:<span>{{Shop_List.marketEnable==1?'热销中':'已下架'}}</span></div>
-          <div class="title">{{Shop_List.name}}</div>
+          <div class="title">
+            <div>
+              {{Shop_List.name}}
+            </div>  
+          </div>
           <small>{{Shop_List.specvalue}}</small>
           <div class="price">
              <div class="priceleft"><text>￥{{Shop_List.price}}元</text>
                 <!-- <span>￥{{Shop_List.p2}}</span> -->
               </div>
              <div class="priceright">
-                <span class="icon"><img src="/static/images/add.png"  @click="Minu(index,Shop_List.cartId)"></span>
-                <span class="num">{{Shop_List.num}}</span>
-                <span class="icon"  @click="Plus(index,Shop_List.cartId)"><img src="/static/images/dec.png"></span>          
+                <span class="icon"  @click="Minu(index,Shop_List.cartId)" ><img src="/static/images/dec.png"></span> 
+                <span class="num">{{Shop_List.num}}</span>  
+                <span class="icon"><img src="/static/images/add.png" @click="Plus(index,Shop_List.cartId)" ></span>        
              </div>
           </div>
        </div>
      </div>
-    </div>
    </div>
 </template>
 <script>
@@ -32,7 +34,7 @@ import config from "@/config"
 
  let api= new Api 
 export default {
-  props: ['ShopList'],
+  props: ['ShopList','shopname'],
   data () {
     return {
       topImg:config.imgUrl+'/cart/home.jpg',
@@ -62,12 +64,19 @@ export default {
     
      let that = this;
     console.log("输出一下数据",that.ShopList,index,cartId)
-    if(that.ShopList[index].num !=0){
+    if(that.ShopList[index].num >1){
         let num = that.ShopList[index].num -1;
         let res = await that.MinuPlusNum(index,cartId,num);
         if(res.data.code == 0){
           that.ShopList[index].num -=1;
         }
+     }
+     else{
+      wx.showToast({
+        title:'数量最少为1',
+        icon:'none',
+        durantion:2000
+      })
      }
      if(that.ShopList[index].selected){
        that.getTotalPrice()
@@ -140,20 +149,23 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
 
 .CartHeader{@include flexc;padding: 10rpx 25rpx;border-bottom: 1px solid #f5f5f5;
    img{width: 35rpx;height: 35rpx;margin-right: 15rpx;}
-   text{font-size: 32rpx;font-weight: 100;color: #666;}
+   text{font-size: 32rpx;font-weight: 100;color: #666;display: inline-block;width: 420rpx;overflow: hidden;text-overflow:ellipsis;
+white-space: nowrap;}
 }
 
 .CartWarp{box-shadow: 0 0 40rpx rgba(0, 0, 0, 0.123);border-radius: 30rpx;margin: 15rpx;}
-.shopList{@include flexc;padding: 0 10rpx;
+.shopList{@include flexc;padding: 15rpx 10rpx; 
    .selectico{padding-right: 15rpx;box-sizing: border-box;}
    .itemLeft{width: 35%}
    .itemLeft img{width: 230rpx;height: 230rpx;margin: auto}
-   .itemRight{width: 65%;padding-right: 20rpx; padding-left: 20rpx;box-sizing: border-box;}
+   .itemRight{width: 55%;padding-right: 20rpx; padding-left: 20rpx;box-sizing: border-box;}
    .itemRight .status{height: 40rpx;text-align: right;color:#8e8e8e;font-size: 0.8em;
     span{color: #fc9b2d;}
    }
-   .itemRight .title{@include fontM;height: 102rpx;font-weight: 100;font-size: 30rpx;color: #8e8e8e;}
-   .itemRight small{font-size: 26rpx;color: #ccc;font-weight: 100;}
+   .itemRight .title{height: 102rpx;font-weight: 100;font-size: 30rpx;color: #8e8e8e;
+    div{@include fontM;}
+   }
+   .itemRight small{font-size: 26rpx;color: #ccc;font-weight: 100;display: inline-block;width: 100%;overflow: hidden;text-overflow:ellipsis;white-space: nowrap;}
    .price{@include flexc;justify-content: space-between;}
    .priceleft{
      text{font-size: 32rpx;font-weight: 100;color: rgb(252,78,79);}

@@ -1,8 +1,7 @@
 <template>
   <div class="Cart">
-    <Shopaddr :shopname="shopDetail.shopName"></Shopaddr>
       <div class="ShopHeader"><text>购物车</text><text @click="Edits">{{EditsName}}</text></div>
-     <CartList :ShopList='ShopLists' @onSelect='SeleAllPrice' ref="childs" v-if="length != 0"></CartList>
+     <CartList :ShopList='ShopLists' :shopname="shopDetail.shopName" @onSelect='SeleAllPrice' ref="childs" v-if="length != 0"></CartList>
      <div class="Kong"  v-if="length == 0">
        <img :src="ImgList.KongImg" mode='aspectFit'/>
      </div>
@@ -36,7 +35,7 @@ export default {
 
   data () {
     return {
-     ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg',KongImg:config.imgUrl+'/cart/kong.png'},
+     ImgList:{KongImg:config.imgUrl+'/cart/kong.png'},
      memberId:'',
      ShopLists:[],
      SelectBool:false,
@@ -172,7 +171,7 @@ export default {
    let that = this;
    that.memberId = wx.getStorageSync('memberId');
    that.onLoads();
-   this.shopDetail=wx.getStorageSync('shopDetail')
+   that.shopDetail=wx.getStorageSync('shopDetail')
   },
 }
 </script>
@@ -188,7 +187,11 @@ display: flex;align-items: center;
 white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
 }
 img{display: block;height: 100%;width: 100%;}
-
+.CartHeader{@include flexc;padding: 10rpx 25rpx;border-bottom: 1px solid #f5f5f5;
+   img{width: 35rpx;height: 35rpx;margin-right: 15rpx;}
+   text{font-size: 32rpx;font-weight: 100;color: #666;display: inline-block;width: 420rpx;overflow: hidden;text-overflow:ellipsis;
+white-space: nowrap;}
+}
 .DivHeigt{height: 100rpx;}
 
 .ShopHeader{@include flexc;justify-content: space-between;padding: 10rpx 30rpx;border-bottom: 1px solid #f4f4f4;

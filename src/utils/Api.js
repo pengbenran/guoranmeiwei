@@ -595,7 +595,7 @@ export default class Api{
 
       GetShare(page,scene){
         return new Promise((resolve, reject) =>{
-          let GetShare = this.fly.get('https://www.guqinet.com:8444/uploadZhaoshang/getShare',{page:page,scene:scene})
+          let GetShare = this.fly.get('https://www.guqinet.com:8444/uploadGuoran/getShare',{page:page,scene:scene})
           resolve(GetShare)
         }) 
       }
