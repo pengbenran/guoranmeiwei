@@ -59,8 +59,9 @@ export default {
    },
    //减
   async Minu(index,cartId){
+    
      let that = this;
- 
+    console.log("输出一下数据",that.ShopList,index,cartId)
     if(that.ShopList[index].num !=0){
         let num = that.ShopList[index].num -1;
         let res = await that.MinuPlusNum(index,cartId,num);
@@ -97,7 +98,7 @@ export default {
       cart.cartId = cartId
       cart.num = num
       parms.cart = cart
-      console.log(" 进来1")
+      console.log(" 进来1",cartId,index,num)
       let res = await api.CartOrderNum(parms)
       return res;
       console.log("查看是否修改",res)

@@ -2,7 +2,7 @@
   <div class="OrderList">
       <div class="tab"><Tabs @listenToChild='onselect' :find_item='find_item' :wid='width'></Tabs></div>
       <!--tab end-->
-      <div class="shopList">
+      <div class="shopList" v-if="kong != 0">
         <div class="Item" v-for="(orderItem,index) in orderList" :index='index' :key='orderItem'>
           <div class="ItemHeader">
             <div class="orderBh">订单编号：{{orderItem.sn}}</div>
@@ -46,6 +46,9 @@
           </div>
         </div>
       </div>
+      <div class="kong" v-if="length == 0">
+        <img :src="kong" mode='aspectFit'/>
+      </div>
       <!--shopList end-->
       
       <div class=""></div>
@@ -70,6 +73,7 @@ export default {
     return {
           topImg:config.imgUrl+'/cart/home.jpg',
           shopImg:config.imgUrl+'/cart/shopimg01.jpg',
+          kong:config.imgUrl+'/myself/kong.png',
           find_item:[{name:"全部",selected:true},{name:"待付款",selected:false},{name:"待发货",selected:false},{name:"待收货",selected:false},{name:"已完成",selected:false}],
           width:"20%",
           shopname:'小程序鲜果零食店',
@@ -79,7 +83,8 @@ export default {
           orderId:'',
           btnSelect:0,
           memberId:'',
-          orderArry:[]
+          orderArry:[],
+          length:0
     }
   },
   methods:{
@@ -97,7 +102,7 @@ export default {
          })
           that.orderArry[0]=that.orderList
         }
-       
+       that.length = that.orderList.length
       //  console.log("所有的商品",res,that.orderList )
      },
 
@@ -178,6 +183,7 @@ export default {
     async queShop(index,orderId){
       let that = this;
       let res = await Lib.ShopModel("提示","是否确认收货")
+    //  console.log("确认收货",that.orderList,)
       if(res.confirm){
           let parms = {}
           let order = {}
@@ -188,7 +194,8 @@ export default {
           console.log("确认收货",QueRes)
           if(QueRes.data.code == 0){
             Lib.Show("成功","success",1500)
-            that.orderList[that.btnSelect].splice(index,1)
+            console.log(that.orderList[that.btnSelect],index)
+            that.orderList.splice(index,1)
           }
       }
     },
@@ -206,7 +213,7 @@ export default {
         let QueRes = await api.OrderCancel(parms)
           if(QueRes.data.code == 0){
             Lib.Show("成功","success",1500)
-            that.orderList[that.btnSelect].splice(index,1)
+            that.orderList.splice(index,1)
           }
       }
     },
@@ -273,6 +280,7 @@ export default {
           })
           that.orderArry[status]=that.orderList
         }
+         that.length = that.orderList.length
       },
 
      //支付
@@ -321,7 +329,6 @@ export default {
 
                           //支付完成后
                           that.orderList = [] //清空存储数据下次进入重新加载
-                          console.log("已经到这了",that.orderList)
                           Lib.Show("支付成功","success",1000)
                           
                           setTimeout(function(){
@@ -351,6 +358,7 @@ export default {
     let that = this;
     that.memberId = wx.getStorageSync('memberId');
     that.btnSelect = options.currentTarget
+    console.log(options,'初始化参数',that.btnSelect)
     that.find_item=that.find_item.map((item)=>{
          item.selected=false;
          return item
@@ -431,7 +439,7 @@ img{display: block;height: 100%;width: 100%;}
    .topImg{height: 35rpx;width: 35rpx;margin-left: 10rpx;margin-right: 10rpx;}
    small{display: inline-block;margin-left: 6rpx;color: rgb(236,189,87);}
 }
-
+.kong{height: 350rpx;}
 
 
 </style>

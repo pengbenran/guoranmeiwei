@@ -107,7 +107,7 @@ img{
   .Item .right{width: 62%;}
   .leftImg{height: 100%;width: 100%;}
   .leftImg img{width: 230rpx;height: 230rpx;}
-  .right .title{font-size: 32rpx;height: 95rpx;}
+  .right .title{font-size: 32rpx;}
   .tag{font-size: 26rpx;margin-top: 10rpx;}
   .tagInfo{font-size: 26rpx;margin-top: 10rpx;background: rgb(247,45,45);color: #fff;padding: 0 25rpx;width: 250rpx;border-radius: 25rpx;}
   .tagInfo i{margin-right: 20rpx;}

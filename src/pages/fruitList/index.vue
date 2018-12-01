@@ -110,7 +110,7 @@ img{
 
 .List{@include Flexc;justify-content: space-between;flex-wrap: wrap;margin: 10rpx 35rpx;
     .item{padding: 20rpx;margin-bottom: 16rpx;width: 42%;background: #fff;box-shadow: 0 0 20rpx rgba(0, 0, 0, 0.15);border-radius: 30rpx;font-weight: 100;}
-    .item .title{font-size: 30rpx;height: 92rpx;}
+    .item .title{font-size: 30rpx;}
     .topImg{text-align: center;}
     .topImg img{height: 250rpx;width: 250rpx;margin: auto;}
     .Price{@include Flexc;justify-content: space-between;margin-top: 20rpx;color: rgb(255,134,111);}

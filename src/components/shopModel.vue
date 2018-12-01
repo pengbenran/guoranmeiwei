@@ -3,7 +3,7 @@
       <div class="ModelMask" ></div>
       <div class="Model" :animation='Animation'>
           <div class="colse" @click="hideModel">
-              <i class="fa fa-times-circle-o" aria-hidden="true"></i>
+              <img :src="close" />
           </div>
          <div class="ModelTop">
            <div class="topLeft"><img :src="GoodsInfo.thumbnail"/></div>
@@ -33,11 +33,14 @@
 <script>
  import Api from "@/utils/Api"
  import Lib from "@/utils/lib"
+ import config from "@/config"
 let api = new Api
 export default {
   props: ['GoodsInfo','modelShow','memberId'],
   data() {
       return {
+          close:config.imgUrl+'/myself/close.png',
+          icoImg:'',
               Animation:'',
               AreaselectIndex:0,
               WeightselectIndex:0,
@@ -228,7 +231,9 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
           div{margin: 10rpx 15rpx;padding: 20rpx 35rpx;color: #666;background: rgb(244,244,244);font-size: 30rpx;font-weight: 100;border-radius: 15rpx;}
           .active{color: rgb(253,146,63);border:1px solid rgb(253,146,63);background: #fff;}
       }
-      .colse{position: absolute;right: 20rpx;top: -60rpx;color: #fff;font-size: 45rpx;font-weight: 100;}
+      .colse{position: absolute;right: 20rpx;top: -60rpx;color: #fff;font-size: 45rpx;font-weight: 100;
+       img{width: 45rpx;height: 45rpx;}
+      }
     }
     .ModelBtn{position: fixed;z-index: 3;left: 0;bottom: 20rpx;width: 100%;}
      .ModelBtn span{

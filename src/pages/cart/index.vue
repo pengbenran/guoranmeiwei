@@ -2,7 +2,10 @@
   <div class="Cart">
     <Shopaddr :shopname="shopDetail.shopName"></Shopaddr>
       <div class="ShopHeader"><text>购物车</text><text @click="Edits">{{EditsName}}</text></div>
-     <CartList :ShopList='ShopLists' @onSelect='SeleAllPrice' ref="childs"></CartList>
+     <CartList :ShopList='ShopLists' @onSelect='SeleAllPrice' ref="childs" v-if="length != 0"></CartList>
+     <div class="Kong"  v-if="length == 0">
+       <img :src="ImgList.KongImg" mode='aspectFit'/>
+     </div>
      <!--shopList end-->
      <div class="DivHeigt"></div>
      <div class="footerBnt">
@@ -33,14 +36,15 @@ export default {
 
   data () {
     return {
-     ImgList:{topImg:config.imgUrl+'/cart/home.jpg'},
+     ImgList:{topImg:config.imgUrl+'/cart/home.jpg',shopImg:config.imgUrl+'/cart/shopimg01.jpg',KongImg:config.imgUrl+'/cart/kong.png'},
      memberId:'',
      ShopLists:[],
      SelectBool:false,
      AllPrice:0,
      BtnDelete:false,
      EditsName:'编辑',
-     shopDetail:{}
+     shopDetail:{},
+     length:0
     }
   },
   //事件
@@ -54,6 +58,7 @@ export default {
           v.selected = false
           return v
         })
+        that.length =  that.ShopLists.length
      }else{
        that.ShopLists = [];
      }
@@ -137,8 +142,12 @@ export default {
             Goods.shippingAmount = 0
             // Goods.orderAmount = that.AllPrice
             // Goods.gainedpoint = gainedpoint
+
+            
             gooditemString = JSON.stringify(Goods)
+        
         })
+            console.log("你好世界查看数据",Goods,gooditemString)
         // console.log("跳转查看数据",gooditemString,Goods)
         that.AllPrice=total.toFixed(2)
         if (googitem.length == "") {
@@ -159,7 +168,7 @@ export default {
    }
   },
   //初始化加载
-  mounted(){
+  onShow(){
    let that = this;
    that.memberId = wx.getStorageSync('memberId');
    that.onLoads();
@@ -193,6 +202,6 @@ img{display: block;height: 100%;width: 100%;}
     .price{height: 95rpx;line-height: 95rpx;margin-right: 15rpx;}
     .btn{background-image: -webkit-linear-gradient(0deg, rgb(255,191,3), rgb(252,148,53));height: 95rpx;line-height: 95rpx; width: 180rpx;text-align: center;color: #fff;}
 }
-
+.Kong{height: 450rpx;}
 
 </style>

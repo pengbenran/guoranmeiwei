@@ -1,11 +1,14 @@
 <template>
   <div class="self">
-     <div class="tab"><Tabs @listenToChild='onselect' :find_item='find_item' :wid='width'></Tabs></div>
+    <div class="TagWarp">
+      <div class="tagItem" :class="selectBool?'active':''" @click="ClickZiti">待自提</div>
+      <div class="tagItem" :class="!selectBool?'active':''"  @click="ClickZiti">已自提</div>
+    </div>
       <!--tab end-->
       <div class="shopList">
-        <!-- <div class="Item" v-for="(orderItem,index) in orderList" :index='index' :key='orderItem'>
+        <div class="Item" v-for="(orderItem,index) in orderList" :index='index' :key='orderItem'>
           <div class="ItemHeader">
-            <div class="orderBh">订单编号：5456456</div>
+            <div class="orderBh">订单编号：{{orderItem.sn}}</div>
              <div class="addInfo">
                <text class="status_Box">待付款</text>
              </div>
@@ -23,15 +26,13 @@
               </div>
             </div>
           </div>
-          <div class="shopWarpInfo"><text>共11件商品</text><text class="zongji">合计：￥123</text></div>
+          <div class="shopWarpInfo"><text>共{{orderItem.shopNum}}件商品</text><text class="zongji">合计：￥{{orderItem.orderAmount}}</text></div>
           <div class="warpBtn" >
             <div class="Btn">
-              <text class="btn1" >取消订单</text>
-              <text class="btn2">确认付款</text>
             </div>
 
           </div>
-        </div> -->
+        </div>
       </div>
       <!--shopList end-->
       
@@ -56,22 +57,30 @@ export default {
                 hopImg:config.imgUrl+'/ranking/shopImg.png',ico1:config.imgUrl+'/index/ico1.png',
                 ico2:config.imgUrl+'/index/ico2.png',ico3:config.imgUrl+'/index/ico3.png'
       },
-      GoodList:[],
-      limit:4,
-      index:0,
-      catId:0
+      memberId:'',
+      orderList:[],
+      selectBool:true
     }
   },
   methods:{
-
+    //点击自提
+    ClickZiti(){
+      let that = this;
+      if(that.selectBool){
+        that.selectBool = false
+      }else{
+         that.selectBool = true
+      }
+    }
     
     
   },
-  onLoad(option){
+  async onLoad(option){
     let that = this;
-    let parms = {}
-    let order = {}
-
+    that.memberId = wx.getStorageSync('memberId');
+    let res = await api.SlfLifting(that.memberId)
+    console.log("查看数据",res)
+    that.orderList = res.data.orderList
   },
 }
 </script>
@@ -84,6 +93,12 @@ img{
   height: 100%;
   overflow:hidden;
 }
+
+.TagWarp{@include flexc;justify-content: space-between;border-bottom: 1px solid #f5f5f5;padding: 15rpx 0;
+   .tagItem{width: 50%;text-align: center;font-size: 30rpx;font-weight: 100;}
+   .active{color: rgb(252,156,56);}
+}
+
 
 .tab{border-bottom: 2px solid rgb(244,244,244);}
 .ItemHeader{@include flexc;justify-content: space-between;padding:8rpx 20rpx;font-size: 32rpx;font-weight: 100;

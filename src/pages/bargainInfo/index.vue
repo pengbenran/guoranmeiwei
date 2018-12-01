@@ -62,11 +62,13 @@
            <button class='homepage custom' open-type="contact" session-from="weapp"><img :src="ImgList.kefu" @click="kefu"/><text>客服</text> </button></div>
          <div class="leftItme"><img :src="ImgList.shouChang" /><text>收藏</text></div>
        </div>
-       <div class="right">
-         <div class="btnWarp" v-if="!isjoin&&!iscutOk&&canJoin" @click="startCut">
-            <!-- <text>加入购物车</text><span></span><text @click="showModel">立即购买</text> -->
-            <text>立即参与</text>
-         </div>
+       <div class="right" >
+         <form @submit="FromModal" report-submit="true"> 
+          <div class="btnWarp" v-if="!isjoin&&!iscutOk&&canJoin" @click="startCut">
+              <!-- <text>加入购物车</text><span></span><text @click="showModel">立即购买</text> -->
+              <button form-type="submit">立即参与</button>
+          </div>
+         </form>
          <div class="btnWarp" v-if="isjoin&&!iscutOk&&canJoin"> 
             <div class="nowprice" @click="payorder">
               <p>现价入手</p>
@@ -265,6 +267,12 @@ export default {
        let startCutRes=await api.startCut(startcutparm)
        that.cutResult=startCutRes.data.memberCutDate
        that.cutModalStatus=true
+    },
+    async FromModal(e){
+      let that = this;
+      let memberId = wx.getStorageSync('memberId');
+      let fromid = e.mp.detail.formId
+      let res = await api.SaveFormid(memberId,fromid)
     }
 
   },
@@ -363,6 +371,7 @@ img{display: block;height: 100%;width: 100%;}
   .btnWarp .nowprice p{height: 35rpx;line-height: 35rpx;}
   .btnWarp span{width: 2rpx;height: 35rpx;background-color: #fff;}
   .btnWarp .forhelp{background: none;border:none;color: #fff;}
+  .btnWarp button{color: #fff;}
 }
 
 </style>

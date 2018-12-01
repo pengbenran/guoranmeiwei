@@ -56,15 +56,19 @@
           <text>收藏</text></div>
        </div>
        <div class="right">
+            <form @submit="FromModal" report-submit="true"> 
          <div class="btnWarp">
-            <text>加入购物车</text><span></span><text @click="jumporder">立即购买</text>
+            <button @click="showModel(2)" form-type="submit">加入购物车</button><span></span><button @click="jumporder" form-type="submit">立即购买</button>
          </div>
+            </form>
        </div>
      </div>
      <!--footerBnt end-->
       
-      <Model :ImgList='ImgList' :modelShow='modelShow' :Area_item='Area_item' :Weight_item='Weight_item'  @hideModel='hideModel' ref="childs"></Model>
-
+  <Model :GoodsInfo='Goods' 
+         :modelShow='modelShow'
+         :memberId='memberId' 
+         @hideModel='hideModel' ref="childs"></Model>
   </div>
 </template>
 
@@ -113,12 +117,24 @@ export default {
      toIndex(url){
     wx.switchTab({ url: url });
    },
+
+   
+    //存储fromId
+    async FromModal(e){
+      // console.log("46454656666",e)
+      let that = this;
+      let memberId = wx.getStorageSync('memberId');
+      let fromid = e.mp.detail.formId
+      let res = await api.SaveFormid(memberId,fromid)
+    },
+  
+
     //立即购买淡出模态框
-    showModel(){
+    showModel(index){
      let that = this;
      that.modelShow=true;
      //父组件控制子组件
-     that.$refs.childs.emitEvent();
+     that.$refs.childs.emitEvent(index);
     },
     hideModel(){
        //是否传值
@@ -129,8 +145,17 @@ export default {
     async getGood(goodsId,memberId){
       let that=this
       let goodsRes=await api.getGoods(goodsId,memberId)
-      that.Gallery=goodsRes.data.Gallery
-      that.Goods=goodsRes.data.Goods
+      goodsRes.data.products=goodsRes.data.products.map((item)=>{
+      item.selected=false
+      return item
+     })
+     goodsRes.data.products[0].selected=true
+     goodsRes.data.Goods.specs=goodsRes.data.products[0].name
+     goodsRes.data.Goods.products=goodsRes.data.products
+     that.Gallery = goodsRes.data.Gallery;
+     that.Goods = goodsRes.data.Goods;
+
+  
       if (goodsRes.data.count == 0) {
         that.posts= false
       } else {   
@@ -265,7 +290,7 @@ img{display: block;height: 100%;width: 100%;}
   .left text{color: rgb(117,117,117);font-size: 28rpx;font-weight: 100;}
   .right{width: 55%;}
   .btnWarp{background-image: -webkit-linear-gradient(0deg,rgb(252,148,53), rgb(255,191,3));border-radius: 45rpx;height: 75rpx;line-height: 75rpx;}
-  .btnWarp text{font-size: 32rpx;color: #fff;font-weight: 100;padding: 0 15rpx;}
+  .btnWarp button{font-size: 32rpx;color: #fff;font-weight: 100;padding: 0 15rpx;}
   .btnWarp span{width: 2rpx;height: 35rpx;background-color: #fff;}
 }
 
