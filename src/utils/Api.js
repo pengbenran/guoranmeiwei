@@ -746,4 +746,19 @@
             }) 
          }
 
+          //用户消费记录
+          Consumption(memberId){
+            return new Promise((resolve, reject) =>{
+                let consumption = this.fly.get(this.baseUrl +'/api/member/consumptionRecord',{memberId:memberId})
+                resolve(consumption)
+              }) 
+            }
+         
+          //用户分润记录
+          FenRunDetail(distribeId){
+            return new Promise((resolve, reject) =>{
+                let FenRunDetail = this.fly.get(this.baseUrl +'/api/distribe/FenRunDetail',{distribeId:distribeId})
+                resolve(FenRunDetail)
+              }) 
+            }
         }

@@ -3,7 +3,7 @@
     <div class="head">
       <div class="title">可提现佣金</div>
       <div class="money">￥{{distribeDo.balance}}元</div>
-      <div class="btnWarp"><text @click="jumpPage">提现</text><text @click="eventDraw">推广</text></div>
+      <div class="btnWarp"><text @click="jumpPage">提现</text><text @click="eventDraw">推广</text><text @click="toXiaofei">明细</text></div>
     </div>
     <!--head end-->
 
@@ -95,6 +95,9 @@ export default {
      that.len = res.data.memberDOList.length
      that.total = res.data.total
      that.totalAssets = res.data.totalAssets
+     wx.setStorageSync('distribeId',res.data.distribeDo.distribeId)
+     
+    //  console.log("查看微分销信息",res)
    },
    async toPage(url){
     let that=this
@@ -118,6 +121,9 @@ export default {
      }else{
        wx.redirectTo({ url: '../distribemoney/main?balance='+that.distribeDo.balance+'&cardno='+that.distribeDo.cardno+'&depositBank='+that.distribeDo.depositBank });
      }
+   },
+   toXiaofei(){
+     wx.navigateTo({ url: '../xiaofei/main' });
    },
    guanbi(){
      let that = this;

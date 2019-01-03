@@ -17,7 +17,11 @@
         </div>
       </picker>
     </div>
+    <div class="bntWarp">
     <div class="btn" @click="recharge">充值</div>
+    <div class="btn" @click="jump">消费明细</div>
+    </div>
+
 </div>
 </template>
 
@@ -54,6 +58,9 @@ export default {
       item.isSelect=false
     })
     that.rechargeList[index].isSelect=true
+   },
+   jump(){
+     wx.navigateTo({ url: '../xiaofei/main' });
    },
    recharge(){
     let that=this
@@ -173,7 +180,8 @@ img{
   }
 }
 
-.btn{width: 55%;margin: auto;background: rgb(252,153,47);color: #fff;font-size: 32rpx;line-height: 75rpx;text-align: center;border-radius: 15rpx;}
+.bntWarp{display: flex;justify-content: center;padding: 0 45rpx;}
+.btn{width: 55%;margin: 0 20rpx;background: rgb(252,153,47);color: #fff;font-size: 32rpx;line-height: 75rpx;text-align: center;border-radius: 15rpx;}
 
 
 </style>

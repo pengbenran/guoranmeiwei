@@ -38,7 +38,8 @@
     "pages/distribePay/main",
     "pages/search/main",
     "pages/orderInfo/main",
-    "pages/Selflifting/main"
+    "pages/Selflifting/main",
+    "pages/xiaofei/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
