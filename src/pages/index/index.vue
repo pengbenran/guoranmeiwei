@@ -59,7 +59,7 @@
         <div class="actItem skeleton-rect" v-for="(item,index) in activityImg" :index='index' :key='item' @click="toPage(item.pageUrl)">
             <div class="itembg"><img :src="item.actBg"/></div>
             <div class="itemTile">
-               <text>{{item.actName}}</text><small>{{item.acttall}}</small>
+               <text>{{item.actName}}</text>
             </div>
         </div>
       </div>
@@ -67,7 +67,7 @@
    <!--activity end-->
    <div class="rili">
      <div class="riliTitle"><text>时令日历</text></div>
-     <div class="riliMore"><span class="time">11月</span><small class="more" @click="toPage('../riliList/main?catId='+rilicatId)">查看更多</small></div>
+     <div class="riliMore"><span class="time">{{month}}月</span><small class="more" @click="toPage('../riliList/main?catId='+rilicatId)">查看更多</small></div>
      <div class="riliBg"><img :src="imgList.rilibg"/></div>
      <div class="liriWarp">
       <!-- <div class="riliTop">
@@ -89,10 +89,10 @@
   <block v-for="(outitem,outindex) in advertisingIndex" :index="outindex" :key="outitem">
     <div class="free">
       <div class="freeTop"><span>{{outitem.bigTitle}}</span><p>{{outitem.smallTitle}}</p></div>
-      <div class="freeBrand"   @click="jumpshopInfo(outitem.goodsId)"><img :src="outitem.imageUrl"/></div>
+      <div class="freeBrand"   @click="jumpshopInfo(outitem.goodsId)"><img :src="outitem.imageUrl"  mode="widthFix"/></div>
     </div>
     <div class="freeList">
-      <div class="freeListBg"><img :src="imgList.freeImgBg" /></div>
+      <div class="freeListBg"><img :src="imgList.freeImgBg"/></div>
       <scroll-view class="scrollItem" scroll-x style="height: 335rpx;">
         <div class="freeItemWarp">
           <div class="freeItem" v-for="(innerItem,innerIndex) in outitem.goodsDOList" :index='innerIndex' :key='innerItem' @click="jumpshopInfo(innerItem.goodsId)">
@@ -143,10 +143,10 @@
         seasonalCalendarRes:[],
         messageDoList:[{content:''}],
         activityImg:[
-          {actName:'限时活动',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao0.jpg',pageUrl:'../discount/main'},
-          {actName:'火爆拼团',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao1.jpg',pageUrl:'../grouplist/main'},
-          {actName:'分享砍价',acttall:'每日10点限时秒杀',actBg:config.imgUrl+'/index/cuxiao2.jpg',pageUrl:'../bargain/main'},
-          {actName:'优惠券',acttall:'400减50',actBg:config.imgUrl+'/index/cuxiao3.jpg',pageUrl:'../coupon/main'}
+          {actName:'限时活动',actBg:config.imgUrl+'/index/cuxiao0.jpg',pageUrl:'../discount/main'},
+          {actName:'火爆拼团',actBg:config.imgUrl+'/index/cuxiao1.jpg',pageUrl:'../grouplist/main'},
+          {actName:'分享砍价',actBg:config.imgUrl+'/index/cuxiao2.jpg',pageUrl:'../bargain/main'},
+          {actName:'优惠券',actBg:config.imgUrl+'/index/cuxiao3.jpg',pageUrl:'../coupon/main'}
         ],
         showSkeleton: false ,
         isMember:false,
@@ -156,7 +156,8 @@
         advertisingIndex:[] ,
         shopList:[],
         shopDetail:{},
-        addr:{a:'2222'}
+        addr:{a:'2222'},
+        month:''
       } 
     },
     components: {
@@ -172,8 +173,20 @@
       that.$refs.loginModel.userLogin()
     },
     onShow(){
-      wx.setStorageSync('addr','noaddr')
+     
       this.shopDetail=wx.getStorageSync('shopDetail')
+    },
+    onLoad(options){
+      var that = this  
+       wx.setStorageSync('addr','noaddr')
+      if (options.scene == undefined) {
+        wx.setStorageSync('distribeId',null)
+      }
+      else {
+        wx.setStorageSync('distribeId', decodeURIComponent(options.scene))
+      }
+     var myDate = new Date();
+     that.month=myDate.getMonth()+1
     },
     methods: {
       getLoca(){
@@ -234,18 +247,14 @@
         let seasonalCalendarRes= await api.getseasonalCalendar()
         that.seasonalCalendarRes=seasonalCalendarRes.data.data
         that.rilicatId = seasonalCalendarRes.data.catId
-        // console.log("查看数据12313213",that.seasonalCalendarRes)
       },
       async getTopIndex(){
         let that=this
         let indexTopRes = await api.getTopIndex()
-        // console.log(indexTopRes.data);
         that.banner=indexTopRes.data.data.AdpicDoList;
- 
         that.messageDoList=indexTopRes.data.data.messageDoList;
         that.hotgoodsList=indexTopRes.data.data.goodsList;
         wx.setStorageSync('indexdata', indexTopRes.data.message)
-        console.log("查看商品信息",that.messageDoList,indexTopRes)
       },
       async getadvertisingIndex(){
         let that=this
@@ -256,10 +265,7 @@
           item.smallTitle=titleArry[1]
           return item
         })
-    
-        console.log(that.advertisingIndex,"查看数据asds",getadvertisingIndexRes)
         // that.advertisingIndex=getadvertisingIndexRes.data.data
-        console.log(that.advertisingIndex)
       },
       toNav(url){
         wx.navigateTo({ url: url });
@@ -325,9 +331,8 @@ white-space: nowrap;}
   .actItem{width: 49%;height: 184rpx;position: relative;margin-bottom: 15rpx;border-radius: 10rpx;overflow: hidden;}
   .itembg{position: absolute;height: 100%;width: 100%;left: 0;top: 0;}
   .itemTile{position: relative;z-index: 2;padding-left: 16rpx;padding-top: 10rpx;line-height: 45rpx;
-          text{font-size: 34rpx;font-weight: 500;}
-          small{color:rgb(184, 184, 184);font-weight: 100;font-size: 24rpx;}
-          }
+          text{font-size: 34rpx;font-weight: 500;height: 50px;line-height: 50px;}
+        }  
 }
 
 .rili{position: relative;height: 380rpx;padding-top: 78rpx;;
@@ -359,11 +364,11 @@ white-space: nowrap;}
 .freeTop p{font-weight: 100;color: #8e8e8e;font-size: 25rpx;}
 
 .free{padding: 0 20rpx;margin-bottom: 25rpx;
-  .freeBrand{height: 215rpx;margin-bottom: 20rpx;}
+  .freeBrand{margin-bottom: 20rpx;}
 }
 
 .freeList{position: relative;height: 360rpx;
-  .freeListBg{position: absolute;top: 0;left: 0;height: 100%;width: 100%;}
+  .freeListBg{height:360rpx; position: absolute;top: 0;left: 0;height: 100%;width: 100%;}
 }
 .scrollItem{white-space:nowrap;display:block;position: relative;z-index: 2;
   .freeItemWarp{@include flexc;}

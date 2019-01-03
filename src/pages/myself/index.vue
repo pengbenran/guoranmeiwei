@@ -89,6 +89,7 @@ export default {
      {name:'地址管理',icon:config.imgUrl+"/myself/address.png",PageUrl:'../addressList/main'},
      {name:'优惠券',icon:config.imgUrl+"/myself/youhuijuan.png",PageUrl:'../coupon/main'},
      {name:'拼团',icon:config.imgUrl+"/myself/group.png",PageUrl:'../groupitem/main'},
+     {name:'砍价',icon:config.imgUrl+"/myself/cut.png",PageUrl:'../cutitem/main'},
      {name:'联系客服',icon:config.imgUrl+"/myself/connect.png",PageUrl:'../kefu/main'}
      ],
      vouchercount:0

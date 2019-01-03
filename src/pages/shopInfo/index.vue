@@ -12,7 +12,9 @@
          {{Goods.name}}
      </div>
      <div class="Price">
-         <text class="new">￥{{Goods.price}}</text><text class="old">￥19.90</text>
+         <text class="new" v-if="Goods.products.length>1">￥{{minPrice}}~{{maxPrice}}</text>
+         <text class="new" v-if="Goods.products.length==1">￥{{Goods.price}}</text>
+         <text class="old">￥{{Goods.cost}}</text>
      </div>
      <div class="PriceTag">
          <text>全场满{{indexdata.freight}}元免配送费</text>  <text>库存:{{Goods.enableStore}}</text>
@@ -137,6 +139,8 @@ export default {
           catId:'',
           productId:'',
           indexdata:{},
+          maxPrice:0,
+          minPrice:0
     }
   },
   
@@ -154,6 +158,8 @@ export default {
      res.data.products[0].selected=true
      res.data.Goods.specs=res.data.products[0].name
      res.data.Goods.products=res.data.products
+     res.data.Goods.price=res.data.products[0].price
+     that.getmax_min(res.data.products)
      that.Gallery = res.data.Gallery;
      that.Goods = res.data.Goods;
      if (res.data.count == 0) {
@@ -161,6 +167,21 @@ export default {
       } else {   
         that.posts= true
       }
+   },
+   getmax_min(productArray){
+    let that=this
+    let maxPrice=productArray[0].price
+    let minPrice=productArray[0].price
+    for(var i in productArray){
+      let curMax = productArray[i].price;
+      curMax > maxPrice ? maxPrice = curMax : null
+    }
+    for(var i in productArray){
+      let curMin = productArray[i].price;
+      curMin < minPrice ? minPrice = curMin : null
+    }
+    that.maxPrice=maxPrice
+    that.minPrice=minPrice
    },
     async collection(){
       let that=this
@@ -195,7 +216,7 @@ export default {
      let that = this;
      that.maskmodel=true;
      Lib.Loading("图片绘制中")
-     let res = await api.GetShare('pages/index/main',that.goodsId)
+     let res = await api.GetShare('pages/shopInfo/main',that.goodsId)
      let ImgArr = [res.data,that.Goods.thumbnail]
      let ImgRes = await Lib.getImageInfo(ImgArr)
          that.painting={
@@ -368,17 +389,26 @@ export default {
       })
    }
   },
-  async mounted(){
+  async onLoad(options){
     let that = this;
     that.indexdata=wx.getStorageSync('indexdata')
-    that.goodsId = this.$root.$mp.query.goodsId;
-    that.catId =  this.$root.$mp.query.catId;
+    
+    
     that.memberId = wx.getStorageSync('memberId');
+     if (options.scene == undefined) {
+       that.goodsId = options.goodsId;
+       that.catId =  options.catId;
+      }
+      else {
+        that.goodsId = decodeURIComponent(options.scene);
+        // that.catId =  options.catId;
+      }
     //获取商品信息
     that.SelectShopInfo();
   },
   onShow(){
     this.modelShow=false;
+    this.footerModel=false;
   },
     onShareAppMessage: function (res) {
     if (res.from === 'button') {

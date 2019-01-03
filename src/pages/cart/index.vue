@@ -147,7 +147,7 @@ export default {
             gooditemString = JSON.stringify(Goods)
         
         })
-            console.log("你好世界查看数据",Goods,gooditemString)
+            console.log("你好世界查看数据",gooditemString)
         // console.log("跳转查看数据",gooditemString,Goods)
         that.AllPrice=total.toFixed(2)
         if (googitem.length == "") {
@@ -158,7 +158,7 @@ export default {
           })
         }else {
           wx.navigateTo({
-            url: "../orderOne/main?gooditem=" + gooditemString + '&cart=1',
+            url: "../orderOne/main?goodItem=" + gooditemString + '&cart=1',
             success: function (res) {
               that.SelectBool=false;
               that.AllPrice=0.00;    

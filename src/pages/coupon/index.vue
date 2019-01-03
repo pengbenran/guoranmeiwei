@@ -6,7 +6,7 @@
          <div class="Item" v-for="(item,index) in VoucherMap" :index='index' :key='item'>
              <div class="title fontHidden1">{{item.voucherName}}(满{{item.conditionAmount}}可用) </div>
              <div class="info">有效时间 <text>{{item.begintime}}</text>-<text>{{item.endtime}}</text></div>
-             <div class="btn"><span>{{item.faceValue}}元优惠券</span> <text @click="Linqu(item.voucherId)">{{btnName}}</text> </div>
+             <div class="btn"><span>{{item.faceValue}}元优惠券</span> <text @click="Linqu(item.voucherId,index)">{{btnName}}</text> </div>
              <div class="tag">ps：此劵不参加拼团、限时、砍价、和特价产品</div>
          </div>
      </div>
@@ -110,22 +110,56 @@ export default {
    },
 
    //领取优惠券
-   async Linqu(voucherId){
-       let that = this;  
-       let res = await api.LiquCouponts(that.memberId,voucherId)
-       if(res.data.code == 1){
-         that.tu = 2
-         Lib.Show("领取次数已达上限","领取次数已达上限",1000)
-       }else{
-         that.tu = 1
-         Lib.Show("领取成功","领取成功",1000)
+   async Linqu(voucherId,index){
+       let that = this;
+       console.log(index);
+       if(that.btnName=="去领取"){
+         let res = await api.LiquCouponts(that.memberId,voucherId)
+         if(res.data.code == 1){
+           that.tu = 2
+           Lib.Show("领取次数已达上限","领取次数已达上限",1000)
+         }else{
+           that.tu = 1
+           Lib.Show("领取成功","领取成功",1000)
+         }
+       } 
+       else if(that.btnName=="点击使用"){
+        if(that.jumpfrom=='index'){
+          wx.switchTab({ url: '../index/main' });
+        }else{
+          if(that.VoucherMap[index].conditions==2){
+            if(wx.getStorageSync('goodsAmount')<that.VoucherMap[index].conditionAmount){
+             wx.showToast({
+              title: '不满足使用条件',
+              icon: 'none',
+              duration: 2000
+            })
+            }
+            else{
+               wx.navigateTo({ url: '../orderOne/main?voucherItem='+JSON.stringify(that.VoucherMap[index]) });
+            }
+          }
+          else{
+             wx.navigateTo({ url: '../orderOne/main?voucherItem='+JSON.stringify(that.VoucherMap[index]) });
+          }
+         
+        }
        }
+      
    }
   },
   async onLoad() {
     let that=this;
     that.memberId = wx.getStorageSync('memberId')
     that.memberIdlvId = wx.getStorageSync('memberIdlvId')
+    let pages = getCurrentPages();
+    let prevpage = pages[pages.length-2];
+    if(prevpage.route=="pages/index/main"){
+      that.jumpfrom='index'
+   }
+   else if(prevpage.route=="pages/orderOne/main"){
+     that.jumpfrom='orderOne'
+   }
     that.onCoupon();
 
   }

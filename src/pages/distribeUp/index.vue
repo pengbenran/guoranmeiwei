@@ -2,7 +2,7 @@
   <div class="Up">
      <div class="header"><img :src="listImg.headerImg" mode='aspectFit'/></div>
      <div class="Tou"><img :src="face"/></div>
-     <div class="title">大众会员</div>
+     <div class="title">{{memberLvList[0].name}}</div>
      <div class="Btn"><text @click="Membershioup">立即升级</text></div>
 
      <div class="List">
@@ -11,13 +11,13 @@
 
        <div class='membergarddetail'>
     <div class='membergardtitle'>
-      <div>等级</div>
+      <!-- <div>等级</div> -->
       <div>会员角色</div>
       <div>分润</div>
       <div>价格</div>
     </div>
     <div class='membergardlist'>
-      <div class='row1'>一级分销商</div>
+    <!--   <div class='row1'>一级分销商</div> -->
       <div class='row2'>
         <div>{{memberLvList[0].name}}</div>
         <div>{{memberLvList[1].name}}</div>
@@ -31,8 +31,8 @@
        <div>{{memberLvList[1].point}}</div>
       </div>
     </div>
-    <div class='membergardlist'>
-      <div class='row1'>二级分销商</div>
+<!--     <div class='membergardlist'>
+     <div class='row1'>二级分销商</div> 
       <div class='row2'>
         <div>{{memberLvList[0].name}}</div>
         <div>{{memberLvList[1].name}}</div>
@@ -45,7 +45,7 @@
        <div>{{memberLvList[0].point}}</div> 
        <div>{{memberLvList[1].point}}</div>
       </div>
-    </div>
+    </div> -->
   </div>
   </div>
 </template>
@@ -135,13 +135,10 @@ export default {
      let that = this;
      that.memberId = wx.getStorageSync('memberId')
      that.face = wx.getStorageSync('face');
-
-       let res = await api.MemberLvList()
-      
-       that.memberLvList = res.data.memberLvList
-       that.needpay = Math.abs(res.data.memberLvList[1].point - res.data.memberLvList[0].point)
-
-        console.log("查看数据",that.memberLvList)
+     let res = await api.MemberLvList()
+     that.memberLvList = res.data.memberLvList
+     that.needpay = Math.abs(res.data.memberLvList[1].point - res.data.memberLvList[0].point)
+     console.log("查看数据",that.memberLvList)
      //初始化数据
      that.onLoads();
   }
@@ -174,14 +171,8 @@ display: flex;
 background: #FAF4E8;
 color: #C19657;
 }
-.title{
-  height: 100rpx;
-  line-height: 100rpx;
-  padding-left: 20rpx;
-  box-sizing: border-box;
-}
 .membergardtitle div{
-  width: 25%;
+  width: 33%;
   text-align: center;
   height: 80rpx;
   line-height: 80rpx;

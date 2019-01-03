@@ -1,13 +1,13 @@
  import Fly from "flyio/dist/npm/wx";
-export default class Api{
+ export default class Api{
   constructor() {
-     // this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guqinzhen"
+   // this.baseUrl = "https://www.guqinjiujiang.xyz:8444/guoranhuiwei"
      // this.baseUrl = "https://www.etuetf.com"
-     // this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
+     this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
      //this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
 
-     this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
-     // this.baseUrl = "http://192.168.2.208/guoranhuiwei" 
+     // this.baseUrl = "http://192.168.2.111/guoranhuiwei" 
+     // this.baseUrl = "http://192.168.2.131:8080/guoranhuiwei" 
 
     // this.baseUrl = "http://192.168.2.131/guoranhuiwei" 
     this.fly = new Fly;
@@ -16,18 +16,18 @@ export default class Api{
 
   //获取首页轮播图
   getTopIndex(){
-	return new Promise((resolve, reject) => {
-      let topIndexRes=this.fly.get(this.baseUrl +'/api/index/topIndex')
-      resolve(topIndexRes)
-	})   
-  }
+   return new Promise((resolve, reject) => {
+    let topIndexRes=this.fly.get(this.baseUrl +'/api/index/topIndex')
+    resolve(topIndexRes)
+  })   
+ }
 
   // 获取时令日历
   getseasonalCalendar(){
-  return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       let seasonalCalendarRes=this.fly.get(this.baseUrl +'/api/index/seasonalCalendar')
       resolve(seasonalCalendarRes)
-  })   
+    })   
   }
   // 获取楼层分类以及商品列表
   getadvertisingIndex(){
@@ -41,7 +41,7 @@ export default class Api{
     return new Promise((resolve, reject) => {
       let res=this.fly.get(this.baseUrl +'/api/collage/collageGoodsList')
       resolve(res)
-  })   
+    })   
   }
   // 获取商品详情
   getGoods(goodsId,memberId){
@@ -70,51 +70,51 @@ export default class Api{
   }
   // 获取所有正在拼团的数据
   getallStartCollage(productId){
-     return new Promise((resolve, reject) => {
-      let res=this.fly.get(this.baseUrl +'/api/collage/allStartCollage',{productId:productId})
-      resolve(res)
-    })
-  }
+   return new Promise((resolve, reject) => {
+    let res=this.fly.get(this.baseUrl +'/api/collage/allStartCollage',{productId:productId})
+    resolve(res)
+  })
+ }
   // 获取限时活动的列表
   getLimit(offset,limit){
     return new Promise((resolve, reject) => {
-       let params={}
-       params.offset=offset
-       params.limit=limit
-       let limitRes=this.fly.get(this.baseUrl +'/api/activity/limit',{params:JSON.stringify(params)})
-       resolve(limitRes)
-    })
+     let params={}
+     params.offset=offset
+     params.limit=limit
+     let limitRes=this.fly.get(this.baseUrl +'/api/activity/limit',{params:JSON.stringify(params)})
+     resolve(limitRes)
+   })
   }
   // 获取砍价列表
   getCutlist(){
     return new Promise((resolve, reject) => {
      let cutlistRes=this.fly.get(this.baseUrl +'/api/cut/cutList')
-       resolve(cutlistRes)
-    })
+     resolve(cutlistRes)
+   })
   }
    // 根据cutID查找砍价商品详情
    getByCutId(cutId){
-      return new Promise((resolve, reject) => {
-        let cutDetailRes=this.fly.get(this.baseUrl+'/api/cut/findCut?cutId=' + cutId)
-        resolve(cutDetailRes)
-      })
-   }
+    return new Promise((resolve, reject) => {
+      let cutDetailRes=this.fly.get(this.baseUrl+'/api/cut/findCut?cutId=' + cutId)
+      resolve(cutDetailRes)
+    })
+  }
   // 判断是否参过团
   isJoin(memberId,cutId){
-     return new Promise((resolve, reject) => {
-        let cutparm = {}
-        cutparm.memberId = memberId
-        cutparm.cutId = cutId
-        let cutDetailRes=this.fly.get(this.baseUrl+'/api/cut/isJoin',{params:JSON.stringify(cutparm)})
-        resolve(cutDetailRes)
-     })
-  }
-  startCut(startcutparm){
-      return new Promise((resolve, reject) => {
-         let startCutRes=this.fly.get(this.baseUrl+'/api/cut/startCut',{params:JSON.stringify(startcutparm)})
-        resolve(startCutRes)
-      })
-  }
+   return new Promise((resolve, reject) => {
+    let cutparm = {}
+    cutparm.memberId = memberId
+    cutparm.cutId = cutId
+    let cutDetailRes=this.fly.get(this.baseUrl+'/api/cut/isJoin',{params:JSON.stringify(cutparm)})
+    resolve(cutDetailRes)
+  })
+ }
+ startCut(startcutparm){
+  return new Promise((resolve, reject) => {
+   let startCutRes=this.fly.get(this.baseUrl+'/api/cut/startCut',{params:JSON.stringify(startcutparm)})
+   resolve(startCutRes)
+ })
+}
   // 根据code判断是否是会员
   getCode(){
    return new Promise((resolve, reject) => {
@@ -127,8 +127,8 @@ export default class Api{
         }
       }
     })
-   })
-  }
+  })
+ }
   // 获取用户信息并且注册会员
   weCatLogin(code,avatarUrl,nickName,gender,country,province,city){
     return new Promise((resolve, reject) => {
@@ -147,10 +147,10 @@ export default class Api{
   // 获取会员信息
   getMemberInfo(memberId){
     return new Promise((resolve, reject) => {
-    let userParms = {}
-    userParms.memberId = memberId
-    let userInfoRes=this.fly.get(this.baseUrl +'/api/member/memberIndex',{parms:JSON.stringify(userParms)})
-    resolve(userInfoRes)
+      let userParms = {}
+      userParms.memberId = memberId
+      let userInfoRes=this.fly.get(this.baseUrl +'/api/member/memberIndex',{parms:JSON.stringify(userParms)})
+      resolve(userInfoRes)
     })
   }
   // 收藏收藏
@@ -159,30 +159,30 @@ export default class Api{
     let collecparm={}
     collecparm.favorite=parms
     let addCollectionRes=this.fly.post(this.baseUrl +'/api/favorite/add',{parms:JSON.stringify(collecparm)},{headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }})
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }})
     resolve(addCollectionRes)
-   })
-  }
+  })
+ }
   // 取消收藏
   delCollection(parms){
    return new Promise((resolve, reject) => {
     let collecparm={}
     collecparm.favorite=parms
     let delCollectionRes=this.fly.post(this.baseUrl +'/api/favorite/delete',{parms:JSON.stringify(collecparm)},{headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }})
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }})
     resolve(delCollectionRes)
-   })
-  }
+  })
+ }
   //获取积分
   getPoint(memberId){
     return new Promise((resolve, reject) => {
-    let pointRes=this.fly.get(this.baseUrl +'/api/member/point',{memberId:memberId})
-    resolve(pointRes)
-   })
+      let pointRes=this.fly.get(this.baseUrl +'/api/member/point',{memberId:memberId})
+      resolve(pointRes)
+    })
   }
-   
+
   //签到
   Signin(memberId,cutpoint){
     return new Promise((resolve, reject) => {
@@ -197,26 +197,26 @@ export default class Api{
   }
   // 获取商品分类
   getGoodKind(){
-     return new Promise((resolve, reject) => {
-      let kindRes=this.fly.get(this.baseUrl +'/api/Goods/GoodCatAll')
-      resolve(kindRes)
-     })
-  }
+   return new Promise((resolve, reject) => {
+    let kindRes=this.fly.get(this.baseUrl +'/api/Goods/GoodCatAll')
+    resolve(kindRes)
+  })
+ }
   // 根据商品分类获取商品
   getGoodsAll(catId){
-     return new Promise((resolve, reject) => {
-      let params={}
-      params.catId = catId
-      let moreGoodRes=this.fly.get(this.baseUrl +'/api/Goods/getGoodsAll',{params:JSON.stringify(params)})
-      resolve(moreGoodRes)
-     })
-   }
+   return new Promise((resolve, reject) => {
+    let params={}
+    params.catId = catId
+    let moreGoodRes=this.fly.get(this.baseUrl +'/api/Goods/getGoodsAll',{params:JSON.stringify(params)})
+    resolve(moreGoodRes)
+  })
+ }
   //获取订单全部列表
   AllGoodList(parms){
     return new Promise((resolve,reject) => {
-       let GoodList = this.fly.get(this.baseUrl +'/api/order/apiSelectOrderList',{params:JSON.stringify(parms)})
-       resolve(GoodList)
-    })
+     let GoodList = this.fly.get(this.baseUrl +'/api/order/apiSelectOrderList',{params:JSON.stringify(parms)})
+     resolve(GoodList)
+   })
   }
   //根据状态查询订单
   OrderSelectList(parms){
@@ -231,7 +231,7 @@ export default class Api{
     return new Promise((resolve,reject) => {
       let Orderres = this.fly.put(this.baseUrl +'/api/order/synthesize',{params:JSON.stringify(parms)},{headers:{
         'Content-Type': 'application/x-www-form-urlencoded'
-       }})
+      }})
       resolve(Orderres)
     })
   }
@@ -248,7 +248,7 @@ export default class Api{
     return new Promise((resolve,reject) => {
       let Orderres = this.fly.put(this.baseUrl +'/api/order/passOrder',{params:JSON.stringify(params)},{headers:{
         'Content-Type': 'application/x-www-form-urlencoded'
-       }})
+      }})
       resolve(Orderres)
     })
   }
@@ -261,20 +261,20 @@ export default class Api{
   }
   addAddress(parms){
    return new Promise((resolve,reject) => {
-      let addressRes = this.fly.post(this.baseUrl +'/api/address/add',{parms:JSON.stringify(parms)},{headers:{
-        'Content-Type': 'application/x-www-form-urlencoded'
-       }})
-      resolve(addressRes)
-    }) 
-  }
-  getAllAddress(memberId){
-     return new Promise((resolve,reject) => {
-      let params={}
-      params.memberId=memberId
-      let allAddressRes = this.fly.get(this.baseUrl +'/api/address/addressAll',{parms:JSON.stringify(params)})
-      resolve(allAddressRes)
-    }) 
-  }
+    let addressRes = this.fly.post(this.baseUrl +'/api/address/add',{parms:JSON.stringify(parms)},{headers:{
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }})
+    resolve(addressRes)
+  }) 
+ }
+ getAllAddress(memberId){
+   return new Promise((resolve,reject) => {
+    let params={}
+    params.memberId=memberId
+    let allAddressRes = this.fly.get(this.baseUrl +'/api/address/addressAll',{parms:JSON.stringify(params)})
+    resolve(allAddressRes)
+  }) 
+ }
     //购物车所有订单
     CartList(memberId){
       return new Promise((resolve,reject) =>{
@@ -288,7 +288,7 @@ export default class Api{
       return new Promise((resolve,reject) =>{
         let CartOrderNum = this.fly.put(this.baseUrl + '/api/shoppingCart/modification',{params:JSON.stringify(parms)},{headers:{
           'Content-Type': 'application/x-www-form-urlencoded'
-         }})
+        }})
         resolve(CartOrderNum)
       })
     }
@@ -324,20 +324,20 @@ export default class Api{
     editAddr(params){
       return new Promise((resolve, reject) =>{
         let editAddre = this.fly.put(this.baseUrl +'/api/address/update',{parms:JSON.stringify(params)},{headers:{
-        'Content-Type': 'application/x-www-form-urlencoded'
-       }})
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }})
         resolve(editAddre)
       })
     }
   // 删除地址
-    deleteAddress(params){
-      return new Promise((resolve, reject) =>{
-        let delAddre = this.fly.post(this.baseUrl +'/api/address/deleteAddress',{parms:JSON.stringify(params)},{headers:{
+  deleteAddress(params){
+    return new Promise((resolve, reject) =>{
+      let delAddre = this.fly.post(this.baseUrl +'/api/address/deleteAddress',{parms:JSON.stringify(params)},{headers:{
         'Content-Type': 'application/x-www-form-urlencoded'
-       }})
-        resolve(delAddre)
-      }) 
-    }
+      }})
+      resolve(delAddre)
+    }) 
+  }
     //加载优惠券
     onCoupont(memberIdlvId){
       return new Promise((resolve, reject) =>{
@@ -359,7 +359,7 @@ export default class Api{
       return new Promise((resolve, reject) =>{
         let LiquCouponts = this.fly.post(this.baseUrl +'/api/vocher/received',{memberId:memberId,voucherId:voucherId},{headers:{
           'Content-Type': 'application/x-www-form-urlencoded'
-         }})
+        }})
         resolve(LiquCouponts)
       })
     }
@@ -392,8 +392,8 @@ export default class Api{
     toCartSave(cartparms){
       return new Promise((resolve, reject) =>{
         let toCartSave = this.fly.post(this.baseUrl +'/api/shoppingCart/save',{params:JSON.stringify(cartparms)},{headers:{
-        'Content-Type': 'application/x-www-form-urlencoded'
-       }})
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }})
         resolve(toCartSave)
       }) 
     }
@@ -405,7 +405,7 @@ export default class Api{
       }})
       resolve(orderSave)
     }) 
-    }
+   }
     // 获取店铺
     getshopList(){
       return new Promise((resolve, reject) =>{
@@ -431,29 +431,29 @@ export default class Api{
     OrderSave(bean){
       return new Promise((resolve, reject) =>{
         let toCartSave = this.fly.post(this.baseUrl +'/api/order/save',{ order:JSON.stringify(bean)},{headers:{
-        'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded'
         }})
         resolve(toCartSave)
       }) 
     }
     // 开团成功回调修改订单状态
     collagePayReturn(params){
-        return new Promise((resolve, reject) =>{
+      return new Promise((resolve, reject) =>{
         let collagePayReturn = this.fly.put(this.baseUrl +'/api/order/collagePayReturn',{ params:JSON.stringify(params)},{headers:{
-        'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded'
         }})
         resolve(collagePayReturn)
       }) 
     }
     // 判断能否参团
     joinCollageRepetition(params){
-       return new Promise((resolve, reject) =>{
-        let toCartSave = this.fly.post(this.baseUrl +'/api/collage/joinCollageRepetition',{ params:JSON.stringify(params)},{headers:{
+     return new Promise((resolve, reject) =>{
+      let toCartSave = this.fly.post(this.baseUrl +'/api/collage/joinCollageRepetition',{ params:JSON.stringify(params)},{headers:{
         'Content-Type': 'application/x-www-form-urlencoded'
-        }})
-        resolve(toCartSave)
-      }) 
-    }
+      }})
+      resolve(toCartSave)
+    }) 
+   }
     // 判断是否成团
     judgeIsCollaged(memberCollageId){
       return new Promise((resolve, reject) =>{
@@ -492,11 +492,11 @@ export default class Api{
     }
     // 获取拼团成功数据
     collageSucceed(params){
-       return new Promise((resolve, reject) =>{
-        let collageSucceedRes = this.fly.get(this.baseUrl +'/api/collage/collageSucceed',{ params:JSON.stringify(params)})
-        resolve(collageSucceedRes)
-      }) 
-    }
+     return new Promise((resolve, reject) =>{
+      let collageSucceedRes = this.fly.get(this.baseUrl +'/api/collage/collageSucceed',{ params:JSON.stringify(params)})
+      resolve(collageSucceedRes)
+    }) 
+   }
     // 获取我的所有参团数据
     allMemberCollage(memberId,collageType){
       return new Promise((resolve, reject) =>{
@@ -527,7 +527,7 @@ export default class Api{
         return new Promise((resolve, reject) =>{
           let SubmitDistribeApply = this.fly.post(this.baseUrl +'/api/distribe/submitDistribeApply',{ params:JSON.stringify(params)},{headers:{
             'Content-Type': 'application/x-www-form-urlencoded'
-            }})
+          }})
           resolve(SubmitDistribeApply)
         }) 
       }
@@ -537,18 +537,18 @@ export default class Api{
         return new Promise((resolve, reject) =>{
           let PayOrder = this.fly.post(this.baseUrl +'/api/distribe/payOrder',{ params:JSON.stringify(params)},{headers:{
             'Content-Type': 'application/x-www-form-urlencoded'
-            }})
+          }})
           resolve(PayOrder)
         })  
       }
 
          //判断微分销是否提交
-    WhetherDistribe(memberId){
-      return new Promise((resolve, reject) =>{
-        let WhetherDistribe = this.fly.get(this.baseUrl +'/api/distribe/whetherDistribe',{memberId:memberId})
-        resolve(WhetherDistribe)
-      }) 
-    }
+         WhetherDistribe(memberId){
+          return new Promise((resolve, reject) =>{
+            let WhetherDistribe = this.fly.get(this.baseUrl +'/api/distribe/whetherDistribe',{memberId:memberId})
+            resolve(WhetherDistribe)
+          }) 
+        }
 
     //微分销详情页
     DistribeInfo(memberId){
@@ -587,7 +587,7 @@ export default class Api{
         return new Promise((resolve, reject) =>{
           let Withdraw = this.fly.post(this.baseUrl +'/api/distribe/withdraw',{params:JSON.stringify(params)},{headers:{
             'Content-Type': 'application/x-www-form-urlencoded'
-            }})
+          }})
           resolve(Withdraw)
         }) 
       }
@@ -601,7 +601,7 @@ export default class Api{
       }
       // 获取充值列表
       accountSettingList(){
-          return new Promise((resolve, reject) =>{
+        return new Promise((resolve, reject) =>{
           let accountSettingListRes = this.fly.get(this.baseUrl+'/api/member/accountSettingList')
           resolve(accountSettingListRes)
         }) 
@@ -611,17 +611,17 @@ export default class Api{
         return new Promise((resolve, reject) =>{
           let topUpRes = this.fly.post(this.baseUrl +'/api/member/topUp',{memberId:memberId,id:id,shopId:shopId},{headers:{
             'Content-Type': 'application/x-www-form-urlencoded'
-            }})
+          }})
           resolve(topUpRes)
         }) 
       }
 
       //微分销提现记录
       AccountManagement(memberId){
-      return new Promise((resolve, reject) =>{
-        let AccountManagement = this.fly.get(this.baseUrl +'/api/distribe/accountManagement',{memberId:memberId})
-        resolve(AccountManagement)
-      }) 
+        return new Promise((resolve, reject) =>{
+          let AccountManagement = this.fly.get(this.baseUrl +'/api/distribe/accountManagement',{memberId:memberId})
+          resolve(AccountManagement)
+        }) 
       }
       // 判断是否已经砍价
       isHelp(params){
@@ -633,17 +633,17 @@ export default class Api{
       // 好友帮忙砍价
       helpCut(params){
        return new Promise((resolve, reject) =>{
-          let helpCutRes = this.fly.get(this.baseUrl +'/api/cut/helpCut',{params:JSON.stringify(params)})
-          resolve(helpCutRes)
-        }) 
-      }
+        let helpCutRes = this.fly.get(this.baseUrl +'/api/cut/helpCut',{params:JSON.stringify(params)})
+        resolve(helpCutRes)
+      }) 
+     }
       //获取优惠券
       VoucherUsed(params){
         return new Promise((resolve, reject) =>{
           let VoucherUsed = this.fly.get(this.baseUrl +'/api/vocher/voucherUsed',{params:JSON.stringify(params)})
           resolve(VoucherUsed)
         }) 
-        }
+      }
 
       //搜索页标签数据初始化
       GetSearchList(memberId){
@@ -651,14 +651,14 @@ export default class Api{
           let GetSearchList = this.fly.get(this.baseUrl +'/api/brand/getSearchList',{memberId:memberId})
           resolve(GetSearchList)
         }) 
-        }
+      }
 
          //检索商品
-      SelectIndexGoods(parms){
-        return new Promise((resolve, reject) =>{
-          let SelectIndexGoods = this.fly.get(this.baseUrl +'/api/Goods/selectIndexGoods',{parms:JSON.stringify(parms)})
-          resolve(SelectIndexGoods)
-        }) 
+         SelectIndexGoods(parms){
+          return new Promise((resolve, reject) =>{
+            let SelectIndexGoods = this.fly.get(this.baseUrl +'/api/Goods/selectIndexGoods',{parms:JSON.stringify(parms)})
+            resolve(SelectIndexGoods)
+          }) 
         }
 
       //搜索页换一批
@@ -667,32 +667,32 @@ export default class Api{
           let RandomList = this.fly.get(this.baseUrl +'/api/brand/randomList')
           resolve(RandomList)
         }) 
-        }
+      }
       // 砍价成功后购买商品修改砍价状态
       finishCut(startCutId){
         return new Promise((resolve, reject) =>{
           let finishCutRes = this.fly.post(this.baseUrl +'/api/cut/finishCut',{startCutId:startCutId},{headers:{
             'Content-Type': 'application/x-www-form-urlencoded'
-            }})
+          }})
           resolve(finishCutRes)
         }) 
       }
        //线下核销
-        BelowConsume(params){
-          return new Promise((resolve, reject) =>{
-            let BelowConsume = this.fly.post(this.baseUrl +'/api/member/belowConsume',{params:JSON.stringify(params)},{headers:{
-              'Content-Type': 'application/x-www-form-urlencoded'
-              }})
-            resolve(BelowConsume)
-          }) 
-        }
+       BelowConsume(params){
+        return new Promise((resolve, reject) =>{
+          let BelowConsume = this.fly.post(this.baseUrl +'/api/member/belowConsume',{params:JSON.stringify(params)},{headers:{
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }})
+          resolve(BelowConsume)
+        }) 
+      }
       
          //商品分润
          ShareProfit(fenrunParm){
           return new Promise((resolve, reject) =>{
             let ShareProfit = this.fly.post(this.baseUrl +'/api/distribe/shareProfit',{params:JSON.stringify(fenrunParm)},{headers:{
               'Content-Type': 'application/x-www-form-urlencoded'
-              }})
+            }})
             resolve(ShareProfit)
           }) 
         }
@@ -718,10 +718,32 @@ export default class Api{
             return new Promise((resolve, reject) =>{
               let SaveFormid = this.fly.post(this.baseUrl +'/api/push/saveFormid',{memberId:memberId,formid:formid},{headers:{
                 'Content-Type': 'application/x-www-form-urlencoded'
-                }})
+              }})
               resolve(SaveFormid)
             }) 
           }
-      
+          // 微分销下级注册
+          promotion(memberId,distribeId){
+            return new Promise((resolve, reject) =>{
+              let promotionRes = this.fly.post(this.baseUrl +'/api/distribe/promotion',{memberId:memberId,distribeId:distribeId},{headers:{
+                'Content-Type': 'application/x-www-form-urlencoded'
+              }})
+              resolve(promotionRes)
+            }) 
+          }
+          // 优惠劵使用
+          usedState(memberVoucherId){
+            return new Promise((resolve, reject) =>{
+              let usedStateRes = this.fly.get(this.baseUrl +'/api/vocher/usedState',{memberVoucherId:memberVoucherId})
+              resolve(usedStateRes)
+            }) 
+          }
+         //获取砍价列表
+         memberCutList(memberId,type){
+          return new Promise((resolve, reject) =>{
+              let memberCutListRes = this.fly.get(this.baseUrl +'/api/cut/mycuton',{memberId:memberId,type:type})
+              resolve(memberCutListRes)
+            }) 
+         }
 
-}
+        }

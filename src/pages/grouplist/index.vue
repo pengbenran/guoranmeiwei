@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div class="group">
     <div class="banner" v-if="Gallery.length==1">
     <img :src="Gallery[0].imageUrl"  mode="widthFix">

@@ -81,7 +81,8 @@ export default {
     total:'',
     totalAssets:'',
     face:'',
-    uname:''
+    uname:'',
+    memberLvList:[]
     }
   },
   methods:{
@@ -89,15 +90,25 @@ export default {
    async onloads(){
      let that = this;
      let res = await api.DistribeInfo(that.memberId)
-     console.log("查看请求信息",res)
      that.distribeDo = res.data.distribeDo;
      that.memberDOList = res.data.memberDOList
      that.len = res.data.memberDOList.length
      that.total = res.data.total
      that.totalAssets = res.data.totalAssets
    },
-   toPage(url){
-     wx.navigateTo({ url: url });
+   async toPage(url){
+    let that=this
+    if(url=="../distribeUp/main"){
+      let res = await api.MemberLvList()
+      let result=res.data.memberLvList.findIndex(item=>item.discount>that.distribeDo.discount)
+      if(result==-1){
+        Lib.Show('您已是最高等级','none',2000)
+      } 
+
+    }
+    else{
+        wx.navigateTo({ url: url });
+    }
    },
    //跳转提现
    jumpPage(){

@@ -73,13 +73,14 @@ export default {
            let payParms={}
            var  sn = Date.parse(new Date())
            payParms.orderid = Date.parse(new Date())
-           payParms.total_fee = 1
+           payParms.total_fee = recharge.money*100
            payParms.sn = sn
            wx.login({
              success: function (res) {
                if (res.code) {
                 api.prepay(res.code,payParms).then(function(res){
                   var pay=res.data
+                  wx.hideLoading()
                   wx.requestPayment({
                     timeStamp: pay.timeStamp,
                     nonceStr: pay.nonceStr,
@@ -109,16 +110,12 @@ export default {
                 })
                }
              }
-           })
-
-
-        
+           })     
         } else if (res.cancel) {
-          console.log('用户点击取消')
+        
         }
       }
     })
-    console.log(recharge);
    }
   },
   async onLoad(){

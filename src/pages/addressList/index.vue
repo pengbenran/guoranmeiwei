@@ -1,9 +1,9 @@
 <template>
   <div class="address">
     <div class="header">
-        <div class="left"><i class="fa fa-map-marker" aria-hidden="true"></i>  收货地址</div>
+        <div class="left"><span class="addressIcon"><img :src="map"></span>收货地址</div>
         <div class="right">
-            <i class="fa fa-trash-o" aria-hidden="true"></i> 
+            <span class="addressIcon"><img :src="trash"></span>
             <text @click="selectTo(1)" v-show='selectIndex==2'>删除地址</text><text  @click="selectTo(2)" v-show='selectIndex==1'>取消</text>
         </div>
     </div>
@@ -15,7 +15,9 @@
                 <div class="pople"><text>{{item.name}}</text> | <text>{{item.mobile}}</text></div>
             </div>
             <div class="right">
-                 <div class="deit" v-show='selectIndex==2'><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit(index)"></i></div>
+                 <div class="deit" v-show='selectIndex==2' @click="edits(index)">
+                    <img :src="edit">          
+                  </div>
                  <div class="deit" v-show='selectIndex==1'  @click="delAddr(index)"><icon type="cancel" color='rgb(252,154,47)' size="18"/> <text>删除</text></div>
             </div>
         </div>
@@ -44,7 +46,10 @@ export default {
         selectIndex:2,
         addressList:[],
         memberId:'',
-        jumpfrom:''
+        jumpfrom:'',
+        edit:config.imgUrl+'/myself/edit.png',
+        trash:config.imgUrl+'/myself/trash.png',
+        map:config.imgUrl+'/myself/map.png'
     }
   },
   methods:{
@@ -71,7 +76,7 @@ export default {
       }
       
     },
-    edit(e){
+    edits(e){
       let that=this
       let url=`../address/main?addrId=${that.addressList[e].addrId}`
       wx.navigateTo({
@@ -131,7 +136,9 @@ export default {
 @mixin flexc{
 display: flex;align-items: center;
 }
-
+.addressIcon{
+  width: 40rpx;height: 40rpx;overflow: hidden;vertical-align: middle;display:inline-block;
+}
 /*文本换行省略*/
 @mixin fontM{
 white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
@@ -147,12 +154,12 @@ img{display: block;height: 100%;width: 100%;}
    .item{@include flexc;justify-content: space-between;padding: 15rpx 0;border-bottom:1px solid rgb(245,245,245);}
    .left .title{font-size: 32rpx;}
    .info,.pople{font-weight: 100;font-size: 26rpx;color: #666;}
-   .deit{font-size: 38rpx;color: #666;}
+   .deit{width: 50rpx;height: 50rpx;overflow: hidden;}
    .deit text{font-weight: 100;font-size: 30rpx;color:rgb(252,154,47) }
 }
 
 .addressList{height: 900rpx;
-    img{width: 70%;margin: auto}
+  
 }
 
 .addresBtn{position: absolute;bottom: 40rpx;left: 5%;width: 90%;background:rgb(252,154,47);margin: auto;text-align: center;

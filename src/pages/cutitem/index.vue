@@ -1,9 +1,9 @@
 <template>
   <div class="groupitem">
     <div class="tab"><Tabs @listenToChild="fromChild" :find_item='find_item' :wid='width'></Tabs></div>
-    <div class="box" v-if="mytuanData.length!=0">
-      <div class='boxlist' v-for="(item,index) in mytuanData" :key="key" :index="index">
-        <div class="time">{{item.collageStarttime}}</div>
+    <div class="box" v-if="cutData.length!=0">
+      <div class='boxlist' v-for="(item,index) in cutData" :key="key" :index="index">
+        <div class="time">{{item.cutStarttime}}</div>
         <div class="spell-down" @click='pin'>
           <div class="spell-left">
             <image :src="item.thumbnail"></image>
@@ -14,35 +14,35 @@
             </div>
             <div class=" spell-bottom">
               <div class="spe-left">
-                <text class=" spetext-one">￥{{item.activityPrice}}</text>
-                <text class=" spetext-two">￥{{item.goodsPrice}}</text>
+                <text class=" spetext-one">还剩￥{{item.residualAmount}}元可砍</text>
+                <!-- <text class=" spetext-two">￥{{item.goodsPrice}}</text> -->
               </div>
-              <block v-if="item.isCollage==0">
+              <block v-if="item.isSuccess==0">
                 <div class="spell-btn" style="color:#ccc">
-                  拼团失败
+                  砍价失败
                 </div>
               </block>
-              <block v-if="item.isCollage==1">
+              <block v-if="item.isSuccess==1">
                 <div class="spell-btn" style="color:red">
-                  拼团成功
+                  砍价成功
                 </div>
               </block>
-              <block v-if="item.isCollage==2">
+              <block v-if="item.isSuccess==2">
                 <div class="spell-btn" style="color:#59d867">
-                  等待拼团
+                  正在砍价
                 </div>
               </block>
             </div>
-            <div class="collage">
+          <!--   <div class="collage">
               <div class="total">{{item.collagePersons}}人团</div>
               <div class="need">还差{{item.shortPerson}}人成团</div>
-            </div>
+            </div> -->
           </div>
         </div>
         <div class='clustering'>
           <div class='clustering-left'></div>
           <div class='clustering-right'>
-            <div class='btn-details'  @click='jumpGroup(index)'>拼团详情</div>
+            <div class='btn-details'  @click='jumpGroup(index)'>砍价详情</div>
           <!-- <block wx:if="{{item.isCollage==0}}">
             <button class='btn-attend' @click='qing'>再次开团</button>
           </block>
@@ -57,8 +57,8 @@
     </div>
   </div>
 
-  <div class="ordercontentno" v-if="mytuanData.length==0">
-    <image :src="none"></image> 
+  <div class="ordercontentno" v-if="cutData.length==0">
+    <image :src="none"></image>  
   </div>
 </div>
 </template>
@@ -68,6 +68,7 @@
  import config from "@/config"
  import Tabs from "@/components/tab.vue"
  import formatTime from "@/utils/index"
+ // import config from "@/config"
  let api=new Api
 export default {
   components: {
@@ -76,32 +77,21 @@ export default {
 
   data () {
     return {
-    find_item:[{name:"全部",selected:true},{name:"等待拼团",selected:false},{name:"拼团成功",selected:false},{name:"拼团失败",selected:false}],
-    width:"25%",
+    find_item:[{name:"正在砍价",selected:true},{name:"砍价成功",selected:false},{name:"砍价失败",selected:false}],
+    width:"33%",
     mytuanData:{},
     memberId:'',
-    none:config.imgUrl+'/group/none.png'
+    cutData:[],
+     none:config.imgUrl+'/group/none.png'
     }
   },
   methods:{
     jumpGroup(index){
       let that=this
-     let pingtuanObj = that.mytuanData[index]
-     let params = {}
-     params.price = pingtuanObj.goodsPrice
-     params.activityPrice = pingtuanObj.activityPrice
-     params.goodsId = pingtuanObj.goodsId
-     params.productId = pingtuanObj.productId
-     params.goodsName = pingtuanObj.goodsName
-     params.iscollage = pingtuanObj.isCollage
-     params.memberCollageId = pingtuanObj.memberCollageId
-     params.img = pingtuanObj.thumbnail
-     params.shortPerson = pingtuanObj.shortPerson
-     params.collageGoodsId = pingtuanObj.collageGoodsId
-     params= JSON.stringify(params)
-      wx.navigateTo({
-        url: '../group/main?shops= ' + params,
-      })
+     let cutObj = that.cutData[index]
+     wx.navigateTo({
+      url: '../bargainInfo/main?cutId=' + cutObj.cutId + '&goodsId=' + cutObj.goodsId+'&productId='+cutObj.productId,
+     })
     },
    //选项点击加载   
     async fromChild(data){
@@ -115,34 +105,33 @@ export default {
        that.find_item[data].selected=true
        switch(data){
         case 0:
-        that.getcollage(3)
-        break;
-        case 1:
         that.getcollage(2)
         break;
-        case 2:
+        case 1:
         that.getcollage(1)
         break;
-        case 3:
+        case 2:
         that.getcollage(0)
         break;
        }
     },
     async getcollage(collageType){ 
     let that=this;
-    api.allMemberCollage(that.memberId,collageType).then(function(allMemberCollageRes){
-      allMemberCollageRes.data=allMemberCollageRes.data.map((v)=>{
-        v.collageStarttime=formatTime.formatTime(v.collageStarttime)
+    api.memberCutList(that.memberId,collageType).then(function(allMemberCutRes){
+      console.log(allMemberCutRes.data);
+      allMemberCutRes.data.data=allMemberCutRes.data.data.map((v)=>{
+        v.cutStarttime=formatTime.formatTime(v.starttime)
         return v
       })
-      that.mytuanData=allMemberCollageRes.data 
+      
+      that.cutData=allMemberCutRes.data.data
      })  
     }
   },
   async onLoad() {
     let that=this
     that.memberId = wx.getStorageSync('memberId')
-    that.getcollage(3)
+    that.getcollage(2)
   }
 }
 </script>

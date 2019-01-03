@@ -100,7 +100,8 @@ export default {
       posts:false,
       memberId:'',
       productId:'',
-      hascollages:true
+      hascollages:true,
+      cutInterval:[]
     }
   },
   components: {
@@ -125,7 +126,7 @@ export default {
     jumpOrder(){
       var that = this;
       if (that.Goods.enableStore>0) {  
-        let url=`../order/main?goodsImg=${that.Goods.thumbnail}&goodname=${that.Goods.name}&activityPrice=${that.collageGoodsDO.activityPrice}&collagePersons=${that.collageDO.collagePersons}&Type=K&price=${that.Goods.price}&goodsId=${that.Goods.goodsId}&productId=${that.productId}`
+        let url=`../order/main?goodsImg=${that.Goods.thumbnail}&goodname=${that.Goods.name}&activityPrice=${that.collageGoodsDO.activityPrice}&collagePersons=${that.collageDO.collagePersons}&Type=K&price=${that.collageGoodsDO.goodsPrice}&goodsId=${that.Goods.goodsId}&productId=${that.productId}`
          wx.navigateTo({
           url:url,
         })
@@ -216,7 +217,7 @@ export default {
         var timestamp2 = (new Date()).valueOf();
         var leftTime = (endtime+86400000) - timestamp2
         if (leftTime >= 0) {
-          var interval = setInterval(function () {
+          var interval= setInterval(function () {
           // var days = parseInt(leftTime / 1000 / 60 / 60 / 24, 10); //计算剩余的天数
           var hours = parseInt(leftTime / 1000 / 60 / 60 % 24, 10); //计算剩余的小时
           var minutes = parseInt(leftTime / 1000 / 60 % 60, 10);//计算剩余的分钟
@@ -266,11 +267,18 @@ export default {
     })
    
   },
-  
+  onHide(){
+   //  let that=this
+   //  console.log(that.cutInterval);
+   //  for(let i in that.cutInterval){
+   //     clearinterval(that.cutInterval[i])
+   //  }
+   // console.log("清除成功");
+  },
   onShareAppMessage: function () {
     return {
       title: '',
-      desc: '小程序招商开发',
+      desc: '果冉回味',
       path: 'pages/index/main'
     }
   }
@@ -327,6 +335,11 @@ img{display: block;height: 100%;width: 100%;}
   .itemInfo .info{font-size: 28rpx;}
   .itemInfo .info text{color: rgb(238,129,26);}
   .btn{height: 55rpx;line-height: 55rpx; width: 180rpx;border-radius: 40rpx;background-image: -webkit-linear-gradient(0deg, rgb(255,191,3), rgb(252,148,53));text-align: center;color: #fff;}
+}
+.item{
+  .left{
+    span{width: 115px;overflow: hidden; white-space: nowrap;text-overflow:ellipsis;display: inline-block; }
+    }
 }
 .tip{height: 150rpx;line-height: 150rpx;text-align: center;color: #8e8e8e;font-size: 0.8em;}
 

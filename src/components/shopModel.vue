@@ -64,10 +64,12 @@ export default {
      //选中事件
     async AreaselectClick(Pindex){
          let that = this;
+         console.log(that.GoodsInfo)
          that.GoodsInfo.products = that.GoodsInfo.products.map((v) =>{      
           v.selected = false
           return v 
          })
+         console.log("执行了")
          // that.TagInfo = that.TagInfo + that.Guige[Pindex].value[indexs].specvalue;
          that.GoodsInfo.products[Pindex].selected = true  
          that.GoodsInfo.price=that.GoodsInfo.products[Pindex].price;
@@ -104,22 +106,23 @@ export default {
 
     //父组件触发的方法
      emitEvent(index){
-     let that = this;
-     that.btnIndex = index;
-      let animation = wx.createAnimation({
+       let that = this;
+       that.btnIndex = index;
+       let animation = wx.createAnimation({
         duration: 200, timingFunction: 'linear', delay: 100,  transformOrigin: 'left top 0',
-          success: function(res) {
-              console.log(res)
-            }
+        success: function(res) {
+          console.log(res)
+        }
       })
-        animation.translateY(300).step()
-          //输出动画
-        that.Animation=animation.export()
-        that.modelShow=true;
-        setTimeout(function () {
+      animation.translateY(300).step()
+      //输出动画
+      that.Animation=animation.export()
+      that.modelShow=true;
+      setTimeout(function () {
         animation.translateY(0).step()
-          that.Animation=animation.export()
-        }.bind(that), 100)
+        that.Animation=animation.export()
+      }.bind(that), 100)
+      
     },
 
     //点击加入购物车
@@ -163,30 +166,52 @@ export default {
         if(that.pic > productsSelect.enableStore){
           Lib.Show("库存不够","success",2000)
         }else{
-          //定义接收对象
-          var googitem = [];
-          var Goods = {};
-          let GoodsLIst = []
-          let GoodsInfo = that.GoodsInfo;
-          let GoodsItem = ''
-          //商品信息赋值
-          GoodsInfo.specvalue = that.GoodsInfo.specs
-          GoodsInfo.cart = 0
-          GoodsInfo.image = that.GoodsInfo.thumbnail
-          GoodsInfo.num = that.pic
-          GoodsInfo.productId = productsSelect.productId
-          GoodsInfo.price=productsSelect.price
-          delete GoodsInfo.intro
-          //封装数据传值
-          GoodsLIst[0] = GoodsInfo
-                    // console.log("你好世界12313212",GoodsInfo,GoodsLIst[0])
-          Goods.googitem = GoodsLIst
-          Goods.gainedpoint = that.pic * that.GoodsInfo.point
-          Goods.goodsAmount = that.pic * productsSelect.price
-          Goods.shareMoney= productsSelect.fenrunAmount*that.pic
-          Goods.shippingAmount = 2
-          GoodsItem = JSON.stringify(Goods)
-            wx.navigateTo({ url: '/pages/orderOne/main?gooditem='+GoodsItem+'&cart=0' });
+         var goodarr=[]
+         var goodlist={}
+         goodlist.pic = that.pic
+         goodlist.num = that.pic;
+         goodlist.price = productsSelect.price;
+         // goodlist.cost = that.data.goodDetail.cost;
+         goodlist.image = that.GoodsInfo.thumbnail
+         goodlist.name = that.GoodsInfo.name
+         goodlist.goodsId = that.GoodsInfo.goodsId
+         goodlist.productId = productsSelect.productId
+         goodlist.gainedpoint = that.pic * that.GoodsInfo.point
+         goodlist.shareMoney =  productsSelect.fenrunAmount*that.pic
+         goodlist.specvalue = that.GoodsInfo.specs
+         goodarr[0] = goodlist;
+         let goodsAmount=Number(productsSelect.price*that.pic).toFixed(2)
+         wx.navigateTo({
+          url: "/pages/orderOne/main?goodItem=" + JSON.stringify(goodarr) + '&cart=0&goodsAmount='+goodsAmount
+        })
+      
+        
+
+
+          // //定义接收对象
+          // var googitem = [];
+          // var Goods = {};
+          // let GoodsLIst = []
+          // let GoodsInfo = that.GoodsInfo;
+          // let GoodsItem = ''
+          // //商品信息赋值
+          // GoodsInfo.specvalue = that.GoodsInfo.specs
+          // GoodsInfo.cart = 0
+          // GoodsInfo.image = that.GoodsInfo.thumbnail
+          // GoodsInfo.num = that.pic
+          // GoodsInfo.productId = productsSelect.productId
+          // GoodsInfo.price=productsSelect.price
+          // delete GoodsInfo.intro
+          // //封装数据传值
+          // GoodsLIst[0] = GoodsInfo
+          //           // console.log("你好世界12313212",GoodsInfo,GoodsLIst[0])
+          // Goods.googitem = GoodsLIst
+          // Goods.gainedpoint = that.pic * that.GoodsInfo.point
+          // Goods.goodsAmount = that.pic * productsSelect.price
+          // Goods.shareMoney= productsSelect.fenrunAmount*that.pic
+          // Goods.shippingAmount = 2
+          // GoodsItem = JSON.stringify(Goods)
+          //   wx.navigateTo({ url: '/pages/orderOne/main?gooditem='+GoodsItem+'&cart=0' });
         }
     },
     Plus(){

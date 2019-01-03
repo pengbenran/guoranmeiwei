@@ -9,7 +9,7 @@
           <div class="title">{{Shop_List.shopTitle}}</div>
           <small>{{Shop_List.specvalue}}</small>
           <div class="price">
-             <div class="priceleft"><text>￥{{Shop_List.price}}元</text></div>
+             <div class="priceleft"><text>￥{{Shop_List.activityPrice}}元</text><text class="oldPrice">￥{{Shop_List.price}}</text></div>
              <div class="priceright">
                  x {{Shop_List.num}}
              </div>
@@ -49,6 +49,7 @@ white-space:normal;overflow: hidden;display: -webkit-box;-webkit-box-orient:vert
    .priceleft{
      text{font-size: 36rpx;font-weight: 100;color: rgb(252,78,79);}
      span{font-size: 26rpx;font-weight: 100;color: #8e8e8e;text-decoration:line-through}
+     .oldPrice{color: #8e8e8e;font-size: 24rpx;text-decoration:line-through;}
    }
    .priceright{height: 48rpx;font-size: 28rpx;font-weight: 100;color: #8e8e8e;
    }

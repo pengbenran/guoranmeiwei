@@ -94,12 +94,11 @@ export default {
     
     //确认支付
      Paysub(){
-
       let that = this;
       if(that.allPrice == ''){
            Lib.Show('请输入金额','none',1000)
       }else{
-               Lib.Loading("请稍等")
+              Lib.Loading("请稍等")
               if(that.PayTypeIndex == 0){
                 that.yuPay();
               }else{
@@ -114,18 +113,25 @@ export default {
      async yuPay(){
         let that = this;
         let params ={}
-
-        params.consume = that.allPrice
-        params.methodPayment = that.PayTypeIndex
-        params.shopId = that.shopId
-        params.memberId = wx.getStorageSync('memberId');
-        let res = await api.BelowConsume(params)
-        console.log("付款存入数据库",res)
-        if(res.data.code == 0){
+        let advances=wx.getStorageSync('advances')
+        if(that.allPrice<advances){
+         params.consume = that.allPrice
+         params.methodPayment = that.PayTypeIndex
+         params.shopId = that.shopId
+         params.memberId = wx.getStorageSync('memberId');
+         let res = await api.BelowConsume(params)
+         if(res.data.code == 0){
            wx.hideLoading();
            Lib.Show('支付成功','success',2000)
-           wx.switchTab({ url: '../myself/main' });
+         }else{
+          wx.hideLoading();
+          Lib.Show('支付失败','success',2000)
         }
+        }
+        else{
+           Lib.Show('余额不足','none',1000)
+        }
+       
     },
 
     //微信支付
@@ -136,28 +142,26 @@ export default {
       payParms.orderid = Date.parse(new Date())
       payParms.total_fee = that.allPrice*100
       payParms.sn = sn
-
        wx.login({
         success: res => {
           if(res.code){
-              api.ConfirmPay(payParms,res.code).then(function(Pres){
-                let pay = Pres.data
-                wx.requestPayment({
-                  timeStamp: pay.timeStamp,
-                  nonceStr: pay.nonceStr,
-                  package: pay.package,
-                  signType: pay.signType,
-                  paySign: pay.paySign,
-                  success: res => {
-                    that.yuPay()
-                  }
-                });
-              })
+            wx.hideLoading()
+            api.ConfirmPay(payParms,res.code).then(function(Pres){
+              let pay = Pres.data
+              wx.requestPayment({
+                timeStamp: pay.timeStamp,
+                nonceStr: pay.nonceStr,
+                package: pay.package,
+                signType: pay.signType,
+                paySign: pay.paySign,
+                success: res => {
+                 wx.hideLoading();
+                 Lib.Show('支付成功','success',2000)
+                }
+              });
+            })
           }
-        }, fail: function (res) {
-             wx.hideLoading();
-            Lib.Show('支付失败','loading',2000)
-            },
+        }
       });
     },
 

@@ -37,6 +37,14 @@ export default {
                   if(res.data.code==0){
                     that.isMember=false
                     that.userLogin()
+                    if(wx.getStorageSync('distribeId')==null){
+
+                    }
+                    else{
+                      api.promotion(res.data.memberId,wx.getStorageSync('distribeId')).then(function(res){
+                       
+                      })
+                    }
                   }
                 }) 
               }

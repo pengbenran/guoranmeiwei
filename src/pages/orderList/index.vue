@@ -14,14 +14,14 @@
                <text class="status_Box" v-if="orderItem.status==4||orderItem.status == 3&orderItem.shipStatus==2&orderItem.payStatus==2">已完成</text>
              </div>
           </div>
-           <div class="shopWarp" v-for="(shopItme,ind) in orderItem.item" :index='ind' :key="shopItme">
-            <div class="addr"><div class="topImg"><img :src="topImg"/></div><text>{{shopItme.shopName}}</text> </div>
-            <div class="List">
+           <div class="shopWarp">
+            <div class="addr"><div class="topImg"><img :src="topImg"/></div><text>{{orderItem.shopName}}</text> </div>
+            <div class="List" v-for="(shopItme,ind) in orderItem.item" :index='ind' :key="shopItme">
               <div class="left"><img :src="shopItme.image"/></div>
               <div class="right">
                   <div class="Itemtitle fontHidden">{{shopItme.name}}</div>
                   <div class="NumInfo">
-                     <text class="tag">桃子水密桃</text>
+                     <text class="tag"></text>
                      <span><text class="Num">x {{shopItme.num}}</text><text class="price">￥{{shopItme.price}}</text></span> 
                   </div>
               </div>
@@ -155,7 +155,7 @@ export default {
       wx.login({
         success: Coderes => {
           if(Coderes.code){
-              Lib.Show("正在支付","loading",2000)
+            Lib.Show("正在支付","loading",2000)
             api.ConfirmPay(parms,Coderes.code).then(function(res){
            
              //全局赋值
@@ -271,14 +271,18 @@ export default {
           order.statuss = statuss//状态
           order.payStatus = payStatus
           order.shipStatus = shipStatus
-          order.memberId = that.memberId
-          
+          order.memberId = that.memberId   
           parms.order = order
           let res = await api.OrderSelectList(parms)
           that.orderList =  res.data.orderList.map(v=>{ 
             v.shopNum=v.item.length
             return v
           })
+          if(statuss==0&&payStatus==0){
+            console.log(that.orderList)
+            that.orderList=that.orderList.filter(item=>item.orderType==1)
+            console.log(that.orderList)
+          } 
           that.orderArry[status]=that.orderList
         }
          that.length = that.orderList.length
@@ -357,6 +361,7 @@ export default {
   },
   onLoad(options){
     let that = this;
+    that.orderArry=[]
     that.memberId = wx.getStorageSync('memberId');
     that.btnSelect = options.currentTarget
     console.log(options,'初始化参数',that.btnSelect)

@@ -32,16 +32,15 @@ const sendMsg=(paypackage, orderid, ordertime, ordername, payorderamount)=>{
       let _jsonData = {
         access_token: _access_token,
         touser: openId,
-        template_id: 'grPG-SjF9uTDVRmS-KathfL0xa2vwZUX-YDFENtQpMQ',
+        template_id: 'w4TxDxlmOTAbD_ldoR_JhVHJ2bQVuO1QtwKT3kh5Ggo',
         form_id: form_id,
-        page: "pages/fivefahuo/fivefahuo?currentTarget=2",
+        page: "pages/fivefahuo/main?currentTarget=2",
         data: {
-          "keyword1": { "value": orderid, "color": "#173177" },
-          "keyword2": { "value": ordertime, "color": "#173177" },
-          "keyword3": { "value": ordername, "color": "#173177" },
-          "keyword4": { "value": payorderamount.toString(), "color": "#173177" },
-          "keyword5": { "value": "待发货", "color": "#173177" },
-          "keyword6": { "value": "微信支付", "color": "#173177" },
+          "keyword1": { "value": ordertime, "color": "#173177" },
+          "keyword2": { "value": ordername, "color": "#173177" },
+          "keyword3": { "value": payorderamount.toString(), "color": "#173177" },
+          "keyword4": { "value": "待发货", "color": "#173177" },
+          "keyword5": { "value": "微信支付", "color": "#173177" },
         }
       }
       wx.request({
